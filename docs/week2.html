@@ -11,37 +11,43 @@
 
 
 
-<title>Week 2 – Working with data in R</title>
+<title>Week 2 – Introduction to R and RStudio</title>
 
-<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
-<script src="site_libs/datatables-binding-0.6/datatables.js"></script>
-<link href="site_libs/dt-core-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
-<link href="site_libs/dt-core-1.10.16/css/jquery.dataTables.extra.css" rel="stylesheet" />
-<script src="site_libs/dt-core-1.10.16/js/jquery.dataTables.min.js"></script>
-<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
-<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -54,32 +60,8 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -90,10 +72,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -110,40 +88,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -171,7 +125,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -183,7 +137,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -193,11 +147,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -209,13 +180,12 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -223,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -335,7 +298,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -349,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -359,39 +322,39 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Contents
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="week0.html">Week 0 - Getting ready</a>
+      <a href="week1.html">Week 1 - Getting ready</a>
     </li>
     <li>
-      <a href="week1.html">Week 1 - Introduction to R and RStudio</a>
+      <a href="week2.html">Week 2 - Introduction to R and RStudio</a>
     </li>
     <li>
-      <a href="week2.html">Week 2 - Working with data in R</a>
+      <a href="week3.html">Week 3 - Working with data in R</a>
     </li>
     <li>
-      <a href="week3.html">Week 3 - Data visualization with ggplot2</a>
+      <a href="week4.html">Week 4 - Data visualization with ggplot2</a>
     </li>
     <li>
-      <a href="week4.html">Week 4 - Data manipulation using dplyr</a>
+      <a href="week5.html">Week 5 - Data manipulation using dplyr</a>
     </li>
     <li>
-      <a href="week5.html">Week 5 - Grouping and combining data</a>
+      <a href="week6.html">Week 6 - Grouping and combining data</a>
     </li>
     <li>
-      <a href="week6.html">Week 6 - Restructuring data for analysis</a>
+      <a href="week7.html">Week 7 - Restructuring data for analysis</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/bioinformatics-core-shared-training/r-intro">
+  <a href="https://github.com/bioinformatics-core-shared-training/Bitesize-R">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -401,1148 +364,447 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
-<h1 class="title toc-ignore">Week 2 – Working with data in R</h1>
+<h1 class="title toc-ignore">Week 2 – Introduction to R and RStudio</h1>
 
 </div>
 
 
 <blockquote>
+<h4 id="aims">Aims</h4>
+<ul>
+<li>To introduce Rstudio that we will be using, to write R scripts, in
+this course</li>
+<li>To demonstrate the ways in which R can store data</li>
+<li>To show how R functions can operate on such data</li>
+</ul>
 <h4 id="learning-objectives">Learning objectives</h4>
 <ul>
-<li>Create and run a script file containing your R code</li>
-<li>Extract values or subsets from vectors</li>
-<li>Modify values within a vector</li>
-<li>Perform vector arithmetic</li>
-<li>Introduce more sophisticated data structures (lists and data frames)</li>
-<li>Learn how to install and use packages that extend R’s basic functionality</li>
-<li>Read data in tabular format into R</li>
-<li>Calculate summary statistics on your tabular data</li>
-<li>Introduce the <strong><code>tibble</code></strong>, arguably the most important data structure you will use in R</li>
-<li>Learn how R deals with missing values</li>
+<li>Learn about the functions of the various panes in Rstudio</li>
+<li>Introduce the concept of vectors and the types of data that they can
+hold</li>
+<li>Present the different ways that a user can access documentation in R
+and when to use them</li>
+<li>Demonstrate the basic format for using an R function</li>
+<li>Teach some simple but useful functions in R</li>
 </ul>
 </blockquote>
-<div id="getting-started-with-data-in-r" class="section level1">
-<h1>Getting started with data in R</h1>
-<p>In this course, we’ll be mostly focusing on a set of R packages specifically designed for the most useful and common operations for interacting with and visualizing data, and particularly data in a tabular form. This collection of packages is known as the <strong>tidyverse</strong>.</p>
-<p>Learning the <strong>tidyverse</strong> is more than just learning about some helpful functions to get certain tasks done. The tidyverse packages form a coherant system for data manipulation, exploration and visualization that share a common design philosophy. There is a certain elegance to code crafted using the tidyverse approach that is in stark contrast to the strange and often cryptic equivalent using traditional ‘base R’. This old-timer only really became a true R convert on being introduced to the tidyverse.</p>
-<p>Sadly, as much as we’d like, we can’t just cover the tidyverse alone and ignore the fundamentals of the R language. So this week we will look at some aspects of R that are crucial to understanding how R is handling your data, even though we will come back to some of these concepts in later weeks to show you how those same operations are more easily and elegantly carried out in the tidyverse.</p>
-<p>We will also start to look at the most important data structure you’ll use with your data, assuming it is in tabular form, the <strong>data frame</strong>, and its superior tidyverse derivative, the <strong>tibble</strong>.</p>
+<div id="introduction-to-r-and-rstudio" class="section level1">
+<h1>Introduction to R and RStudio</h1>
+</div>
+<div id="why-learn-r" class="section level1">
+<h1>Why learn R?</h1>
+<ul>
+<li><p>R involves creating &amp; using scripts which makes the steps you
+used in your analysis clear and can be inspected by someone else for
+feedback and error-checking.</p></li>
+<li><p>R code is great for reproducibility. An increasing number of
+journals and funding agencies expect analyses to be reproducible, so
+knowing R will give you an edge with these requirements.</p></li>
+<li><p>R integrates with other tools to generate manuscripts from your
+code. This document (RMarkdown a .Rmd file) is a case in point.</p></li>
+<li><p>R is interdisciplinary and extensible and has thousands of
+installable packages to extend its capabilities. R has packages for
+image analysis, GIS, time series, population genetics, and a lot
+more.</p></li>
+<li><p>R scales well to work on data of all shapes and sizes.</p></li>
+<li><p>R can connect to spreadsheets, databases, and many other data
+formats, on your computer or on the web.</p></li>
+<li><p>R produces high-quality graphics suitable for publication in
+journals or the web.</p></li>
+<li><p>R has a large and welcoming community - Thousands use R daily and
+many of them are willing to help you through websites such as Stack
+Overflow or the RStudio community.</p></li>
+<li><p>Not only is R free, but it is also open-source and
+cross-platform.</p></li>
+</ul>
 <hr />
 </div>
-<div id="scripts" class="section level1">
-<h1>Scripts</h1>
-<p>Up to now, we were mostly typing code in the Console pane at the <strong><code>&gt;</code></strong> prompt. This is a very interactive way of working with R but what if you want to save the commands you’ve typed for a future session working in R?</p>
-<p>Instead we can create a script file containing our R commands that we can come back to later. This is the way most R coding is done so let’s have a go.</p>
-<p>From the RStudio ‘<strong>File</strong>’ menu, select ‘<strong>New File</strong>’ and then ‘<strong>R Script</strong>’.</p>
-<div class="figure">
-<img src="images/RStudio_new_file_menu.png" style="width:50.0%" />
-
+<div id="rstudio-a-brief-tour" class="section level1">
+<h1>Rstudio a brief tour</h1>
+<p>Rstudio provides us with a friendly interface to the R statistical
+progrmming language. It consists of four main “Panes”. These can be
+re-sized and moved around to suit how you like to work.</p>
+<p><img src="images/Rstudioataglance.png" alt="Rstudio screenshot" width="90%"></p>
+<div id="editing-pane" class="section level2">
+<h2>Editing pane</h2>
+<p>By default the top left-hand pane is one for creating, editing &amp;
+running R scripts.</p>
+<p><img src="images/Rstudio_scripting.png" alt="Rstudio edit pane screenshot" width="90%"></p>
+<p>A script is an R program that you have written. A good practice is
+for that script to perform only one role in your analysis workflow and
+so you may have several R scripts which you call, in a particular
+sequence, to analyse your data.</p>
+<p>As you will see, a script is basically a text file that contains R
+commands and (ideally) comments to explain what the codes function is
+(as a documentation process).</p>
+<p>As well as R scripts, there are many types of Rstudio document
+including Markdown files which we will use in the teaching of this
+course. These can provide interactive workbooks or pdf and web documents
+to name but a few possible outcomes.</p>
 </div>
-<p>You should now have a new file at the top of the left-hand side of RStudio for your new R script named ‘Untitled1’. The Console window no longer occupies the whole of the left-hand side.</p>
-<div class="figure">
-<img src="images/RStudio_new_script.png" style="width:100.0%" />
-
+<div id="console" class="section level2">
+<h2>Console</h2>
+<p>Coming down the screen to the bottom left-hand pane we find the
+console window. This is where we can find output produced by running our
+R scripts.</p>
+<p><img src="images/Rstudio_console.png" alt="Rstudio screenshot" width="90%"></p>
+<p>We can also try out snippets of R code here. Those of you who have
+only used graphical interfaces like Windows or MacOS where you click on
+commands using a mouse may find this aspect of R somewhat different. We
+type in commands to R using the command line.</p>
+<p>This area can also be used like a calculator. Let’s just type in
+something like <code>23 + 45</code> followed by the return key and see
+what happens. You should get the following:</p>
+<pre><code>&gt; 23 + 45
+[1] 68</code></pre>
+<p>Now 68 is clearly the answer but what is that 1 in brackets?</p>
+<p>Here is another example to explain. If we type <code>1:36</code> and
+press enter, what happens? R generates output counting from 1 to 36 but
+cannot fit all the output on one line and so starts another like
+this:</p>
+<pre><code>&gt; 1:36
+ [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+[26] 26 27 28 29 30 31 32 33 34 35 36</code></pre>
+<p>Now we have two lines beginning with a number in square brackets.
+Note that the number of values displayed on each line may differ on your
+computer; it largely depends on the width of your console pane and the
+font size. Try creating a larger sequence of numbers,
+e.g. <code>1:100</code>, if all 36 numbers fit on a single line in your
+case.</p>
+<p>This is just R helping us to keep tabs on which number we are looking
+at. <code>[1]</code> denotes that the line starts with the first result
+and the <code>[26]</code> denotes that this line starts with the 26th
+number. Let’s try another one and generate a sequence incrementing in
+steps of 2:</p>
+<pre><code>&gt; 1:36 * 2
+ [1]  2  4  6  8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50
+[26] 52 54 56 58 60 62 64 66 68 70 72</code></pre>
+<p>There are other tabs on this pane but we shall not be covering these
+on this course.</p>
 </div>
-<p>We can type code into this file just as we have done in the Console window at the command prompt.</p>
-<p>Type in some of the commands from last week’s assignment. Do you notice that the file name on the tab for this pane is now highlighted in red and has an asterisk?</p>
-<div class="figure">
-<img src="images/RStudio_modified_script.png" style="width:50.0%" />
-
+<div id="environment" class="section level2">
+<h2>Environment</h2>
+<p>Next we move to the top right-hand corner pane. Here we have even
+more tabs (of which we will only consider two Environment and
+History).</p>
+<p><img src="images/Rstudio_env.png" alt="Rstudio screenshot" width="80%"></p>
+<p>Environment keeps track on R variables which we create (more on those
+later) and their contents. History is like a tally role of all the R
+commands we have entered in our session.</p>
 </div>
-<p>This tells us that we haven’t yet saved our changes. There are various ways to do so just like in Word or Excel or other applications you’re familiar with, for example using the ‘<strong>Save</strong>’ option from the ‘<strong>File</strong>’ menu or clicking on the ‘<strong>Save</strong>’ button.</p>
-<p>My preference by far is to use a keyboard shortcut. On a Mac this would be <kbd>cmd</kbd> + <kbd>S</kbd> (press the <kbd>cmd</kbd> key first and, while keeping this depressed, click the <kbd>S</kbd> key); on Windows you would do the same thing using <kbd>Ctrl</kbd> + <kbd>S</kbd>.</p>
-<p>If the file already exists it will be saved without any further ado. As this is a new file, RStudio needs to know what you want to call it and in which folder on your computer you want it to be saved. You can choose the file name and location using the file dialog that appears. RStudio will add a ‘.R’ suffix if you don’t specify one.</p>
-<p>It is a good idea to keep your scripts and assignment files for this course together in one folder or directory.</p>
-<div id="running-scripts" class="section level2">
-<h2>Running scripts</h2>
-<p>Having typed an R command and hit the return key you’ll notice that the command isn’t actually run like it was in the console window. That’s because you’re writing your R code in an editor. To run a single line of code within your script you can press the ‘<strong>Run</strong>’ button at the top of the script.</p>
-<div class="figure">
-<img src="images/RStudio_run_script_command.png" />
-
-</div>
-<p>This will run the line of code on which the cursor is flashing or the next line of code if the cursor is on a blank or empty line.</p>
-<p>The keyboard shortcut is more convenient in practice as you won’t have to stop typing at the keyboard to use your mouse. This is <kbd>cmd</kbd> + <kbd>return</kbd> on a Mac and <kbd>Ctrl</kbd> + <kbd>enter</kbd> on Windows.</p>
-<p>Running a line in your script will automatically move the cursor onto the next command which can be very convenient as you’ll be able to run successive commands just by repeatedly clicking ‘<strong>Run</strong>’ or using the keyboard shortcut.</p>
-<p>You can also run the entire script by clicking on the ‘<strong>Source</strong>’ button, a little to the right of the ‘<strong>Run</strong>’ button. More useful though is to run ‘<strong>Source with Echo</strong>’ from the Source drop-down menu as this will also display your commands and the outputs from these in the Console window.</p>
-</div>
-<div id="adding-comments-to-scripts" class="section level2">
-<h2>Adding comments to scripts</h2>
-<p>It is a very good idea to add comments to your code to explain what it’s doing or what you intended. This will help others to understand your code and more than likely even yourself when you come to revisit it a few weeks or months later.</p>
-<p>Anything following a <strong><code>#</code></strong> symbol is a comment that R will ignore. Here’s an example of adding comments to our simple script.</p>
-<div class="figure">
-<img src="images/RStudio_script_comments.png" />
-
-</div>
-<p>Comments usually appear at the beginning of lines but can appear at the end of an R statement.</p>
-<pre class="r"><code>days &lt;- c(1, 2, 4, 6, 8, 12, 16) # didn&#39;t manage to get a measurement on day 10</code></pre>
-<p>It is also quite common when looking at R code to see lines of code commented out, usually replaced by another line that does something similar or makes a small change.</p>
-<pre class="r"><code># random_numbers &lt;- rnorm(100, mean = 0, sd = 1)
-random_numbers &lt;- rnorm(100, mean = 0, sd = 0.5)</code></pre>
+<div id="files-plots-help" class="section level2">
+<h2>Files, Plots &amp; Help</h2>
+<p>Our final bottom right-hand pane also has several tabs. The Files tab
+is a file explorer that enable us to move around our directories and
+select which files we wish to work on. We can also change the default
+working directory that Rstudio will use.</p>
+<p><img src="images/Rstudio_filexpl.png" alt="Rstudio screenshot" width="80%"></p>
+<p>The Plots tab is where any graphs that we create in R will appear. We
+can move through them using the arrow buttons and the export button will
+convert them to different graphics formats e.g. for publication in a
+paper or for the web.</p>
+<p>The Packages tab shows which R packages are installed (These expand
+R’s functionallity and again will be covered later) and can also install
+new packages.</p>
+<p>The Help tab is a <em>massively useful</em> tab which enables you to
+search R help index to get help pages on R functions and provide example
+code to help you use them in your R scripts.</p>
 <hr />
 </div>
 </div>
-<div id="vectors" class="section level1">
-<h1>Vectors</h1>
-<p>In week 1 we introduced <strong>vectors</strong>, the simplest type of data structure in R. An atomic vector is a collection of values or things of the same type in a given order. We created some last week using <strong><code>c()</code></strong> and the <strong><code>:</code></strong> operator.</p>
-<pre class="r"><code>some_numbers &lt;- 1:10
-days_of_the_week &lt;- c(&quot;Sunday&quot;, &quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;)</code></pre>
-<p>In the first example, an integer vector was created with 10 values from 1 to 10. <code>some_numbers</code> is a name that refers to the vector and can be used in other R statements while <code>1:10</code> is the vector object itself.</p>
-<div class="rmdblock">
-<p>
-<strong><code>:</code> operator</strong>
-</p>
-<p>
-The colon operator (<strong><code>:</code></strong>) returns every integer between two integers. These can be in ascending or descending order and can include negative numbers.
-</p>
-<p>
-<code>countdown &lt;- 10:1</code>
-</p>
-<p>
-<code>including_some_negative_numbers &lt;- -4:3</code>
-</p>
-</div>
-<p>A single value is known as a <strong>scalar</strong>. An example from last week was the number of samples in our experiment.</p>
+<div id="our-first-look-at-the-r-language" class="section level1">
+<h1>Our first look at the R language</h1>
+<p>Our overall goal for this course is to give you the ability to import
+your data into R, select a subset of the data most of interest for a
+given analysis, carry out an analysis to summarize these data and create
+visualizations of the data. First though, let us consider <strong>“What
+is Data?”</strong></p>
+<p>Data comes in many forms: Numbers (Integers and decimal values) or
+alphabetical (characters or lines of text). Clearly a computer (or R)
+needs a way of representing this wide range of data with it’s diverse
+properties.</p>
+<p><em>The pigeon-hole analogy:- R stores data in contiguous sections of
+computer memory a bit like the pigeon-holes used in many internal mail
+systems. These holes are indexed e.g by 1st letter of surname or a range
+of letters e.g. A-C. Internal mail systems can carry different types of
+traffic small notes, large envelopes or parcels with different
+dimensions so there may be rows associated with small letters, big
+letters and parcels. For a system like this it makes sense that a row
+contains the same type of mail with similar dimensions to avoid wasting
+space.</em></p>
+<div id="storing-our-first-r-data-value" class="section level2">
+<h2>Storing our first R data value</h2>
+<p>R has an equivalent to this called a Vector – everything is
+represented as a vector. For example say we had a single numerical value
+8 and this was the number of samples in an experiment – an R vector can
+be created (or assigned) thusly:</p>
+<pre class="r"><code>samples &lt;- 8</code></pre>
+<p>The <code>&lt;-</code> is the assignment action and
+<code>samples</code> is the name of our vector.</p>
+<p>If we just type <code>samples</code> followed by the return key R
+will print the contents of the vector called samples (Try it). Notice
+that Rstudio tries to help us by autocompleting the variable name to
+avoid mis-typing.</p>
+<p>Be kind to yourself and use meaningful names for your vectors like
+<code>samples</code> rather than <code>s</code>. When you come back to
+your code after 6 months or give it to colleagues it will be more
+obvious what your program is doing and how it works. Also, note that the
+variable Samples is different to the variable samples (<strong>Case
+matters</strong>).</p>
 <pre class="r"><code>samples &lt;- 8
+Samples &lt;- 24
 samples</code></pre>
 <pre><code>## [1] 8</code></pre>
-<p>But as we saw last week, R doesn’t treat this single value any differently; it is still a vector, just one that has a length of 1.</p>
-<pre class="r"><code>length(days_of_the_week)</code></pre>
-<pre><code>## [1] 7</code></pre>
-<pre class="r"><code>length(samples)</code></pre>
-<pre><code>## [1] 1</code></pre>
-<p>Almost every object in R is a vector of one kind or another, or is constructed of vectors, so it’s really important to understand these well.</p>
-<div class="rmdblock">
-<p>
-<strong><code>length()</code></strong>
-</p>
-<p>
-The <code>length()</code> function returns the number of elements in a vector.
-</p>
-<p>
-<code>length(8:15)</code>
-</p>
+<pre class="r"><code>Samples</code></pre>
+<pre><code>## [1] 24</code></pre>
+<p>What if we found out that there were actually 12 samples? We can
+correct this by re-assigning the value of samples:</p>
+<p>Now try outputting the value – is it 12 or 8?</p>
+<pre class="r"><code>samples &lt;- 12</code></pre>
+<p>Of course our data is often a decimal value e.g.</p>
+<pre class="r"><code>ph &lt;- 5.5</code></pre>
+<p>Or we may have a name e.g. a <em>string</em> of characters.</p>
+<pre class="r"><code>drug &lt;- &quot;Gefitinib&quot;</code></pre>
+<p>A less obvious type of data (but incredibly useful later on in this
+course) are logical values i.e. <code>TRUE</code> and
+<code>FALSE</code>.</p>
+<pre class="r"><code>yes &lt;- TRUE
+no &lt;- FALSE
+yes</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>no</code></pre>
+<pre><code>## [1] FALSE</code></pre>
 </div>
-<div id="combining-vectors" class="section level2">
-<h2>Combining vectors</h2>
-<p>The other way we’ve encountered for creating a vector is to use <strong><code>c()</code></strong>. This is actually a function and we can get help for it just as we can for any other function.</p>
-<pre class="r"><code>?c</code></pre>
-<p>From the help page you can see that <code>c</code> stands for ‘combine’ (or perhaps ‘concatenate’ as both terms are used in the documentation).</p>
-<p>One of the most useful things about the help pages for functions are the examples that are given – you’ll need to scroll down to the bottom of the help page to see them. These can be really helpful in demonstrating how a function works. You can very easily cut and paste these examples and run these in the console window as a way of experimenting with and learning about the function.</p>
-<p>Let’s have a look at the first example from the help page for <code>c()</code>. It’s slighly more complicated than what we did last week.</p>
-<pre class="r"><code>c(1, 7:9)</code></pre>
-<pre><code>## [1] 1 7 8 9</code></pre>
-<p>This is actually combining two vectors, the first with a single value <code>1</code> and the second with values <code>7</code>, <code>8</code> and <code>9</code>. Here’s another example:</p>
-<pre class="r"><code>cats &lt;- c(&quot;felix&quot;, &quot;kitty&quot;, &quot;tigger&quot;)
-dogs &lt;- c(&quot;spot&quot;, &quot;snoopy&quot;)
-cats_and_dogs &lt;- c(cats, dogs)
-cats_and_dogs</code></pre>
-<pre><code>## [1] &quot;felix&quot;  &quot;kitty&quot;  &quot;tigger&quot; &quot;spot&quot;   &quot;snoopy&quot;</code></pre>
-<div class="rmdblock">
-<p>
-<strong><code>c()</code></strong>
-</p>
-<p>
-The <code>c()</code> function is a generic function that combines its arguments, i.e. the things you pass to the function by including these within the parentheses, <code>()</code>. You can pass as many vectors as you like to <code>c()</code> and it will concatenate these into a single vector.
-</p>
-<p>
-Arguments will be coerced to a common type.
-</p>
-<p>
-<code>c(1:5, 10.5, “next”)</code>
-</p>
-</div>
-</div>
-<div id="coercion" class="section level2">
-<h2>Coercion</h2>
-<p>Atomic vectors must contain values that are all of the same type. A bit later on, we’ll introduce another type of data structure that doesn’t have this restriction – the list. First though, a look at back at one of the exercises from last week’s assignment in which we tried to create vectors of things that are of different types.</p>
-<pre class="r"><code>integer_logical &lt;- c(1:5, c(TRUE, FALSE, TRUE))
-integer_logical</code></pre>
-<pre><code>## [1] 1 2 3 4 5 1 0 1</code></pre>
-<pre class="r"><code>typeof(integer_logical)</code></pre>
-<pre><code>## [1] &quot;integer&quot;</code></pre>
-<p>Combining an integer vector, <code>1:5</code>, containing the numbers 1 through 5, with a logical vector results in an integer vector. The logical values have been <em>‘coerced’</em> into integers. But why the logical values and not the integers to produce a logical vector?</p>
-<p>If you think about it, it makes more sense to convert logical values where <code>TRUE</code> and <code>FALSE</code> are usually represented in computers by the bits <code>1</code> and <code>0</code> respectively. <code>TRUE</code> and <code>FALSE</code> have natural and understandable equivalents in the world of integers. Which logical value would you give to the number 5 for example?</p>
-<p>Similarly, integers get converted to doubles in this example:</p>
-<pre class="r"><code>integer_double &lt;- c(3.4, 7, 2.3, 6:-3)
-integer_double</code></pre>
-<pre><code>##  [1]  3.4  7.0  2.3  6.0  5.0  4.0  3.0  2.0  1.0  0.0 -1.0 -2.0 -3.0</code></pre>
-<pre class="r"><code>typeof(integer_double)</code></pre>
-<pre><code>## [1] &quot;double&quot;</code></pre>
-<p>Again, this makes more sense than converting doubles (numbers with a decimal point) to integers (whole numbers) and losing some of their precision.</p>
-<p>Finally, it is really not obvious how to convert most character strings into either logical or numeric values, so when combining vectors that contain characters everything else gets ‘coerced’ into becoming characters.</p>
-<pre class="r"><code>we_all_want_to_be_characters &lt;- c(FALSE, 1:5, 23L, 3.23, 5.2e4, 1e-6, &quot;matt&quot;)
-we_all_want_to_be_characters</code></pre>
-<pre><code>##  [1] &quot;FALSE&quot; &quot;1&quot;     &quot;2&quot;     &quot;3&quot;     &quot;4&quot;     &quot;5&quot;     &quot;23&quot;    &quot;3.23&quot; 
-##  [9] &quot;52000&quot; &quot;1e-06&quot; &quot;matt&quot;</code></pre>
-<pre class="r"><code>typeof(we_all_want_to_be_characters)</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-</div>
-<div id="extracting-subsets" class="section level2">
-<h2>Extracting subsets</h2>
-<p>One of the operations we do frequently on our data is to select subsets that are of particular interest. For example, we may be interested in the top 50 genes in a differential expression analysis for our RNA-seq experiment where those genes of interest are the ones with a log fold change above a certain value and with a <em>p</em>-value below 0.01.</p>
-<p>Having a good understanding of how to select a subset of values from a vector is going to be invaluable when we come to do the same for more complicated data structures so let’s take a look.</p>
-<p>The main subsetting operator we’ll use is the square bracket, <strong><code>[]</code></strong>. Here’s an example.</p>
-<pre class="r"><code>log2fc &lt;- c(2.3, -1, 0.48, 0.97, -0.02, 1.23)
-log2fc[3]</code></pre>
-<pre><code>## [1] 0.48</code></pre>
-<p>We have a vector of six log<sub>2</sub> fold change values and we’ve chosen to select the third value.</p>
-<p>If you’re familiar with other programming languages you will notice that the indexing scheme in R starts from 1, not 0. So the first element in the vector is referred to using the index 1, i.e. <code>log2fc[1]</code>.</p>
-<p>Multiple values can be extracted by providing a vector of indices, e.g.</p>
-<pre class="r"><code>log2fc[c(2, 4, 5)]</code></pre>
-<pre><code>## [1] -1.00  0.97 -0.02</code></pre>
-<p>You can also extract elements in a different order, e.g.</p>
-<pre class="r"><code>log2fc[c(2, 5, 4)]</code></pre>
-<pre><code>## [1] -1.00 -0.02  0.97</code></pre>
-<p>It is possible to exclude values instead by providing negative indices, e.g. to exclude the second element:</p>
-<pre class="r"><code>log2fc[-2]</code></pre>
-<pre><code>## [1]  2.30  0.48  0.97 -0.02  1.23</code></pre>
-<p>Or to exclude multiple elements:</p>
-<pre class="r"><code>log2fc[-c(2, 3)]</code></pre>
-<pre><code>## [1]  2.30  0.97 -0.02  1.23</code></pre>
-<p>Finally, we can also subset our vector using a vector of logical values.</p>
-<pre class="r"><code>log2fc[c(TRUE, FALSE, TRUE, TRUE, FALSE, FALSE)]</code></pre>
-<pre><code>## [1] 2.30 0.48 0.97</code></pre>
-<div class="rmdblock">
-<p>
-<strong>Parentheses <code>()</code> and brackets <code>[]</code></strong>
-</p>
-<p>
-Remember to use <strong><code>()</code></strong> for <strong>functions</strong> and <strong><code>[]</code></strong> for <strong>subsetting</strong>.
-</p>
-<p>
-<code>my_vector &lt;- c(1, 7:9)</code>
-</p>
-<p>
-<code>my_vector[2]</code>
-</p>
-</div>
-<div id="conditional-subsetting" class="section level3">
-<h3>Conditional subsetting</h3>
-<p>You may be thinking that the last example in which we extracted a subset using logical values seems very abstract and why on earth it could possibly be useful. But actually, it is probably the most frequently used way of selecting values of interest. To understand why, we’ll need to introduce the concept of logical operators.</p>
-<p>Let’s say we’re interested in just the log<sub>2</sub> fold changes that are above a threshold of 0.5. We can test each of the values using the <strong><code>&gt;</code></strong> logical operator.</p>
-<pre class="r"><code>log2fc &gt; 0.5</code></pre>
-<pre><code>## [1]  TRUE FALSE FALSE  TRUE FALSE  TRUE</code></pre>
-<p>This results in a logical vector containing <code>TRUE</code> and <code>FALSE</code> values for each element. The values at positions 1, 4 and 6 in our vector are above the threshold so result in <code>TRUE</code>, the others result in <code>FALSE</code>.</p>
-<p>We can use this resulting vector to subset our original <code>log2fc</code> vector.</p>
-<pre class="r"><code>above_threshold &lt;- log2fc &gt; 0.5
-log2fc[above_threshold]</code></pre>
-<pre><code>## [1] 2.30 0.97 1.23</code></pre>
-<p>In practice, we wouldn’t really create a variable containing our logical vector signifying whether values are of interest. Instead we’d do this in a single step.</p>
-<pre class="r"><code>log2fc[log2fc &gt; 0.5]</code></pre>
-<pre><code>## [1] 2.30 0.97 1.23</code></pre>
-<p>However, in a real R script, we might not want to hard-wire the threshold of 0.5 but instead let the user specify this each time the script is run, e.g. by passing in the value as a command-line argument. If we have a variable storing the desired threshold value, e.g. <code>log2fc_threshold</code>, then we would write the above as follows.</p>
-<pre class="r"><code>log2fc_threshold &lt;- 0.5
-log2fc_above_threshold &lt;- log2fc[log2fc &gt; log2fc_threshold]
-log2fc_above_threshold</code></pre>
-<pre><code>## [1] 2.30 0.97 1.23</code></pre>
-<p>We also captured the result in another vector called <code>log2fc_above_threshold</code> although we could have overwritten our original log2fc if we wanted to by assigning the result back to log2fc.</p>
-<pre class="r"><code>log2fc &lt;- log2fc[log2fc &gt; log2fc_threshold]</code></pre>
-<p>You can combine two or more conditions using <strong><code>&amp;</code></strong> if you want both conditions to be true or using <strong><code>|</code></strong> if either of the conditions holds.</p>
-<pre class="r"><code># reset our log2fc vector to how it was originally
-log2fc &lt;- c(2.3, -1, 0.48, 0.97, -0.02, 1.23)
-# find small fold changes
-log2fc[log2fc &lt; 0.5 &amp; log2fc &gt; -0.5]</code></pre>
-<pre><code>## [1]  0.48 -0.02</code></pre>
-<pre class="r"><code># find large fold changes
-log2fc[log2fc &gt; 1 | log2fc &lt; -1]</code></pre>
-<pre><code>## [1] 2.30 1.23</code></pre>
-<p><code>&amp;</code> and <code>|</code> are the R versions of the AND and OR operations in Boolean algebra but applied to vectors.</p>
-</div>
-<div id="logical-operators" class="section level3">
-<h3>Logical operators</h3>
-<p>The following table lists the logical operators you can use in R.</p>
+<div id="storing-more-than-one-value" class="section level2">
+<h2>Storing more than one value</h2>
+<p>We are much more likely to want to store a series of data
+e.g. observation values. Vectors can take any number of values but the
+assignment statement changes slightly.</p>
+<pre class="r"><code>obs &lt;- c(2, 5, 8, 5, 8, 2)
+obs</code></pre>
+<pre><code>## [1] 2 5 8 5 8 2</code></pre>
+<pre class="r"><code>vulcan &lt;- c(TRUE, FALSE, !TRUE, !FALSE)
+vulcan</code></pre>
+<pre><code>## [1]  TRUE FALSE FALSE  TRUE</code></pre>
+<p>What happens when you ask R to print obs?</p>
+<p><strong>Note</strong> that with the logical vector we can use the
+<strong><code>!</code></strong> operator to negate (or NOT) a logical
+i.e. <code>!TRUE</code> is equal to <code>FALSE</code>.</p>
+<p>Calculations can also be included in assignments e.g. we might have a
+column supplied in one type of units and we need it in another.</p>
+<pre class="r"><code>new_obs &lt;- obs * 2.2
+new_obs</code></pre>
+<pre><code>## [1]  4.4 11.0 17.6 11.0 17.6  4.4</code></pre>
+<pre class="r"><code>smaller &lt;- samples / 2
+smaller</code></pre>
+<pre><code>## [1] 6</code></pre>
+<p><strong>Notice that each and every element of the vector has been
+multiplied by 2.2</strong>. This is what was happening when we used
+<code>1:36 * 2</code> earlier.</p>
+<p>Here are some more arithmetic operators you’re likely to come
+across.</p>
 <table>
 <thead>
 <tr class="header">
-<th>Operator</th>
-<th>Description</th>
+<th>Symbol</th>
+<th>Effect</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>&lt;</td>
-<td>less than</td>
+<td>+</td>
+<td>Addition</td>
 </tr>
 <tr class="even">
-<td>&lt;=</td>
-<td>less than or equal to</td>
+<td>–</td>
+<td>Subtraction</td>
 </tr>
 <tr class="odd">
-<td>&gt;</td>
-<td>greater than</td>
+<td>*</td>
+<td>Multiplication</td>
 </tr>
 <tr class="even">
-<td>&gt;=</td>
-<td>greater than or equal to</td>
+<td>/</td>
+<td>Division</td>
 </tr>
 <tr class="odd">
-<td>==</td>
-<td>exactly equal to</td>
+<td>^</td>
+<td>Exponent</td>
 </tr>
 <tr class="even">
-<td>!=</td>
-<td>not equal to</td>
+<td>%%</td>
+<td>Modulus (Remainder)</td>
 </tr>
 <tr class="odd">
-<td>!x</td>
-<td>NOT x</td>
-</tr>
-<tr class="even">
-<td>x | y</td>
-<td>x OR y</td>
-</tr>
-<tr class="odd">
-<td>x &amp; y</td>
-<td>x AND y</td>
+<td>%/%</td>
+<td>Integer Division</td>
 </tr>
 </tbody>
 </table>
-<p><code>x</code> and <code>y</code> in the last 3 of these operators are intended for logical values; if you apply them to other types, those other types will be coerced to logicals in exactly the same way we saw earlier.</p>
+<p><strong>Note</strong> that when applying arithmetical functions to
+vectors they must be appropriate. For example, if you try and add 3 to
+the character string “a” then R will quite rightly return an error
+message.</p>
+<pre><code>&gt; &quot;a&quot; + 3
+Error in &quot;a&quot; + 3 : non-numeric argument to binary operator</code></pre>
+<p>Similarly, we can have long vectors of text strings:</p>
+<pre class="r"><code>animals &lt;- c(&#39;cat&#39;, &#39;dog&#39;, &#39;mouse&#39;)
+drugs &lt;- c(&#39;Gefitinib&#39;, &#39;FCR&#39;, &quot;Vincristine&quot;)
+bases &lt;- c(&quot;c&quot;, &quot;g&quot;, &quot;t&quot;, &quot;a&quot;, &quot;n&quot;)</code></pre>
+<p>What happens if you print these?</p>
 </div>
-</div>
-<div id="modifying-subsets" class="section level2">
-<h2>Modifying subsets</h2>
-<p>All subsetting operations can be combined with assignment. So we can modify or overwrite the values at specified position in our vector.</p>
-<pre class="r"><code>some_numbers &lt;- 1:10
-some_numbers[c(2, 4, 8)] &lt;- c(150, 34, -10)
-some_numbers</code></pre>
-<pre><code>##  [1]   1 150   3  34   5   6   7 -10   9  10</code></pre>
-<p>And, as before, we could use a condition to decide which values to change. For example, you may decide that log<sub>2</sub> fold changes above 1 are somewhat unreliable with your detection method and so you’d like to put a cap on any values above this limit.</p>
-<pre class="r"><code>log2fc[log2fc &gt; 1] &lt;- 1
-log2fc</code></pre>
-<pre><code>## [1]  1.00 -1.00  0.48  0.97 -0.02  1.00</code></pre>
-</div>
-<div id="vector-arithmetic" class="section level2">
-<h2>Vector arithmetic</h2>
-<p>Many operations in R are <strong>vectorized</strong>, which means that the operation is applied to an entire set of values at once. We’ve already seen lots of examples of this, like the following:</p>
-<pre class="r"><code>some_numbers &lt;- 1:10
-square_numbers &lt;- some_numbers ^ 2
-square_numbers</code></pre>
-<pre><code>##  [1]   1   4   9  16  25  36  49  64  81 100</code></pre>
-<p>Here we used the <strong><code>^</code></strong> exponent operator to raise our numbers to the power of 2. This happened in a single operation, i.e. just one line of code. In other computer languages we might have had to write what is known as a loop in order to iterate over and perform the calculation for each value in turn.</p>
-<p>Another way of writing the above statement to get the same result would be to multiply our numbers by themselves.</p>
-<pre class="r"><code>square_numbers &lt;- some_numbers * some_numbers
-square_numbers</code></pre>
-<pre><code>##  [1]   1   4   9  16  25  36  49  64  81 100</code></pre>
-<p>What actually happened here was slightly different though. Two vectors (actually the same vector in this case) of the same length were multiplied together. R did this <strong><em>element-by-element</em></strong>, which means that the first element from the first vector was multiplied by the first element of the second vector. Likewise, the second elements from each vector were multiplied by each other and so on.</p>
-<p>Here’s another example that we will also show diagrammatically.</p>
-<pre class="r"><code>a &lt;- 1:6
-b &lt;- c(3.2, 0.4, 1.6, 0.5, 1.3, 0.1)
-a * b</code></pre>
-<pre><code>## [1] 3.2 0.8 4.8 2.0 6.5 0.6</code></pre>
-<div class="figure">
-<img src="images/vector_arithmetic.png" />
-
-</div>
-<p>Usually vector arithmetic involves two vectors of the same length or involves a vector and a scalar (a vector of length 1). One of the first examples from last week was the second scenario involving a vector and a single value.</p>
-<pre class="r"><code>1:36 * 2</code></pre>
-<pre><code>##  [1]  2  4  6  8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46
-## [24] 48 50 52 54 56 58 60 62 64 66 68 70 72</code></pre>
-<div id="vector-recycling-advanced" class="section level3">
-<h3>Vector recycling (advanced)</h3>
-<p>It is possible to perform calculations using two vectors of different sizes. When R runs out of values to use from the shorter of the two vectors, it wraps around to the beginning of that shorter one. For example, we can set every other value in our set of numbers to be negative as follows:</p>
-<pre class="r"><code>some_numbers * c(1, -1)</code></pre>
-<pre><code>##  [1]   1  -2   3  -4   5  -6   7  -8   9 -10</code></pre>
-<p>When R gets to the third element it has exhausted the shorter vector, <code>c(1, -1)</code>, so it goes back to the beginning, i.e. back to the first value, <code>1</code>. It uses the second vector five times in what is referred to as <strong><em>vector recycling</em></strong>.</p>
-<p>You will probably never have to do something like this (why would you?) but without you knowing it you will carry out vector arithmetic using recycling very frequently. This is because a very common operation is to carry out a calculation on a vector using a single scalar value. For example, multiplying all values by a constant.</p>
-<pre class="r"><code>heights_in_metres &lt;- c(1.86, 1.65, 1.72, 1.4, 1.79)
-heights_in_centimetres &lt;- 100 * heights_in_metres
-heights_in_centimetres</code></pre>
-<pre><code>## [1] 186 165 172 140 179</code></pre>
-<p>The multiplier of 100 is effectively being recycled and so is equivalent to us having written the following:</p>
-<pre class="r"><code>heights_in_centimetres &lt;- c(100, 100, 100, 100, 100) * heights_in_metres</code></pre>
-<p>R will give a warning if we carry out vector arithmetic on two vectors where the length of one of those vectors is not an exact multiple of the length of the other.</p>
-<pre class="r"><code>1:7 * c(1, -1)</code></pre>
-<pre><code>## Warning in 1:7 * c(1, -1): longer object length is not a multiple of
-## shorter object length</code></pre>
-<pre><code>## [1]  1 -2  3 -4  5 -6  7</code></pre>
-<hr />
-</div>
-</div>
-</div>
-<div id="combining-data-of-different-types" class="section level1">
-<h1>Combining data of different types</h1>
-<p>Vectors are all very well and good but your data are almost certainly more complicated than an ordered set of values all of the same type. You’ve probably been working with Excel spreadsheets that contain some columns that are numerical while others contain names or character strings, e.g. the following table of Star Wars characters.</p>
-<div id="htmlwidget-e1ed84b49c90fd1636d6" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e1ed84b49c90fd1636d6">{"x":{"filter":"none","data":[["Luke Skywalker","C-3PO","R2-D2","Darth Vader","Leia Organa","Owen Lars","Beru Whitesun lars","R5-D4","Biggs Darklighter","Obi-Wan Kenobi","Anakin Skywalker","Wilhuff Tarkin","Chewbacca","Han Solo","Greedo","Jabba Desilijic Tiure","Wedge Antilles","Jek Tono Porkins","Yoda","Palpatine","Boba Fett","IG-88","Bossk","Lando Calrissian","Lobot","Ackbar","Mon Mothma","Arvel Crynyd","Wicket Systri Warrick","Nien Nunb","Qui-Gon Jinn","Nute Gunray","Finis Valorum","Jar Jar Binks","Roos Tarpals","Rugor Nass","Ric Olié","Watto","Sebulba","Quarsh Panaka","Shmi Skywalker","Darth Maul","Bib Fortuna","Ayla Secura","Dud Bolt","Gasgano","Ben Quadinaros","Mace Windu","Ki-Adi-Mundi","Kit Fisto","Eeth Koth","Adi Gallia","Saesee Tiin","Yarael Poof","Plo Koon","Mas Amedda","Gregar Typho","Cordé","Cliegg Lars","Poggle the Lesser","Luminara Unduli","Barriss Offee","Dormé","Dooku","Bail Prestor Organa","Jango Fett","Zam Wesell","Dexter Jettster","Lama Su","Taun We","Jocasta Nu","Ratts Tyerell","R4-P17","Wat Tambor","San Hill","Shaak Ti","Grievous","Tarfful","Raymus Antilles","Sly Moore","Tion Medon","Finn","Rey","Poe Dameron","BB8","Captain Phasma","Padmé Amidala"],[172,167,96,202,150,178,165,97,183,182,188,180,228,180,173,175,170,180,66,170,183,200,190,177,175,180,150,null,88,160,193,191,170,196,224,206,183,137,112,183,163,175,180,178,94,122,163,188,198,196,171,184,188,264,188,196,185,157,183,183,170,166,165,193,191,183,168,198,229,213,167,79,96,193,191,178,216,234,188,178,206,null,null,null,null,null,165],[77,75,32,136,49,120,75,32,84,77,84,null,112,80,74,1358,77,110,17,75,78.2,140,113,79,79,83,null,null,20,68,89,90,null,66,82,null,null,null,40,null,null,80,null,55,45,null,65,84,82,87,null,50,null,null,80,null,85,null,null,80,56.2,50,null,80,null,79,55,102,88,null,null,15,null,48,null,57,159,136,79,48,80,null,null,null,null,null,45],["masculine","masculine","masculine","masculine","feminine","masculine","feminine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","feminine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","masculine",null,"masculine","masculine",null,"feminine","masculine","masculine","feminine","masculine","masculine","masculine","masculine","masculine","masculine","masculine","feminine","masculine","masculine","masculine","masculine","masculine","feminine","masculine","masculine","feminine","feminine","feminine","masculine","masculine","masculine","feminine","masculine","masculine","feminine","feminine","masculine","feminine","masculine","masculine","feminine","masculine","masculine","masculine",null,"masculine","masculine","feminine","masculine","masculine",null,"feminine"],["Human","Droid","Droid","Human","Human","Human","Human","Droid","Human","Human","Human","Human","Wookiee","Human","Rodian","Hutt","Human","Human","Yoda's species","Human","Human","Droid","Trandoshan","Human","Human","Mon Calamari","Human","Human","Ewok","Sullustan","Human","Neimodian","Human","Gungan","Gungan","Gungan",null,"Toydarian","Dug",null,"Human","Zabrak","Twi'lek","Twi'lek","Vulptereen","Xexto","Toong","Human","Cerean","Nautolan","Zabrak","Tholothian","Iktotchi","Quermian","Kel Dor","Chagrian","Human","Human","Human","Geonosian","Mirialan","Mirialan","Human","Human","Human","Human","Clawdite","Besalisk","Kaminoan","Kaminoan","Human","Aleena","Droid","Skakoan","Muun","Togruta","Kaleesh","Wookiee","Human",null,"Pau'an","Human","Human","Human","Droid",null,"Human"],["Tatooine","Tatooine","Naboo","Tatooine","Alderaan","Tatooine","Tatooine","Tatooine","Tatooine","Stewjon","Tatooine","Eriadu","Kashyyyk","Corellia","Rodia","Nal Hutta","Corellia","Bestine IV",null,"Naboo","Kamino",null,"Trandosha","Socorro","Bespin","Mon Cala","Chandrila",null,"Endor","Sullust",null,"Cato Neimoidia","Coruscant","Naboo","Naboo","Naboo","Naboo","Toydaria","Malastare","Naboo","Tatooine","Dathomir","Ryloth","Ryloth","Vulpter","Troiken","Tund","Haruun Kal","Cerea","Glee Anselm","Iridonia","Coruscant","Iktotch","Quermia","Dorin","Champala","Naboo","Naboo","Tatooine","Geonosis","Mirial","Mirial","Naboo","Serenno","Alderaan","Concord Dawn","Zolan","Ojom","Kamino","Kamino","Coruscant","Aleen Minor",null,"Skako","Muunilinst","Shili","Kalee","Kashyyyk","Alderaan","Umbara","Utapau",null,null,null,null,null,"Naboo"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>name<\/th>\n      <th>height<\/th>\n      <th>mass<\/th>\n      <th>gender<\/th>\n      <th>species<\/th>\n      <th>homeworld<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-<p>Note that the first column contains character type data, the second and third columns contain numerical data (of type double) and the remaining columns contain the special type we briefly touched on last week, factors, that look like character types but have a limited set of values or categories.</p>
-<div id="lists" class="section level2">
-<h2>Lists</h2>
-<p>R’s simplest structure that combines data of different types is a <strong>list</strong>. A list is a collection of vectors. It is also a vector itself but is a step up in complexity from the atomic vectors we’ve been looking at up until now. Vectors in a list can be of different types and different lengths.</p>
-<pre class="r"><code>my_first_list &lt;- list(1:10, c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), c(TRUE, FALSE), 100, c(1.3, 2.2, 0.75, 3.8))
-my_first_list</code></pre>
-<pre><code>## [[1]]
-##  [1]  1  2  3  4  5  6  7  8  9 10
-## 
-## [[2]]
-## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
-## 
-## [[3]]
-## [1]  TRUE FALSE
-## 
-## [[4]]
-## [1] 100
-## 
-## [[5]]
-## [1] 1.30 2.20 0.75 3.80</code></pre>
-<p><code>my_first_list</code> has five elements and when printed out like this looks quite strange at first sight. Note how each of the elements of a list is referred to by an index within 2 sets of square brackets. This gives a clue to how you can access individual elements in the list.</p>
-<pre class="r"><code>my_first_list[[2]]</code></pre>
-<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;</code></pre>
-<p>The line of code in which we created this list is a little difficult to read and might be better written split across several lines.</p>
-<pre class="r"><code>my_first_list &lt;- list(
-  1:10,
-  c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;),
-  c(TRUE, FALSE), 100,
-  c(1.3, 2.2, 0.75, 3.8)
-)</code></pre>
-<p>The editor in RStudio will indent code to help this look clearer. The R interpretor is fully able to cope with code split across multiple lines; it will assume this is what you’re doing if it doesn’t think the current line of code is complete.</p>
-<p>Elements in lists are normally named, e.g.</p>
-<pre class="r"><code>genomics_instruments &lt;- list(
-  sequencers = c(&quot;NovaSeq 6000&quot;, &quot;HiSeq 4000&quot;, &quot;NextSeq 500&quot;, &quot;MiSeq&quot;),
-  liquid_handling_robots = c(&quot;Mosquito HV&quot;, &quot;Bravo&quot;)
-)
-genomics_instruments</code></pre>
-<pre><code>## $sequencers
-## [1] &quot;NovaSeq 6000&quot; &quot;HiSeq 4000&quot;   &quot;NextSeq 500&quot;  &quot;MiSeq&quot;       
-## 
-## $liquid_handling_robots
-## [1] &quot;Mosquito HV&quot; &quot;Bravo&quot;</code></pre>
-<p>We can still access the elements using the double square brackets but now we can use either the index (position) or the name.</p>
-<pre class="r"><code>genomics_instruments[[1]]</code></pre>
-<pre><code>## [1] &quot;NovaSeq 6000&quot; &quot;HiSeq 4000&quot;   &quot;NextSeq 500&quot;  &quot;MiSeq&quot;</code></pre>
-<pre class="r"><code>genomics_instruments[[&quot;sequencers&quot;]]</code></pre>
-<pre><code>## [1] &quot;NovaSeq 6000&quot; &quot;HiSeq 4000&quot;   &quot;NextSeq 500&quot;  &quot;MiSeq&quot;</code></pre>
-<p>Even more conveniently we can use the <strong><code>$</code></strong> operator.</p>
-<pre class="r"><code>genomics_instruments$sequencers</code></pre>
-<pre><code>## [1] &quot;NovaSeq 6000&quot; &quot;HiSeq 4000&quot;   &quot;NextSeq 500&quot;  &quot;MiSeq&quot;</code></pre>
-<p>You can see what the names of elements in your list are using the <strong><code>names()</code></strong> function.</p>
-<pre class="r"><code>names(genomics_instruments)</code></pre>
-<pre><code>## [1] &quot;sequencers&quot;             &quot;liquid_handling_robots&quot;</code></pre>
-<div id="modifying-lists" class="section level3">
-<h3>Modifying lists</h3>
-<p>You can modify lists either by adding addition elements or modifying existing ones.</p>
-<pre class="r"><code>genomics_instruments$dna_rna_quality_control &lt;- c(&quot;Bioanalyzer 2100&quot;, &quot;Tapestation 4200&quot;)
-genomics_instruments</code></pre>
-<pre><code>## $sequencers
-## [1] &quot;NovaSeq 6000&quot; &quot;HiSeq 4000&quot;   &quot;NextSeq 500&quot;  &quot;MiSeq&quot;       
-## 
-## $liquid_handling_robots
-## [1] &quot;Mosquito HV&quot; &quot;Bravo&quot;      
-## 
-## $dna_rna_quality_control
-## [1] &quot;Bioanalyzer 2100&quot; &quot;Tapestation 4200&quot;</code></pre>
-<pre class="r"><code>genomics_instruments$sequencers[3] &lt;- &quot;NextSeq 550 (upgraded)&quot;
-genomics_instruments</code></pre>
-<pre><code>## $sequencers
-## [1] &quot;NovaSeq 6000&quot;           &quot;HiSeq 4000&quot;            
-## [3] &quot;NextSeq 550 (upgraded)&quot; &quot;MiSeq&quot;                 
-## 
-## $liquid_handling_robots
-## [1] &quot;Mosquito HV&quot; &quot;Bravo&quot;      
-## 
-## $dna_rna_quality_control
-## [1] &quot;Bioanalyzer 2100&quot; &quot;Tapestation 4200&quot;</code></pre>
-</div>
-</div>
-<div id="statistical-test-results" class="section level2">
-<h2>Statistical test results</h2>
-<p>Lists can be thought of as a ragbag collection of things without a very clear structure. You probably won’t find yourself creating list objects of the kind we’ve seen above when analysing your own data. However, the list provides the basic underlying structure to the data frame that we’ll be using throughout the rest of this course.</p>
-<p>The other area where you’ll come across lists is as the return value for many of the statistical tests and procedures such as linear regression that you can carry out in R.</p>
-<p>To demonstrate, we’ll run a t-test comparing two sets of samples drawn from subtly different normal distributions. We’ve already come across the <code>rnorm()</code> function for creating random numbers based on a normal distribution.</p>
-<pre class="r"><code>sample1 &lt;- rnorm(n = 50, mean = 1.0, sd = 0.1)
-sample2 &lt;- rnorm(n = 50, mean = 1.1, sd = 0.1)
-t.test(sample1, sample2)</code></pre>
-<pre><code>## 
-##  Welch Two Sample t-test
-## 
-## data:  sample1 and sample2
-## t = -5.3549, df = 95.287, p-value = 5.914e-07
-## alternative hypothesis: true difference in means is not equal to 0
-## 95 percent confidence interval:
-##  -0.14686387 -0.06742331
-## sample estimates:
-## mean of x mean of y 
-## 0.9842265 1.0913701</code></pre>
-<p>The output from running the <code>t.test()</code> function doesn’t much look like a list. That’s because it is a special type of list with some additional behaviours including knowing how to print itself in a human-friendly way. But we can check it is a list and use some of the list operations we’ve just looked at.</p>
-<pre class="r"><code>result &lt;- t.test(sample1, sample2)
-is.list(result)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>names(result)</code></pre>
-<pre><code>##  [1] &quot;statistic&quot;   &quot;parameter&quot;   &quot;p.value&quot;     &quot;conf.int&quot;    &quot;estimate&quot;   
-##  [6] &quot;null.value&quot;  &quot;stderr&quot;      &quot;alternative&quot; &quot;method&quot;      &quot;data.name&quot;</code></pre>
-<pre class="r"><code>result$p.value</code></pre>
-<pre><code>## [1] 5.914169e-07</code></pre>
-</div>
-<div id="data-frames" class="section level2">
-<h2>Data frames</h2>
-<p>A much more useful data structure and the one we will mostly be using for the rest of the course is the <strong>data frame</strong>. This is actually a special type of list in which all the elements are vectors of the same length. The data frame is how R represents tabular data like the Star Wars table.</p>
-<p>There are a number of example data frames lurking in the background just waiting for you to call on them. Many of the examples for functions given in the help pages make use of these. Two such data frames that are often used in example code snippets are <strong><code>iris</code></strong> and <strong><code>mtcars</code></strong>. See, for example, the help page for the <code>unique()</code> function in which <code>iris</code> appears in the last code example without any explanation of what the mysterious <code>iris</code> is and potentially causing some confusion to the uninitiated.</p>
-<p>To bring one of these internal data sets to the fore, you can just start using it by name.</p>
-<pre class="r"><code>iris</code></pre>
-<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-## 1          5.1         3.5          1.4         0.2  setosa
-## 2          4.9         3.0          1.4         0.2  setosa
-## 3          4.7         3.2          1.3         0.2  setosa
-## 4          4.6         3.1          1.5         0.2  setosa
-## 5          5.0         3.6          1.4         0.2  setosa
-## 6          5.4         3.9          1.7         0.4  setosa</code></pre>
-<p>Here we’ve only displayed the first few rows. If you type <code>iris</code> into the console pane you’ll notice that it prints the entire table with row numbers that indicate that the data frame contains measurements for 150 irises.</p>
-<p>You can also get help for a data set such as <code>iris</code> in the usual way.</p>
-<pre class="r"><code>?iris</code></pre>
-<p>This reveals that <code>iris</code> is a rather famous old data set of measurements taken by the esteemed British statistician and geneticist, Ronald Fisher (he of Fisher’s exact test fame).</p>
-<div id="creating-a-data-frame" class="section level3">
-<h3>Creating a data frame</h3>
-<p>A data frame can be created in a similar way to how we created a list. The only restriction is that each of the vectors should be named and all must have the same length.</p>
-<pre class="r"><code>beatles &lt;- data.frame(
-  name = c(&quot;John&quot;, &quot;Paul&quot;, &quot;Ringo&quot;, &quot;George&quot;),
-  birth_year = c(1940, 1942, 1940, 1943),
-  instrument = c(&quot;guitar&quot;, &quot;bass&quot;, &quot;drums&quot;, &quot;guitar&quot;)
-)
-beatles</code></pre>
-<pre><code>##     name birth_year instrument
-## 1   John       1940     guitar
-## 2   Paul       1942       bass
-## 3  Ringo       1940      drums
-## 4 George       1943     guitar</code></pre>
-</div>
-<div id="extracting-values-from-a-data-frame" class="section level3">
-<h3>Extracting values from a data frame</h3>
-<p>A data frame is a special type of list so you can access its elements in the same way as we saw previously for lists.</p>
-<pre class="r"><code>names(iris)</code></pre>
-<pre><code>## [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot; 
-## [5] &quot;Species&quot;</code></pre>
-<pre class="r"><code>iris$Petal.Width # or equivalently iris[[&quot;Petal.Width&quot;]] or iris[[4]]</code></pre>
-<pre><code>##   [1] 0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 0.2 0.2 0.1 0.1 0.2 0.4 0.4
-##  [18] 0.3 0.3 0.3 0.2 0.4 0.2 0.5 0.2 0.2 0.4 0.2 0.2 0.2 0.2 0.4 0.1 0.2
-##  [35] 0.2 0.2 0.2 0.1 0.2 0.2 0.3 0.3 0.2 0.6 0.4 0.3 0.2 0.2 0.2 0.2 1.4
-##  [52] 1.5 1.5 1.3 1.5 1.3 1.6 1.0 1.3 1.4 1.0 1.5 1.0 1.4 1.3 1.4 1.5 1.0
-##  [69] 1.5 1.1 1.8 1.3 1.5 1.2 1.3 1.4 1.4 1.7 1.5 1.0 1.1 1.0 1.2 1.6 1.5
-##  [86] 1.6 1.5 1.3 1.3 1.3 1.2 1.4 1.2 1.0 1.3 1.2 1.3 1.3 1.1 1.3 2.5 1.9
-## [103] 2.1 1.8 2.2 2.1 1.7 1.8 1.8 2.5 2.0 1.9 2.1 2.0 2.4 2.3 1.8 2.2 2.3
-## [120] 1.5 2.3 2.0 2.0 1.8 2.1 1.8 1.8 1.8 2.1 1.6 1.9 2.0 2.2 1.5 1.4 2.3
-## [137] 2.4 1.8 1.8 2.1 2.4 2.3 1.9 2.3 2.5 2.3 1.9 2.0 2.3 1.8</code></pre>
-<div class="rmdblock">
-<p>
-<strong><code>$</code> operator</strong>
-</p>
-<p>
-Use <code>$</code> to extract an element from a list or a column from a data frame by name.
-</p>
-<p>
-<code>iris$Species</code>
-</p>
-</div>
-<p>In that last example we extracted the <code>Petal.Width</code> column which itself is a vector. We can further subset the values in that column to, say, return the first 10 values only.</p>
-<pre class="r"><code>iris$Petal.Length[1:10]</code></pre>
-<pre><code>##  [1] 1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5</code></pre>
-<p>We can also select a subset of columns as follows:</p>
-<pre class="r"><code>iris[c(&quot;Petal.Width&quot;, &quot;Petal.Length&quot;, &quot;Species&quot;)] # or equivalently iris[c(4, 3, 5)]</code></pre>
-<pre><code>##   Petal.Width Petal.Length Species
-## 1         0.2          1.4  setosa
-## 2         0.2          1.4  setosa
-## 3         0.2          1.3  setosa
-## 4         0.2          1.5  setosa
-## 5         0.2          1.4  setosa
-## 6         0.4          1.7  setosa</code></pre>
-<p>Data frames have rows and columns both of which have names that can be used to extract subsets of our tabular data. You can get those names using <strong><code>rownames()</code></strong> and <strong><code>colnames()</code></strong>.</p>
-<pre class="r"><code>colnames(iris) # this is essentially the same as names()</code></pre>
-<pre><code>## [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot; 
-## [5] &quot;Species&quot;</code></pre>
-<pre class="r"><code>rownames(iris)</code></pre>
-<pre><code>##   [1] &quot;1&quot;   &quot;2&quot;   &quot;3&quot;   &quot;4&quot;   &quot;5&quot;   &quot;6&quot;   &quot;7&quot;   &quot;8&quot;   &quot;9&quot;   &quot;10&quot;  &quot;11&quot; 
-##  [12] &quot;12&quot;  &quot;13&quot;  &quot;14&quot;  &quot;15&quot;  &quot;16&quot;  &quot;17&quot;  &quot;18&quot;  &quot;19&quot;  &quot;20&quot;  &quot;21&quot;  &quot;22&quot; 
-##  [23] &quot;23&quot;  &quot;24&quot;  &quot;25&quot;  &quot;26&quot;  &quot;27&quot;  &quot;28&quot;  &quot;29&quot;  &quot;30&quot;  &quot;31&quot;  &quot;32&quot;  &quot;33&quot; 
-##  [34] &quot;34&quot;  &quot;35&quot;  &quot;36&quot;  &quot;37&quot;  &quot;38&quot;  &quot;39&quot;  &quot;40&quot;  &quot;41&quot;  &quot;42&quot;  &quot;43&quot;  &quot;44&quot; 
-##  [45] &quot;45&quot;  &quot;46&quot;  &quot;47&quot;  &quot;48&quot;  &quot;49&quot;  &quot;50&quot;  &quot;51&quot;  &quot;52&quot;  &quot;53&quot;  &quot;54&quot;  &quot;55&quot; 
-##  [56] &quot;56&quot;  &quot;57&quot;  &quot;58&quot;  &quot;59&quot;  &quot;60&quot;  &quot;61&quot;  &quot;62&quot;  &quot;63&quot;  &quot;64&quot;  &quot;65&quot;  &quot;66&quot; 
-##  [67] &quot;67&quot;  &quot;68&quot;  &quot;69&quot;  &quot;70&quot;  &quot;71&quot;  &quot;72&quot;  &quot;73&quot;  &quot;74&quot;  &quot;75&quot;  &quot;76&quot;  &quot;77&quot; 
-##  [78] &quot;78&quot;  &quot;79&quot;  &quot;80&quot;  &quot;81&quot;  &quot;82&quot;  &quot;83&quot;  &quot;84&quot;  &quot;85&quot;  &quot;86&quot;  &quot;87&quot;  &quot;88&quot; 
-##  [89] &quot;89&quot;  &quot;90&quot;  &quot;91&quot;  &quot;92&quot;  &quot;93&quot;  &quot;94&quot;  &quot;95&quot;  &quot;96&quot;  &quot;97&quot;  &quot;98&quot;  &quot;99&quot; 
-## [100] &quot;100&quot; &quot;101&quot; &quot;102&quot; &quot;103&quot; &quot;104&quot; &quot;105&quot; &quot;106&quot; &quot;107&quot; &quot;108&quot; &quot;109&quot; &quot;110&quot;
-## [111] &quot;111&quot; &quot;112&quot; &quot;113&quot; &quot;114&quot; &quot;115&quot; &quot;116&quot; &quot;117&quot; &quot;118&quot; &quot;119&quot; &quot;120&quot; &quot;121&quot;
-## [122] &quot;122&quot; &quot;123&quot; &quot;124&quot; &quot;125&quot; &quot;126&quot; &quot;127&quot; &quot;128&quot; &quot;129&quot; &quot;130&quot; &quot;131&quot; &quot;132&quot;
-## [133] &quot;133&quot; &quot;134&quot; &quot;135&quot; &quot;136&quot; &quot;137&quot; &quot;138&quot; &quot;139&quot; &quot;140&quot; &quot;141&quot; &quot;142&quot; &quot;143&quot;
-## [144] &quot;144&quot; &quot;145&quot; &quot;146&quot; &quot;147&quot; &quot;148&quot; &quot;149&quot; &quot;150&quot;</code></pre>
-<p>In this case the row names are just numbers but did you notice that these row numbers are all displayed in quotation marks? They are in fact character strings.</p>
-<pre class="r"><code>typeof(rownames(iris))</code></pre>
+<div id="our-first-r-function-help" class="section level2">
+<h2>Our first R function – help</h2>
+<p>Functions are like mathematical functions they take argument(s) and
+return a result and the arguments are enclosed in brackets i.e. <span
+class="math inline">\(Y = F(X)\)</span></p>
+<p>They extend the capabilities of R. A function that you will find most
+‘helpful’ is the help() function. It provides help on the topic that is
+supplied as the argument.</p>
+<p>Try</p>
+<pre class="r"><code>help(help)</code></pre>
+<p>The result appears in the bottom right-hand pane.</p>
+<p>Notice how Rstudio tries to help you by suggesting what the arguments
+could be (in floating yellow text box). <em>Need more help?</em> You can
+also use ?<command> i.e. <code>?help</code>.</p>
+<p>If you know roughly what you need but not the actual function name
+use <code>??</code> e.g. <code>??average</code>.</p>
+<p>What if you know the function name but can’t recall what the
+arguments are? Try <code>args()</code> function
+e.g. <code>args(plot.default)</code>.</p>
+<div id="more-useful-functions" class="section level3">
+<h3>More useful functions</h3>
+<p><strong><code>length()</code></strong> to find out how many elements
+are in a vector</p>
+<pre class="r"><code>length(animals)</code></pre>
+<pre><code>## [1] 3</code></pre>
+<p><strong><code>class()</code></strong> will tell you the class
+(suprise) of a vector e.g. character or numeric</p>
+<pre class="r"><code>class(animals)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
-<p>If we take a look at the <code>mtcars</code> data frame we can see that the row names are models of cars.</p>
-<pre class="r"><code>rownames(mtcars)</code></pre>
-<pre><code>##  [1] &quot;Mazda RX4&quot;           &quot;Mazda RX4 Wag&quot;       &quot;Datsun 710&quot;         
-##  [4] &quot;Hornet 4 Drive&quot;      &quot;Hornet Sportabout&quot;   &quot;Valiant&quot;            
-##  [7] &quot;Duster 360&quot;          &quot;Merc 240D&quot;           &quot;Merc 230&quot;           
-## [10] &quot;Merc 280&quot;            &quot;Merc 280C&quot;           &quot;Merc 450SE&quot;         
-## [13] &quot;Merc 450SL&quot;          &quot;Merc 450SLC&quot;         &quot;Cadillac Fleetwood&quot; 
-## [16] &quot;Lincoln Continental&quot; &quot;Chrysler Imperial&quot;   &quot;Fiat 128&quot;           
-## [19] &quot;Honda Civic&quot;         &quot;Toyota Corolla&quot;      &quot;Toyota Corona&quot;      
-## [22] &quot;Dodge Challenger&quot;    &quot;AMC Javelin&quot;         &quot;Camaro Z28&quot;         
-## [25] &quot;Pontiac Firebird&quot;    &quot;Fiat X1-9&quot;           &quot;Porsche 914-2&quot;      
-## [28] &quot;Lotus Europa&quot;        &quot;Ford Pantera L&quot;      &quot;Ferrari Dino&quot;       
-## [31] &quot;Maserati Bora&quot;       &quot;Volvo 142E&quot;</code></pre>
-<p>We could look up the row for a particular car using the square bracket notation but in a slightly different and odd-looking way.</p>
-<pre class="r"><code>mtcars[&quot;Ferrari Dino&quot;, ]</code></pre>
-<pre><code>##               mpg cyl disp  hp drat   wt qsec vs am gear carb
-## Ferrari Dino 19.7   6  145 175 3.62 2.77 15.5  0  1    5    6</code></pre>
-<p>The <strong><code>,</code></strong> is somehow telling R to subset based on rows, not columns. If you omit the comma, R will think you’re referring to columns and will complain because it can’t find a column named “Ferrari Dino” (give it go and see for yourself).</p>
-<p>Similarly we can extract multiple rows by providing a vector of car names:</p>
-<pre class="r"><code>mtcars[c(&quot;Ferrari Dino&quot;, &quot;Maserati Bora&quot;), ]</code></pre>
-<pre><code>##                mpg cyl disp  hp drat   wt qsec vs am gear carb
-## Ferrari Dino  19.7   6  145 175 3.62 2.77 15.5  0  1    5    6
-## Maserati Bora 15.0   8  301 335 3.54 3.57 14.6  0  1    5    8</code></pre>
-<p>This way of accessing the data frame makes more sense when we look at how we can access subsets of rows and columns at the same time, for example selecting the first three rows and the first five columns.</p>
-<pre class="r"><code>mtcars[1:3, 1:5] # equivalent to mtcars[c(&quot;Mazda RX4&quot;, &quot;Mazda RX4 Wag&quot;, &quot;Datsun 710&quot;), c(&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;hp&quot;, &quot;drat&quot;)]</code></pre>
-<pre><code>##                mpg cyl disp  hp drat
-## Mazda RX4     21.0   6  160 110 3.90
-## Mazda RX4 Wag 21.0   6  160 110 3.90
-## Datsun 710    22.8   4  108  93 3.85</code></pre>
-<p>We can extract just a single element in our table.</p>
-<pre class="r"><code>mtcars[4, 3]</code></pre>
-<pre><code>## [1] 258</code></pre>
-<p>We can also use conditional subsetting to extract the rows that meet certain conditions, e.g. all the cars with automatic transmission (those with <code>am</code> value of 0).</p>
-<pre class="r"><code>mtcars[mtcars$am == 0, ]</code></pre>
-<pre><code>##                      mpg cyl  disp  hp drat    wt  qsec vs am gear carb
-## Hornet 4 Drive      21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
-## Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
-## Valiant             18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
-## Duster 360          14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
-## Merc 240D           24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
-## Merc 230            22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
-## Merc 280            19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
-## Merc 280C           17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4
-## Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3
-## Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3
-## Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3
-## Cadillac Fleetwood  10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4
-## Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4
-## Chrysler Imperial   14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4
-## Toyota Corona       21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
-## Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2
-## AMC Javelin         15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2
-## Camaro Z28          13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4
-## Pontiac Firebird    19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2</code></pre>
-<p>Here we have used the equality operator, <strong><code>==</code></strong>, which is not to be mistaken for the assignment operator, <strong><code>=</code></strong>, used to specify arguments to functions. <code>mtcars$am ==0</code> returns a logical vector with <code>TRUE</code> values for each car that has automatic transmission (<code>am</code> equal to 0). We then use this to subset rows (note the comma after the logical condition).</p>
-<p>Other useful functions for data frames are <strong><code>dim()</code></strong>, <strong><code>nrow()</code></strong> and <strong><code>ncol()</code></strong> that let you know about the dimensions of your table.</p>
-<pre class="r"><code>dim(mtcars)</code></pre>
-<pre><code>## [1] 32 11</code></pre>
-<pre class="r"><code>nrow(mtcars)</code></pre>
-<pre><code>## [1] 32</code></pre>
-<pre class="r"><code>ncol(mtcars)</code></pre>
-<pre><code>## [1] 11</code></pre>
-<div class="rmdblock">
-<p>
-<strong>Subsetting data frames</strong>
-</p>
-<p>
-Get the first element in the first column.
-</p>
-<p>
-<code>iris[1, 1]</code>
-</p>
-<p>
-Get the first element from the fifth column.
-</p>
-<p>
-<code>iris[1, 5]</code>
-</p>
-<p>
-Get the fourth column as a vector.
-</p>
-<p>
-<code>iris[, 4]</code>
-</p>
-<p>
-Get the fourth column as a data frame.
-</p>
-<p>
-<code>iris[4]</code>
-</p>
-<p>
-Get the first 10 elements from the fourth column.
-</p>
-<p>
-<code>iris[1:10, 4]</code>
-</p>
-<p>
-Get the third row as a data frame.
-</p>
-<p>
-<code>iris[3, ]</code>
-</p>
-<p>
-Get the first 6 rows (equivalent to <code>head(iris)</code>).
-</p>
-<p>
-<code>iris[1:6, ]</code>
-</p>
-<p>
-Get a column by name as a vector.
-</p>
-<p>
-<code>iris$Petal.Length</code>
-</p>
-<p>
-Get several columns by name as a data frame.
-</p>
-<p>
-<code>iris[c(“Petal.Length”, “Petal.Width”, “Species”)]</code>
-</p>
-<p>
-Get specific rows and columns.
-</p>
-<p>
-<code>mtcars[c(“Ferrari Dino”, “Maserati Bora”), c(“mpg”, “cyl”, “hp”)]</code>
-</p>
-</div>
-<p>Some functions work just as well (or even better) with data frames as they do with vectors. Remember the <strong><code>summary()</code></strong> function from last week? Let’s give that a go on the <code>iris</code> data frame.</p>
-<pre class="r"><code>summary(iris)</code></pre>
-<pre><code>##   Sepal.Length    Sepal.Width     Petal.Length    Petal.Width   
-##  Min.   :4.300   Min.   :2.000   Min.   :1.000   Min.   :0.100  
-##  1st Qu.:5.100   1st Qu.:2.800   1st Qu.:1.600   1st Qu.:0.300  
-##  Median :5.800   Median :3.000   Median :4.350   Median :1.300  
-##  Mean   :5.843   Mean   :3.057   Mean   :3.758   Mean   :1.199  
-##  3rd Qu.:6.400   3rd Qu.:3.300   3rd Qu.:5.100   3rd Qu.:1.800  
-##  Max.   :7.900   Max.   :4.400   Max.   :6.900   Max.   :2.500  
-##        Species  
-##  setosa    :50  
-##  versicolor:50  
-##  virginica :50  
-##                 
-##                 
-## </code></pre>
-<p>Wow, that’s amazing! One simple command to compute all those useful summary statistics for our entire data set.</p>
-<p>The summary for numerical columns contains the minimum and maximum values, the median and mean, and the interquartile range. The <code>Species</code> column contains categorical data (stored as a special <code>factor</code> type in R) and <code>summary()</code> shows how many observations there are for each type of iris.</p>
-</div>
-<div id="modifying-data-frames" class="section level3">
-<h3>Modifying data frames</h3>
-<p>We can use the subsetting operations for assigning values in order to modify or update a data frame in a very similar way to what we saw earlier for vectors.</p>
-<p>We can change a single value, such as the number of cylinders of the Ferrari Dino.</p>
-<pre class="r"><code>mtcars[&quot;Ferrari Dino&quot;, &quot;cyl&quot;] &lt;- 8
-mtcars[&quot;Ferrari Dino&quot;, ]</code></pre>
-<pre><code>##               mpg cyl disp  hp drat   wt qsec vs am gear carb
-## Ferrari Dino 19.7   8  145 175 3.62 2.77 15.5  0  1    5    6</code></pre>
-<p>We can change multiple values, for example:</p>
-<pre class="r"><code>mtcars[c(1, 4, 5), &quot;gear&quot;] &lt;- c(6, 5, 5)
-head(mtcars)</code></pre>
-<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
-## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    6    4
-## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
-## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
-## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    5    1
-## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    5    2
-## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
-<p>We could set these multiple values to a single value.</p>
-<pre class="r"><code>mtcars[c(1, 4, 5), &quot;gear&quot;] &lt;- 6
-head(mtcars)</code></pre>
-<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
-## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    6    4
-## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
-## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
-## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    6    1
-## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    6    2
-## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
-<p>We can also create new columns, just like we did to create new elements in a list, although with the additional constraint that the new column must have the same length as all the other columns.</p>
-<p>In the following, we add a column for kilometres per litre by mutliplying the miles per gallon column (<code>mpg</code>) by the appropriate scaling factor.</p>
-<pre class="r"><code>mtcars$kpl &lt;- mtcars$mpg * 0.425144
-mtcars[1:6, c(&quot;cyl&quot;, &quot;mpg&quot;, &quot;kpl&quot;)]</code></pre>
-<pre><code>##                   cyl  mpg      kpl
-## Mazda RX4           6 21.0 8.928024
-## Mazda RX4 Wag       6 21.0 8.928024
-## Datsun 710          4 22.8 9.693283
-## Hornet 4 Drive      6 21.4 9.098082
-## Hornet Sportabout   8 18.7 7.950193
-## Valiant             6 18.1 7.695106</code></pre>
-</div>
-<div id="viewing-data-frames" class="section level3">
-<h3>Viewing data frames</h3>
-<p>One last aside before moving on to the more user-friendly tidyverse version of the data frame, the tibble. Earlier we truncated the data frame when printing it out because it was really a bit too long to digest in one go. Although we hid this from view, we used the <strong><code>head()</code></strong> function.</p>
-<pre class="r"><code>head(iris)</code></pre>
-<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-## 1          5.1         3.5          1.4         0.2  setosa
-## 2          4.9         3.0          1.4         0.2  setosa
-## 3          4.7         3.2          1.3         0.2  setosa
-## 4          4.6         3.1          1.5         0.2  setosa
-## 5          5.0         3.6          1.4         0.2  setosa
-## 6          5.4         3.9          1.7         0.4  setosa</code></pre>
-<p>You can specify how many rows to return from the ‘head’ (top) of the data frame – have a look at the help page to see how. Also, the help page lets you know about the equivalent function, <strong><code>tail()</code></strong>, for returning the last few rows.</p>
-<p>Another way of inspecting the contents of a data frame in RStudio is to bring up a spreadsheet-style data viewer using the <code>View()</code> function.</p>
-<pre class="r"><code>View(iris)</code></pre>
-<p>This will open a new tab pane in the top left-hand part of RStudio alongside any script or markdown files you have open.</p>
-<div class="figure">
-<img src="images/RStudio_data_viewer.png" />
-
-</div>
-<p>This viewer has some handy filtering capabilities - try using the search box, e.g. by entering the search term ‘versi’, and see what happens.</p>
-<p>All the data objects you’ve created are listed in the Environment tab pane (top right-hand side in RStudio) – double-clicking on an object in this pane will also open it in the viewer.</p>
+<pre class="r"><code>class(obs)</code></pre>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<p><strong><code>str()</code></strong> reports the structure of an
+object. This terse report includes such useful information as class,
+index range of elements e.g. 1..n and the values contained therein. The
+same output can be seen for each object in the Environment pane in the
+top right-hand pane.</p>
+<pre class="r"><code>str(obs)</code></pre>
+<pre><code>##  num [1:6] 2 5 8 5 8 2</code></pre>
+<p><strong><code>typeof()</code></strong> - reports how object is stored
+e.g. character, integer, double or logical. If we explicitly want a
+vector to be integer-only we can use another function
+<strong><code>as.integer()</code></strong> or a suffix of
+<strong><code>L</code></strong> when we assign it (see below).</p>
+<pre class="r"><code>?typeof
+samples</code></pre>
+<pre><code>## [1] 12</code></pre>
+<pre class="r"><code>typeof(samples)</code></pre>
+<pre><code>## [1] &quot;double&quot;</code></pre>
+<pre class="r"><code>hint &lt;- 5L
+hint2 &lt;- as.integer(25)
+hint</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>typeof(hint)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>hint2</code></pre>
+<pre><code>## [1] 25</code></pre>
+<pre class="r"><code>typeof(hint2)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>drug</code></pre>
+<pre><code>## [1] &quot;Gefitinib&quot;</code></pre>
+<pre class="r"><code>typeof(drug)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<p>So what does R mean by these types and why would we use one over
+another? What does R have to tell us on this topic?</p>
+<pre class="r"><code>?integer</code></pre>
+<pre class="r"><code>?double</code></pre>
+<pre class="r"><code>?character</code></pre>
+<p><strong>Integer</strong> - whole discrete numbers e.g. numbers of
+mice, cell counts.</p>
+<p><strong>Double</strong> - continuous decimal values e.g. specific
+activity or a voltage reading.</p>
+<p><strong>Character</strong> - A string of one to N alphanumeric
+characters e.g. a drug name.</p>
+<p><strong>Factor</strong> - A new one. Categorical values that may or
+may not have any heirachical order e.g. drug1, drug2, drug3. We would
+use these to seperate data e.g. when plotting. More about factors later
+in the course.</p>
+<p>Computational aspects of these types relate to space required to
+store the value (number of bytes) and speed at accessing the value.
+Order of lowest to highest is typically: integer, double and character.
+However, unless you are dealing with huge quantities of data or lots of
+processing, this is unlikely to affect your programs.</p>
+<p><strong>Important</strong> - you can only store one type of data in
+any one vector i.e. all logical or all character etc. If you mix them, R
+will store them in the lowest common denominator of type in order to
+preserve as much information as possible about the value.</p>
+<p><strong><code>summary()</code></strong> - one of my
+<strong>favourite</strong> functions. R gives an object summary of the
+vector. this means that what is returned depends on the vector. I often
+use it on data after I have read it in from a file to do a ‘sanity
+check’ and find maximum and minimum values etc to spot unexpected (and
+possibly erroneous) values.</p>
+<pre class="r"><code>summary(obs)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    2.00    2.75    5.00    5.00    7.25    8.00</code></pre>
+<p>So-called ‘Base’ R does possess plotting functions. However, later
+lessons will teach you how to plot using a much more powerful and
+easy-to-use <em>tidyverse</em> package called <em>ggplot2</em>.</p>
+<p>Just to demonstrate a function with multiple parameters, I will use
+base R plot here. Once you have read in your data you may wish to do a
+quick &amp; dirty plot it e.g. to spot any trends or outliers. This can
+be done quickly in R (but much finer control in ggplot2).</p>
+<pre class="r"><code> X &lt;- c(1,2,3,4,5)
+ Y &lt;- c(9, 17, 23, 38, 52)
+ plot.default(X, Y, pch = 4, col = &quot;red&quot;)</code></pre>
+<p><img src="week2_files/figure-html/scatter_plot-1.png" width="672" /></p>
+<p><strong>A point to note here</strong> - In the help you will notice
+that parameters are usually presented in a specific order in the
+brackets. This will work fine, but you may wish to take default values
+or enter parameters out of order. You can do this by using a parameter
+name e.g. the plot character is called ‘pch’ and we can put
+<code>pch = N</code> anywhere between the brackets. However, just
+because you can is not a good reason. Doing things out of order for no
+reason can make your code less readable.</p>
 <hr />
 </div>
 </div>
-</div>
-<div id="data-semantics" class="section level1">
-<h1>Data semantics</h1>
-<p>From “Tidy Data” by Hadley Wickham, <a href="https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf"><em>The Journal of Statistical Software</em>, vol. 59, 2014</a>.</p>
-<blockquote>
-<p><em>A data set is a collection of <strong>values</strong>, usually either numbers (if</em> <em>quantitative) or character strings (if qualitative). Values are organised in</em> <em>two ways. Every value belongs to a <strong>variable</strong> and an <strong>observation</strong>.</em></p>
-<p><em>A variable contains all values that measure the same underlying attribute</em> <em>(like height, temperature, duration) across units.</em></p>
-<p><em>An observation contains all values measured on the same unit (like a person</em> <em>or a day) across attributes.</em></p>
-</blockquote>
-<p>The data frame represents observations as rows and variables or attributes as columns.</p>
-<p>The <code>iris</code> data set has 150 observations (i.e. 150 rows), one for each iris plant from which measurements were recorded. The variables are the petal width and length, sepal width and length and species, each of which is an underlying attribute of an iris plant. An observation is the set of measurements or attributes recorded for a single iris plant.</p>
-<hr />
-</div>
-<div id="packages" class="section level1">
-<h1>Packages</h1>
-<p>Before we move on to the tidyverse version of a data frame, the tibble, we have to load the tidyverse package that provides the tibble functionality. It doesn’t come with the set of packages loaded when you first start R.</p>
-<p>There are thousands of R packages that extend R’s core functionality to provide specialized functions for doing all kinds of things. There are R packages that provide various kinds of visualizations and plotting functions, others that let us manipulate data in interesting and useful ways, and still others that give us access to cutting-edge machine learning algorithms. Several packages have been developed by statisticians and bioinformaticians at CRUK CI, mainly focusing on genomic and transcriptomic analysis methods.</p>
-<p>You need to load a package using the <strong><code>library()</code></strong> function in order to be able to use the functions and data sets that the package provides. The tibble data structure is part of the <strong><code>tibble</code></strong> package so to make this available you would run the following command:</p>
-<pre class="r"><code>library(tibble)</code></pre>
-<p>The <code>tibble</code> package also contains various useful functions for converting other data structures, e.g. data frames, to tibbles and for working with tibble objects.</p>
-<p>The <code>tibble</code> package is one of a collection of packages that make up the tidyverse. It is usually more convenient to load the core tidyverse packages in one go as follows.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ──────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.2.1     ✔ purrr   0.3.3
-## ✔ tibble  2.1.3     ✔ dplyr   1.0.0
-## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
-## ✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
-<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.2</code></pre>
-<pre><code>## ── Conflicts ─────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<p>The output from this command tells us which packages were loaded, one of which is the <code>tibble</code> package. Another of these is <code>ggplot2</code> that provides excellent plotting functions for visualizing our data and will be the main focus next week.</p>
-<p>We also got a warning about some conflicts. This tells us that there are functions loaded as part of the <code>dplyr</code> package that have the same name as functions that are in the <code>stats</code> package. The <code>stats</code> package was already loaded, from when we first started our R session, and the functions referred to in the warning are now masked; to use these instead of their <code>dplyr</code> namesakes you need to specify them fully by adding the package name and <code>::</code> as shown in the warning message.</p>
-<div id="installing-packages" class="section level2">
-<h2>Installing packages</h2>
-<p>If you got the following error message when trying to load the tidyverse, then you haven’t yet installed it.</p>
-<pre><code>&gt; library(tidyverse)
-Error in library(tidyverse) : there is no package called ‘tidyverse’</code></pre>
-<p>Installing packages should be relatively straightforward using the <code>install.packages()</code> function.</p>
-<pre class="r"><code>install.packages(&quot;tidyverse&quot;)</code></pre>
-<p>If you’re using R at a regular console within a terminal window, i.e. not RStudio, you may be asked to select one of several mirrors of the CRAN R package repository hosted at different locations around the world (in the UK these are in Bristol and London).</p>
-<p>For some packages you may be asked to choose between a binary and a source package, particularly if the latest version of the package is only available in source form and that package contains code written in another language such as C. This could be a problem if you don’t have a C compiler installed on your computer.</p>
-<hr />
-</div>
-</div>
-<div id="tibbles" class="section level1">
-<h1>Tibbles</h1>
-<p>The tidyverse brings us a special type of data frame called the <strong><code>tibble</code></strong>.</p>
-<p>Data frames have some rather quirky and annoying behaviours and the <code>tibble</code> addresses some of these issues to make life a little easier. We’ll first look at how we can create a tibble and then will have a quick look at some of the advantages of the tibble over the data frame.</p>
-<div id="creating-a-tibble" class="section level2">
-<h2>Creating a tibble</h2>
-<p>Tibbles can be created using the <code>tibble()</code> function in a similar manner to how we created a data frame earlier.</p>
-<pre class="r"><code>beatles &lt;- tibble(
-  name = c(&quot;John&quot;, &quot;Paul&quot;, &quot;Ringo&quot;, &quot;George&quot;),
-  birth_year = c(1940, 1942, 1940, 1943),
-  instrument = c(&quot;guitar&quot;, &quot;bass&quot;, &quot;drums&quot;, &quot;guitar&quot;)
-)
-beatles</code></pre>
-<pre><code>## # A tibble: 4 x 3
-##   name   birth_year instrument
-##   &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;     
-## 1 John         1940 guitar    
-## 2 Paul         1942 bass      
-## 3 Ringo        1940 drums     
-## 4 George       1943 guitar</code></pre>
-<p>A data frame can be converted into a tibble using the <code>as_tibble()</code> function.</p>
-<pre class="r"><code>iris_tibble &lt;- as_tibble(iris)</code></pre>
-<p>Our iris tibble is still a data frame but it also has acquired some additional types or classes (<code>tbl_df</code> and <code>tbl</code>).</p>
-<pre class="r"><code>class(iris)</code></pre>
-<pre><code>## [1] &quot;data.frame&quot;</code></pre>
-<pre class="r"><code>class(iris_tibble)</code></pre>
-<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
-<p>Because tibbles are data frames, almost everything we learned about data frames, including subsetting, also applies to tibbles.</p>
-</div>
-<div id="tibbles-vs-data-frames" class="section level2">
-<h2>Tibbles vs data frames</h2>
-<p>So let’s now have a look at what capabilities and behaviours these additional types confer and what the main differences are between tibbles and data frames.</p>
-<div id="printing" class="section level3">
-<h3>Printing</h3>
-<p>If you typed <code>iris</code> at the command prompt to list its contents it will have printed all 150 lines. At times this can feel a bit unwieldy, as we may just want a quick look at the first few rows to get an idea of what our data frame looks like. Hence the need for the <code>head()</code> function.</p>
-<p>Tibbles print in a much more user-friendly way. Only the first 10 rows are displayed and only as many columns as can fit comfortably on the screen. This is best demonstrated with a table with many columns such as the <code>starwars</code> table we came across earlier. <code>starwars</code> is in fact one of those hidden data sets but it is part of the <code>dplyr</code> package so can only be accessed if you load <code>dplyr</code> using <code>library(dplyr)</code> or as part of loading the tidyverse collection of packages using <code>library(tidyverse)</code>.</p>
-<pre class="r"><code>starwars</code></pre>
-<pre><code>## # A tibble: 87 x 14
-##    name  height  mass hair_color skin_color eye_color birth_year sex  
-##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;
-##  1 Luke…    172    77 blond      fair       blue            19   male 
-##  2 C-3PO    167    75 &lt;NA&gt;       gold       yellow         112   none 
-##  3 R2-D2     96    32 &lt;NA&gt;       white, bl… red             33   none 
-##  4 Dart…    202   136 none       white      yellow          41.9 male 
-##  5 Leia…    150    49 brown      light      brown           19   fema…
-##  6 Owen…    178   120 brown, gr… light      blue            52   male 
-##  7 Beru…    165    75 brown      light      blue            47   fema…
-##  8 R5-D4     97    32 &lt;NA&gt;       white, red red             NA   none 
-##  9 Bigg…    183    84 black      light      brown           24   male 
-## 10 Obi-…    182    77 auburn, w… fair       blue-gray       57   male 
-## # … with 77 more rows, and 6 more variables: gender &lt;chr&gt;,
-## #   homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;</code></pre>
-<p>The dimensions of the tibble are shown on the first line of output and the types of each of the columns (variables) are also displayed in shorthand form. So we easily see that the name column is a character vector and the height column contains integer values, while the mass column contains doubles.</p>
-<p>Values in some columns have been shortened with <code>...</code> in order to fit as many columns on the screen as possible. Those columns that it couldn’t fit on are listed after the first 10 rows.</p>
-</div>
-<div id="not-trying-to-be-too-clever" class="section level3">
-<h3>Not trying to be too clever</h3>
-<p>The other main thing that tibbles do is to curb some strange behaviours that the developers of R thought were a good idea at the time but which can cause some confusion.</p>
-<p>Let’s reconsider how we created the <code>beatles</code> data frame.</p>
-<pre class="r"><code>beatles &lt;- data.frame(
-  name = c(&quot;John&quot;, &quot;Paul&quot;, &quot;Ringo&quot;, &quot;George&quot;),
-  birth_year = c(1940, 1942, 1940, 1943),
-  instrument = c(&quot;guitar&quot;, &quot;bass&quot;, &quot;drums&quot;, &quot;guitar&quot;)
-)</code></pre>
-<p>What type do you think the name and instrument columns are?</p>
-<p>If you think these should be characters, think again. Or inspect these using <code>str()</code> or <code>class()</code>.</p>
-<pre class="r"><code>str(beatles)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    4 obs. of  3 variables:
-##  $ name      : Factor w/ 4 levels &quot;George&quot;,&quot;John&quot;,..: 2 3 4 1
-##  $ birth_year: num  1940 1942 1940 1943
-##  $ instrument: Factor w/ 3 levels &quot;bass&quot;,&quot;drums&quot;,..: 3 1 2 3</code></pre>
-<pre class="r"><code>class(beatles$name)</code></pre>
-<pre><code>## [1] &quot;factor&quot;</code></pre>
-<p>The <code>data.frame()</code> function automatically converts character vectors into factors. Factors are categorical variables, i.e. have a restricted set of values, a controlled vocabulary if you like.</p>
-<p>Why did it do this? I never asked it to. Those vectors started as character vectors, why does <code>data.frame()</code> think I want these to be factors?</p>
-<p>To be fair, the instruments variable probably should be a factor but it’s hard to see why the name would be.</p>
-<p>If you look at the help page for the <code>data.frame()</code> function, you’ll see that you can prevent this behaviour by setting the argument <code>stringsAsFactors = FALSE</code>. Likewise, it is very common to see code in which this same argument is set to <code>FALSE</code> in the base R functions for reading tabular data from a tab-delimited or comma-separated value (CSV) file.</p>
-<p>Tibbles do not automatically convert character string variables to factors.</p>
-<p>Tibbles also prevent another shortcut that can lead to very unclear code, i.e. the ability to refer to a column using a truncated form of its name.</p>
-<pre class="r"><code>beatles$i</code></pre>
-<pre><code>## [1] guitar bass   drums  guitar
-## Levels: bass drums guitar</code></pre>
-</div>
-<div id="subsetting" class="section level3">
-<h3>Subsetting</h3>
-<p>Extracting subsets of values from a tibble can be achieved using the single square bracket (<code>[ ]</code>) operator in the same way as for data frames. You may have noticed from the blue summary box above that sometimes these operations return another data frame and sometimes a vector when run on a data frame. A vector is preferentially returned if the subset of values can take the form of an atomic vector. This does not happen with tibbles. Using <code>[ ]</code> on a tibble will always return another tibble.</p>
-<pre class="r"><code>iris[1:5, 3]</code></pre>
-<pre><code>## [1] 1.4 1.4 1.3 1.5 1.4</code></pre>
-<pre class="r"><code>iris_tibble[1:5, 3]</code></pre>
-<pre><code>## # A tibble: 5 x 1
-##   Petal.Length
-##          &lt;dbl&gt;
-## 1          1.4
-## 2          1.4
-## 3          1.3
-## 4          1.5
-## 5          1.4</code></pre>
-<p>It’s another example of tibbles not trying to be too clever but instead favouring a more consistent set of expectations for their behaviour. There are good reasons for this. Many of the most powerful operations in the tidyverse work on data frames and we shall see in future weeks how these operations can be ‘chained’ together to form workflows in a very elegant fashion. This would not be possible if the return value from any one of the steps in the workflow returned a vector or table depending on whether it could be a vector. But that’s getting ahead of ourselves, so let’s park it there for now.</p>
-</div>
-<div id="row-names" class="section level3">
-<h3>Row names</h3>
-<p>The final difference we’ll briefly note here is that setting row names on tibbles is allowed but deprecated (and future versions of the tidyverse may not allow you to set row names at all). If you try to set row names on a tibble you will get a warning message about this and if you convert a data frame such as <code>mtcars</code> with meaningful row names then these get removed and you end up with character version of row numbers much like we saw for the <code>iris</code> data set.</p>
-<pre class="r"><code>as_tibble(mtcars)</code></pre>
-<pre><code>## # A tibble: 32 x 12
-##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb   kpl
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1  21       6  160    110  3.9   2.62  16.5     0     1     6     4  8.93
-##  2  21       6  160    110  3.9   2.88  17.0     0     1     4     4  8.93
-##  3  22.8     4  108     93  3.85  2.32  18.6     1     1     4     1  9.69
-##  4  21.4     6  258    110  3.08  3.22  19.4     1     0     6     1  9.10
-##  5  18.7     8  360    175  3.15  3.44  17.0     0     0     6     2  7.95
-##  6  18.1     6  225    105  2.76  3.46  20.2     1     0     3     1  7.70
-##  7  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4  6.08
-##  8  24.4     4  147.    62  3.69  3.19  20       1     0     4     2 10.4 
-##  9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2  9.69
-## 10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4  8.16
-## # … with 22 more rows</code></pre>
-<p>Being able to access data through row name identifiers might seem like a very useful thing but in most cases this information would be better included in a separate column where you can apply exactly the same filtering and faceting operations as you can for any other column or variable.</p>
-<p>The <code>tibble</code> package does provide a useful way of converting row names into a column, so we can recover those car models on converting <code>mtcars</code> into a tibble.</p>
-<pre class="r"><code>as_tibble(rownames_to_column(mtcars, var = &quot;model&quot;))</code></pre>
-<pre><code>## # A tibble: 32 x 13
-##    model    mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
-##    &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1 Mazda…  21       6  160    110  3.9   2.62  16.5     0     1     6     4
-##  2 Mazda…  21       6  160    110  3.9   2.88  17.0     0     1     4     4
-##  3 Datsu…  22.8     4  108     93  3.85  2.32  18.6     1     1     4     1
-##  4 Horne…  21.4     6  258    110  3.08  3.22  19.4     1     0     6     1
-##  5 Horne…  18.7     8  360    175  3.15  3.44  17.0     0     0     6     2
-##  6 Valia…  18.1     6  225    105  2.76  3.46  20.2     1     0     3     1
-##  7 Duste…  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
-##  8 Merc …  24.4     4  147.    62  3.69  3.19  20       1     0     4     2
-##  9 Merc …  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
-## 10 Merc …  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
-## # … with 22 more rows, and 1 more variable: kpl &lt;dbl&gt;</code></pre>
-<p>Note that the <code>$</code> and <code>[[]]</code> subsetting operators are actually operators designed to work on lists and to return vectors. Tibbles, like data frames, are special kinds of lists and so tibbles respect the clear expectation that these should return vectors.</p>
-<pre class="r"><code>starwars[[1]] # same as starwars$name</code></pre>
-<pre><code>##  [1] &quot;Luke Skywalker&quot;        &quot;C-3PO&quot;                
-##  [3] &quot;R2-D2&quot;                 &quot;Darth Vader&quot;          
-##  [5] &quot;Leia Organa&quot;           &quot;Owen Lars&quot;            
-##  [7] &quot;Beru Whitesun lars&quot;    &quot;R5-D4&quot;                
-##  [9] &quot;Biggs Darklighter&quot;     &quot;Obi-Wan Kenobi&quot;       
-## [11] &quot;Anakin Skywalker&quot;      &quot;Wilhuff Tarkin&quot;       
-## [13] &quot;Chewbacca&quot;             &quot;Han Solo&quot;             
-## [15] &quot;Greedo&quot;                &quot;Jabba Desilijic Tiure&quot;
-## [17] &quot;Wedge Antilles&quot;        &quot;Jek Tono Porkins&quot;     
-## [19] &quot;Yoda&quot;                  &quot;Palpatine&quot;            
-## [21] &quot;Boba Fett&quot;             &quot;IG-88&quot;                
-## [23] &quot;Bossk&quot;                 &quot;Lando Calrissian&quot;     
-## [25] &quot;Lobot&quot;                 &quot;Ackbar&quot;               
-## [27] &quot;Mon Mothma&quot;            &quot;Arvel Crynyd&quot;         
-## [29] &quot;Wicket Systri Warrick&quot; &quot;Nien Nunb&quot;            
-## [31] &quot;Qui-Gon Jinn&quot;          &quot;Nute Gunray&quot;          
-## [33] &quot;Finis Valorum&quot;         &quot;Jar Jar Binks&quot;        
-## [35] &quot;Roos Tarpals&quot;          &quot;Rugor Nass&quot;           
-## [37] &quot;Ric Olié&quot;              &quot;Watto&quot;                
-## [39] &quot;Sebulba&quot;               &quot;Quarsh Panaka&quot;        
-## [41] &quot;Shmi Skywalker&quot;        &quot;Darth Maul&quot;           
-## [43] &quot;Bib Fortuna&quot;           &quot;Ayla Secura&quot;          
-## [45] &quot;Dud Bolt&quot;              &quot;Gasgano&quot;              
-## [47] &quot;Ben Quadinaros&quot;        &quot;Mace Windu&quot;           
-## [49] &quot;Ki-Adi-Mundi&quot;          &quot;Kit Fisto&quot;            
-## [51] &quot;Eeth Koth&quot;             &quot;Adi Gallia&quot;           
-## [53] &quot;Saesee Tiin&quot;           &quot;Yarael Poof&quot;          
-## [55] &quot;Plo Koon&quot;              &quot;Mas Amedda&quot;           
-## [57] &quot;Gregar Typho&quot;          &quot;Cordé&quot;                
-## [59] &quot;Cliegg Lars&quot;           &quot;Poggle the Lesser&quot;    
-## [61] &quot;Luminara Unduli&quot;       &quot;Barriss Offee&quot;        
-## [63] &quot;Dormé&quot;                 &quot;Dooku&quot;                
-## [65] &quot;Bail Prestor Organa&quot;   &quot;Jango Fett&quot;           
-## [67] &quot;Zam Wesell&quot;            &quot;Dexter Jettster&quot;      
-## [69] &quot;Lama Su&quot;               &quot;Taun We&quot;              
-## [71] &quot;Jocasta Nu&quot;            &quot;Ratts Tyerell&quot;        
-## [73] &quot;R4-P17&quot;                &quot;Wat Tambor&quot;           
-## [75] &quot;San Hill&quot;              &quot;Shaak Ti&quot;             
-## [77] &quot;Grievous&quot;              &quot;Tarfful&quot;              
-## [79] &quot;Raymus Antilles&quot;       &quot;Sly Moore&quot;            
-## [81] &quot;Tion Medon&quot;            &quot;Finn&quot;                 
-## [83] &quot;Rey&quot;                   &quot;Poe Dameron&quot;          
-## [85] &quot;BB8&quot;                   &quot;Captain Phasma&quot;       
-## [87] &quot;Padmé Amidala&quot;</code></pre>
-<p>We’ll be mostly using tibbles in this course but almost all the functions we’ll be using, from the various tidyverse packages, can work with ordinary data frames in the same way they do for tibbles.</p>
-<hr />
-</div>
-</div>
-</div>
-<div id="reading-data-into-r" class="section level1">
-<h1>Reading data into R</h1>
-<p>Another of the tidyverse packages loaded when we ran <code>library(tidyverse)</code> is the <code>readr</code> package, which provides functions for reading tabular data into a tibble and writing tibbles to tab-delmited and comma-separated value (CSV) files.</p>
-<p>For example, the clinical data for the METABRIC breast cancer dataset generated at CRUK CI can be downloaded as a tab-delimited file from <a href="https://www.cbioportal.org/study/clinicalData?id=brca_metabric">cBioPortal</a>. Targeted sequencing was performed for 2509 primary breast tumours, along with 548 matched normals, using a panel of 173 of the most frequently mutated breast cancer genes as part of the METABRIC study (<a href="https://www.ncbi.nlm.nih.gov/pubmed/27161491">Pereira <em>et al.</em>, Nature Communications 7:11479, 2016</a>).</p>
-<p>This file contains information in tabular form in which values are separated by tab characters so we’ll use the <strong><code>read_tsv()</code></strong> to read these data.</p>
-<pre class="r"><code>metabric &lt;- read_tsv(&quot;data/brca_metabric_clinical_data.tsv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   `Mutation Count` = col_double(),
-##   `Age at Diagnosis` = col_double(),
-##   Cohort = col_double(),
-##   `Lymph nodes examined positive` = col_double(),
-##   `Neoplasm Histologic Grade` = col_double(),
-##   `Nottingham prognostic index` = col_double()
-## )</code></pre>
-<pre><code>## See spec(...) for full column specifications.</code></pre>
-<p><code>read_tsv()</code> prints a message telling us which types it has assigned to each of the columns it has read, although in this case the table has quite a lot of columns and it only outputs details about the first few.</p>
-<p>If we print the clinical data set we can see that <code>read_tsv()</code> created a tibble.</p>
-<pre class="r"><code>metabric</code></pre>
-<pre><code>## # A tibble: 2,509 x 20
-##    `Patient ID` `Sample ID` `Cancer Type` `Cancer Type De… `Mutation Count`
-##    &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;         &lt;chr&gt;                       &lt;dbl&gt;
-##  1 MB-0000      MB-0000     Breast Cancer Breast Invasive…               NA
-##  2 MB-0002      MB-0002     Breast Cancer Breast Invasive…                2
-##  3 MB-0005      MB-0005     Breast Cancer Breast Invasive…                2
-##  4 MB-0006      MB-0006     Breast Cancer Breast Mixed Du…                1
-##  5 MB-0008      MB-0008     Breast Cancer Breast Mixed Du…                2
-##  6 MB-0010      MB-0010     Breast Cancer Breast Invasive…                4
-##  7 MB-0014      MB-0014     Breast Cancer Breast Invasive…                4
-##  8 MB-0020      MB-0020     Breast Cancer Breast Invasive…               NA
-##  9 MB-0022      MB-0022     Breast Cancer Breast Mixed Du…                1
-## 10 MB-0025      MB-0025     Breast Cancer Breast Invasive…                5
-## # … with 2,499 more rows, and 15 more variables: `3-Gene classifier
-## #   subtype` &lt;chr&gt;, `Age at Diagnosis` &lt;dbl&gt;, Cellularity &lt;chr&gt;,
-## #   Chemotherapy &lt;chr&gt;, Cohort &lt;dbl&gt;, `ER Status` &lt;chr&gt;, `ER status
-## #   measured by IHC` &lt;chr&gt;, `HER2 Status` &lt;chr&gt;, `HER2 status measured by
-## #   SNP6` &lt;chr&gt;, `Hormone Therapy` &lt;chr&gt;, `Inferred Menopausal
-## #   State` &lt;chr&gt;, `Integrative Cluster` &lt;chr&gt;, `Lymph nodes examined
-## #   positive` &lt;dbl&gt;, `Neoplasm Histologic Grade` &lt;dbl&gt;, `Nottingham
-## #   prognostic index` &lt;dbl&gt;</code></pre>
-<div class="rmdblock">
-<p>
-<strong><code>read_csv()</code></strong> and <strong><code>read_tsv()</code></strong>
-</p>
-<p>
-<code>read_csv()</code> reads data from a comma-separated value (CSV) file into a tibble. <code>read_tsv()</code> is the equivalent function that works on tab-delmited files.
-</p>
-<p>
-These functions expect the first line to contain column names and try to make sensible guesses at the type of data in each column. You can change this by specifying various arguments, e.g. to skip comment lines beginning with a specific character (e.g. “#”) or to tell the function what the column types are.
-</p>
-<p>
-patients &lt;- read_csv(“patients.csv”)
-</p>
-</div>
-<p>We are now in a position to explore these data. For example, we can use the <strong><code>table()</code></strong> function to count the number of patients in this cohort that had chemotherapy and those that did not.</p>
-<pre class="r"><code>table(metabric$Chemotherapy)</code></pre>
-<pre><code>## 
-##   NO  YES 
-## 1568  412</code></pre>
-<p>We can summarize the numbers of mutations found per patient.</p>
-<pre class="r"><code>summary(metabric$`Mutation Count`)</code></pre>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
-##   1.000   3.000   5.000   5.579   7.000  80.000     152</code></pre>
-<p>Note that several of the column names have multiple words separated by spaces. We have to use backticks ( <strong>`</strong> ) to refer to column names such as these.</p>
-<p>We can create a scatter plot to see if there is any relationship between the age of the patient at diagnosis of breast cancer and the Nottingham prognostic index (whatever that is).</p>
-<pre class="r"><code>plot(metabric$`Age at Diagnosis`, metabric$`Nottingham prognostic index`,
-     xlab = &quot;Age at diagnosis&quot;, ylab = &quot;Nottingham prognostic index&quot;)</code></pre>
-<p><img src="week2_files/figure-html/metabric_plot-1.png" width="672" /></p>
-<p>Hmm, what a horrible looking plot. Thank goodness we’re moving on to <strong><code>ggplot2</code></strong> next week.</p>
-<div id="working-directory" class="section level2">
-<h2>Working directory</h2>
-<p>When reading in the METABRIC dataset we specified the file using a relative path, <code>data/brca_metabric_clinical_data.tsv</code>. This is relative to the current working directory and is in the <code>data</code> subdirectory within our working directory. The <strong><code>getwd()</code></strong> function will tell you what the current working directory is.</p>
-<pre class="r"><code>getwd()</code></pre>
-<p>If you open RStudio by clicking on its icon in the task bar or its entry in the start menu, your working directory will probably be your home folder.</p>
-<p>You can specify a full path for the file you want to read, which is also known as an absolute path.</p>
-<p>You can explicitly set your working directory using <strong><code>setwd()</code></strong>.</p>
-<pre class="r"><code>setwd(&quot;/Users/matt/projects/20200116_JB_amplicon_sequencing&quot;)</code></pre>
-<p>If you’re running an R script from a terminal window (by typing something like <code>Rscript my_script.R</code> at the command prompt) your working directory will be the directory in which you run the script (i.e. the one in which you issue the Rscript command). In this case you will probably want to read files from locations that are relative to the directory in which you run the script.</p>
-<p>If you’re writing an R script in RStudio you can set the working directory to be the same directory as that which contains your script file using the menu: <strong>Session &gt; Set Working Directory &gt; To Source File Location</strong>. You can also navigate to the directory of your choosing in the Files tab pane and set this to be the working directory by clicking on the <strong>More</strong> menu button and selecting <strong>Set As Working Directory</strong>.</p>
-<hr />
-</div>
-</div>
-<div id="missing-values" class="section level1">
-<h1>Missing values</h1>
-<p>The METABRIC clinical dataset has some missing values. If you look back to the table we printed out earlier you can see 2 missing values for mutation counts within the first 10 rows.</p>
-<pre class="r"><code>metabric$`Mutation Count`[1:10]</code></pre>
-<pre><code>##  [1] NA  2  2  1  2  4  4 NA  1  5</code></pre>
-<div class="rmdblock">
-<p>
-<strong>Missing values</strong> (<strong><code>NA</code></strong>)
-</p>
-<p>
-Missing values in R are represented as <strong><code>NA</code></strong>, which stands for ‘not available’.
-</p>
-</div>
-<p>The <code>summary()</code> function reported that there are 152 missing mutation counts. <code>summary()</code> reports the mean and median values for the remaining observations, i.e. those for which a mutation count <em>is</em> available. Not all functions do this though.</p>
-<pre class="r"><code>mean(metabric$`Mutation Count`)</code></pre>
-<pre><code>## [1] NA</code></pre>
-<p>The <code>mean()</code> function, for example, takes a different approach in how it treats missing values. It returns <code>NA</code>, i.e. a missing value, because it takes the view that it cannot compute a mean for a set of values where some are not available. You can specify the argument <code>na.rm = TRUE</code> when calling <code>mean()</code> to instruct it to ignore the missing values and calculate the mean of the remaining values.</p>
-<pre class="r"><code>mean(metabric$`Mutation Count`, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 5.578702</code></pre>
-<p>There are many such functions in R that would be similarly affected by missing values and which offer the <code>na.rm</code> argument.</p>
-<p>You can test for missing values using the <code>is.na()</code> function.</p>
-<pre class="r"><code>first_ten_mutation_counts &lt;- metabric$`Mutation Count`[1:10]
-is.na(first_ten_mutation_counts)</code></pre>
-<pre><code>##  [1]  TRUE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE</code></pre>
-<p>One final handy tip: summing the result of <code>is.na()</code> will count the number of missing values in a vector.</p>
-<pre class="r"><code>sum(is.na(metabric$`Mutation Count`))</code></pre>
-<pre><code>## [1] 152</code></pre>
-<p>Can you see why this works? <em>(hint: look at what kind of vector <code>sum()</code> expects and think about how a logical vector will be coerced into such a type)</em>.</p>
-<hr />
 </div>
 <div id="summary" class="section level1">
 <h1>Summary</h1>
 <p>In this session we have covered the following concepts:</p>
 <ul>
-<li>How to write R code in scripts that can saved and re-run at a later date</li>
-<li>How to extract subsets of values from vectors and how to modify values within a vector</li>
-<li>Vector arithmetic</li>
-<li>How R stores more complicated data structures in lists and data frames</li>
-<li>How to install and use packages that extend R’s basic functionality</li>
-<li>How to read tabular data into R</li>
-<li>The tibble, a superior version of the data frame</li>
-<li>Missing values and how R handles these</li>
+<li>The Rstudio environment and the functions associated with each
+pane</li>
+<li>Using the RStudio console as a calculator and place to test out R
+code</li>
+<li>Storing a single item of data in an R vector</li>
+<li>Storing multiple items of data in an R vector</li>
+<li>Arithmetic operators and applying them to R vectors</li>
+<li>Calling functions in R</li>
+<li>Many different ways of getting help within R</li>
+<li>Learning about the different types of vector in R (integer, double,
+character)</li>
+<li>Further details on how we can supply parameters to an R
+function</li>
 </ul>
+<p>We also cover how to work within an R markdown document and run code
+therein in this week’s assignment.</p>
 <hr />
 </div>
 <div id="assignment" class="section level1">
 <h1>Assignment</h1>
-<p>Assignment: <a href="assignments/assignment2.Rmd">assignment2.Rmd</a></p>
-<p>Solutions: <a href="assignments/assignment2_solutions.Rmd">assignment2_solutions.Rmd</a> and <a href="assignments/assignment2_solutions.html">assignment2_solutions.html</a></p>
+<p>Assignment: <a
+href="assignments/assignment1.Rmd">assignment1.Rmd</a></p>
+<p>Solutions: <a
+href="assignments/assignment1_walkthrough.Rmd">assignment1_walkthrough.Rmd</a>
+and <a
+href="assignments/assignment1_solutions.html">assignment1_solutions.html</a></p>
 </div>
 
 
@@ -1556,7 +818,7 @@ is.na(first_ten_mutation_counts)</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -1574,7 +836,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -1583,6 +845,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')
@@ -1595,7 +860,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

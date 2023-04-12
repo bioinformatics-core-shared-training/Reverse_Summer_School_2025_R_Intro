@@ -11,14 +11,24 @@
 
 
 
-<title>Week 5 – Grouping and combining data</title>
+<title>Week 5 – Data manipulation with dplyr</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
@@ -28,12 +38,16 @@
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -46,32 +60,8 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -82,10 +72,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -102,40 +88,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -163,7 +125,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -175,7 +137,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -185,11 +147,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -201,13 +180,12 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -215,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -327,7 +298,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -341,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -351,39 +322,39 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Contents
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="week0.html">Week 0 - Getting ready</a>
+      <a href="week1.html">Week 1 - Getting ready</a>
     </li>
     <li>
-      <a href="week1.html">Week 1 - Introduction to R and RStudio</a>
+      <a href="week2.html">Week 2 - Introduction to R and RStudio</a>
     </li>
     <li>
-      <a href="week2.html">Week 2 - Working with data in R</a>
+      <a href="week3.html">Week 3 - Working with data in R</a>
     </li>
     <li>
-      <a href="week3.html">Week 3 - Data visualization with ggplot2</a>
+      <a href="week4.html">Week 4 - Data visualization with ggplot2</a>
     </li>
     <li>
-      <a href="week4.html">Week 4 - Data manipulation using dplyr</a>
+      <a href="week5.html">Week 5 - Data manipulation using dplyr</a>
     </li>
     <li>
-      <a href="week5.html">Week 5 - Grouping and combining data</a>
+      <a href="week6.html">Week 6 - Grouping and combining data</a>
     </li>
     <li>
-      <a href="week6.html">Week 6 - Restructuring data for analysis</a>
+      <a href="week7.html">Week 7 - Restructuring data for analysis</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/bioinformatics-core-shared-training/r-intro">
+  <a href="https://github.com/bioinformatics-core-shared-training/Bitesize-R">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -393,11 +364,11 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
-<h1 class="title toc-ignore">Week 5 – Grouping and combining data</h1>
+<h1 class="title toc-ignore">Week 5 – Data manipulation with dplyr</h1>
 
 </div>
 
@@ -405,825 +376,1372 @@ div.tocify {
 <blockquote>
 <h4 id="learning-objectives">Learning objectives</h4>
 <ul>
-<li>Use <code>group_by()</code> with <code>summarise()</code> to compute summary values for groups of observations</li>
-<li>Use <code>count()</code> to count the numbers of observations within categories</li>
-<li>Combine data from two tables based on a common identifier (<code>join</code> operations)</li>
-<li>Customize plots created using ggplot2 by changing labels, scales and colours</li>
+<li>Learn the five key <strong>dplyr</strong> functions for manipulating
+your data
+<ul>
+<li><strong><code>select()</code></strong> for selecting a subset of
+variables, i.e. selecting columns in your table</li>
+<li><strong><code>filter()</code></strong> for selecting observations
+based on their values, i.e. selecting rows in your table</li>
+<li><strong><code>arrange()</code></strong> for sorting the observations
+in your table</li>
+<li><strong><code>mutate()</code></strong> for creating a new variable
+or modifying an existing variable</li>
+<li><strong><code>summarise()</code></strong> for collapsing values in
+one of more columns to a single summary value</li>
+</ul></li>
+<li>Chain operations together into a workflow using pipes</li>
+<li>Learn about faceting in ggplot2 to split your data into separate
+categories and create a series of sub-plots arranged in a grid</li>
 </ul>
 </blockquote>
 <hr />
-<div id="grouping-and-combining-data" class="section level1">
-<h1>Grouping and combining data</h1>
-<p>In this session, we’ll look at some more useful functions provided by the <strong>dplyr</strong> package, the ‘workhorse’ in the tidyverse family for manipulating tabular data. Continuing from last week, we’ll see how we can summarise data for groups of observations within different categories. We’ll also show how dplyr allows us to combine data for the same observational unit, e.g. person or date, that comes from different sources and is read into R in different tables.</p>
-<p>We’ll also look at how to customize the plots we create using <strong>ggplot2</strong>, in particular how we can add or change titles and labels, how we can adjust the way the axes are displayed and how we can use a colour scheme of our choosing.</p>
-<p><strong>dplyr</strong> and <strong>ggplot2</strong> are core component packages within the tidyverse and both get loaded as part of the tidyverse.</p>
+<div id="data-manipulation-with-dplyr" class="section level1">
+<h1>Data manipulation with dplyr</h1>
+<p><strong>dplyr</strong> is one of the packages that gets loaded as
+part of the tidyverse.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<p>To demonstrate how these grouping and combining functions work and to illustrate customization of plots, we’ll again use the METABRIC data set.</p>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.4.1     ✔ purrr   1.0.1
+## ✔ tibble  3.2.0     ✔ dplyr   1.1.0
+## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
+## ✔ readr   2.1.4     ✔ forcats 1.0.0
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<p>dplyr is the Swiss army knife in the tidyverse, providing many useful
+functions for manipulating tabular data in data frames or tibbles. We’re
+going to look at the key functions for filtering our data, modifying the
+contents and computing summary statistics.</p>
+<p>We’ll also introduce the pipe operator,
+<strong><code>%&gt;%</code></strong>, for chaining operations together
+into mini workflows in a way that makes for more readable and
+maintainable code.</p>
+<p>Finally, we’ll return to plotting and look at a powerful feature of
+ggplot2, <strong>faceting</strong>, that allows you to divide your plots
+into subplots by splitting the observations based on one or more
+categorical variables.</p>
+<p>We’ll again use the METABRIC data set to illustrate how these
+operations work.</p>
 <pre class="r"><code>metabric &lt;- read_csv(&quot;data/metabric_clinical_and_expression_data.csv&quot;)
 metabric</code></pre>
-<pre><code>## # A tibble: 1,904 x 32
-##    Patient_ID Cohort Age_at_diagnosis Survival_time Survival_status
-##    &lt;chr&gt;       &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt; &lt;chr&gt;          
-##  1 MB-0000         1             75.6         140.  LIVING         
-##  2 MB-0002         1             43.2          84.6 LIVING         
-##  3 MB-0005         1             48.9         164.  DECEASED       
-##  4 MB-0006         1             47.7         165.  LIVING         
-##  5 MB-0008         1             77.0          41.4 DECEASED       
-##  6 MB-0010         1             78.8           7.8 DECEASED       
-##  7 MB-0014         1             56.4         164.  LIVING         
-##  8 MB-0022         1             89.1          99.5 DECEASED       
-##  9 MB-0028         1             86.4          36.6 DECEASED       
-## 10 MB-0035         1             84.2          36.3 DECEASED       
-## # … with 1,894 more rows, and 27 more variables: Vital_status &lt;chr&gt;,
-## #   Chemotherapy &lt;chr&gt;, Radiotherapy &lt;chr&gt;, Tumour_size &lt;dbl&gt;,
-## #   Tumour_stage &lt;dbl&gt;, Neoplasm_histologic_grade &lt;dbl&gt;,
-## #   Lymph_nodes_examined_positive &lt;dbl&gt;, Lymph_node_status &lt;dbl&gt;,
-## #   Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;, PR_status &lt;chr&gt;,
-## #   HER2_status &lt;chr&gt;, HER2_status_measured_by_SNP6 &lt;chr&gt;, PAM50 &lt;chr&gt;,
-## #   `3-gene_classifier` &lt;chr&gt;, Nottingham_prognostic_index &lt;dbl&gt;,
+<pre><code>## # A tibble: 1,904 × 32
+##    Patient_ID Cohort Age_at_di…¹ Survi…² Survi…³ Vital…⁴ Chemo…⁵ Radio…⁶ Tumou…⁷
+##    &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;
+##  1 MB-0000         1        75.6   140.  LIVING  Living  NO      YES          22
+##  2 MB-0002         1        43.2    84.6 LIVING  Living  NO      YES          10
+##  3 MB-0005         1        48.9   164.  DECEAS… Died o… YES     NO           15
+##  4 MB-0006         1        47.7   165.  LIVING  Living  YES     YES          25
+##  5 MB-0008         1        77.0    41.4 DECEAS… Died o… YES     YES          40
+##  6 MB-0010         1        78.8     7.8 DECEAS… Died o… NO      YES          31
+##  7 MB-0014         1        56.4   164.  LIVING  Living  YES     YES          10
+##  8 MB-0022         1        89.1    99.5 DECEAS… Died o… NO      YES          29
+##  9 MB-0028         1        86.4    36.6 DECEAS… Died o… NO      YES          16
+## 10 MB-0035         1        84.2    36.3 DECEAS… Died o… NO      NO           28
+## # … with 1,894 more rows, 23 more variables: Tumour_stage &lt;dbl&gt;,
+## #   Neoplasm_histologic_grade &lt;dbl&gt;, Lymph_nodes_examined_positive &lt;dbl&gt;,
+## #   Lymph_node_status &lt;dbl&gt;, Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;,
+## #   PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;, HER2_status_measured_by_SNP6 &lt;chr&gt;,
+## #   PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;, Nottingham_prognostic_index &lt;dbl&gt;,
 ## #   Cellularity &lt;chr&gt;, Integrative_cluster &lt;chr&gt;, Mutation_count &lt;dbl&gt;,
-## #   ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;,
-## #   GATA3 &lt;dbl&gt;, FOXA1 &lt;dbl&gt;, MLPH &lt;dbl&gt;</code></pre>
+## #   ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, …</code></pre>
 <hr />
 </div>
-<div id="grouping-observations" class="section level1">
-<h1>Grouping observations</h1>
-<div id="summaries-for-groups" class="section level2">
-<h2>Summaries for groups</h2>
-<p>In the previous session we introduced the <code>summarise()</code> function for computing a summary value for one or more variables from all rows in a table (data frame or tibble). For example, we computed the mean expression of ESR1, the estrogen receptor alpha gene, as follows.</p>
+<div id="data-semantics" class="section level1">
+<h1>Data semantics</h1>
+<p>We use the terms ‘observation’ and ‘variable’ a lot in this course.
+As a reminder from week 2, when we talk about an observation, we’re
+talking about a set of values measured for the same unit or thing,
+e.g. a person or a date, and when we talk about a variable we are really
+talking about the attribute that we are measuring or recording,
+e.g. height, temperature or expression value.</p>
+<p><strong>Observations are represented as rows</strong> in our data
+frames or tibbles, while the <strong>columns correspond to
+variables</strong>.</p>
+<div class="rmdblock">
+<p>
+From <strong>“Tidy Data”</strong> by <strong>Hadley Wickham</strong>, <a
+href="https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf"><em>The
+Journal of Statistical Software</em>, vol. 59, 2014</a>.
+</p>
+<p>
+A data set is a collection of <strong>values</strong>, usually either
+numbers (if quantitative) or character strings (if qualitative). Values
+are organised in two ways. Every value belongs to a variable and an
+observation.
+</p>
+<p>
+A <strong>variable</strong> contains all values that measure the same
+underlying attribute (like height, temperature, duration) across units.
+</p>
+<p>
+An <strong>observation</strong> contains all values measured on the same
+unit (like a person or a day) across attributes.
+</p>
+</div>
+<hr />
+</div>
+<div id="dplyr-verbs" class="section level1">
+<h1>dplyr verbs</h1>
+<p>We will be looking at the 5 key dplyr functions this week:</p>
+<ul>
+<li><strong><code>filter()</code></strong> for filtering rows</li>
+<li><strong><code>select()</code></strong> for selecting columns</li>
+<li><strong><code>arrange()</code></strong> for sorting rows</li>
+<li><strong><code>mutate()</code></strong> for modifying columns or
+creating new ones</li>
+<li><strong><code>summarise()</code></strong> for computing summary
+values</li>
+</ul>
+<p>In looking at each of these in turn, we’ll be applying these to the
+entire data set. It is possible to combine these with the
+<code>group_by()</code> function to instead operate on separate groups
+within our data set but this is something we’ll cover in detail next
+week.</p>
+<p>The dplyr operations are commonly referred to as “verbs” in a data
+manipulation grammar. These verbs have a common syntax and work together
+in a consistent and uniform manner. They all have the following shared
+behaviours:</p>
+<ul>
+<li><p>The first argument in each function is a data frame (or
+tibble)</p></li>
+<li><p>Any additional arguments describe what operation to perform on
+the data frame</p></li>
+<li><p>Variable names, i.e. column names, are referred to without using
+quotes</p></li>
+<li><p>The result of an operation is a new data frame</p></li>
+</ul>
+<hr />
+</div>
+<div id="filtering-rows-with-filter" class="section level1">
+<h1>Filtering rows with <code>filter()</code></h1>
+<p>The <strong><code>filter</code></strong> verb allows you to choose
+rows from a data frame that match some specified criteria. The criteria
+are based on values of variables and can make use of comparison
+operators such as <code>==</code>, <code>&gt;</code>, <code>&lt;</code>
+and <code>!=</code>.</p>
+<p>For example, to filter the METABRIC data set so that it only contains
+observations for those patients who died of breast cancer we can use
+<code>filter()</code> as follows.</p>
+<pre class="r"><code>deceased &lt;- filter(metabric, Vital_status == &quot;Died of Disease&quot;)
+deceased</code></pre>
+<pre><code>## # A tibble: 622 × 32
+##    Patient_ID Cohort Age_at_di…¹ Survi…² Survi…³ Vital…⁴ Chemo…⁵ Radio…⁶ Tumou…⁷
+##    &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;
+##  1 MB-0005         1        48.9  164.   DECEAS… Died o… YES     NO           15
+##  2 MB-0008         1        77.0   41.4  DECEAS… Died o… YES     YES          40
+##  3 MB-0010         1        78.8    7.8  DECEAS… Died o… NO      YES          31
+##  4 MB-0035         1        84.2   36.3  DECEAS… Died o… NO      NO           28
+##  5 MB-0036         1        85.5  132.   DECEAS… Died o… NO      YES          22
+##  6 MB-0079         1        50.4   28.5  DECEAS… Died o… YES     YES          40
+##  7 MB-0083         1        64.8   86.1  DECEAS… Died o… NO      YES          13
+##  8 MB-0100         1        68.7    8.07 DECEAS… Died o… YES     YES          39
+##  9 MB-0102         1        51.4  141.   DECEAS… Died o… YES     YES          40
+## 10 MB-0108         1        43.2   42.7  DECEAS… Died o… YES     YES          18
+## # … with 612 more rows, 23 more variables: Tumour_stage &lt;dbl&gt;,
+## #   Neoplasm_histologic_grade &lt;dbl&gt;, Lymph_nodes_examined_positive &lt;dbl&gt;,
+## #   Lymph_node_status &lt;dbl&gt;, Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;,
+## #   PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;, HER2_status_measured_by_SNP6 &lt;chr&gt;,
+## #   PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;, Nottingham_prognostic_index &lt;dbl&gt;,
+## #   Cellularity &lt;chr&gt;, Integrative_cluster &lt;chr&gt;, Mutation_count &lt;dbl&gt;,
+## #   ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, …</code></pre>
+<p>Remember that the <strong><code>==</code></strong> operator tests for
+equality, i.e. is the value for <code>Vital_status</code> for each
+patient (observation) equal to “Died of Disease”.</p>
+<p>This filtering operation is equivalent to subsetting the rows based
+on a logical vector resulting from our comparison of vital status values
+with “Died of Disease”.</p>
+<pre class="r"><code>filter(metabric, Vital_status == &quot;Died of Disease&quot;)
+# is equivalent to
+metabric[metabric$Vital_status == &quot;Died of Disease&quot;, ]</code></pre>
+<p>Both achieve the same result but the dplyr filter method is arguably
+a little easier to read. We haven’t had to write <code>metabric</code>
+twice for one thing; we just referred to the variable name as it is,
+unquoted and without any fuss.</p>
+<p>Let’s have a look at the various categories in the
+<code>Vital_status</code> variable.</p>
+<pre class="r"><code>table(metabric$Vital_status)</code></pre>
+<pre><code>## 
+##      Died of Disease Died of Other Causes               Living 
+##                  622                  480                  801</code></pre>
+<p>We could use the <code>!=</code> comparison operator to select all
+deceased patients regardless of whether they died of the disease or
+other causes, by filtering for those that don’t have the value
+“Living”.</p>
+<pre class="r"><code>deceased &lt;- filter(metabric, Vital_status != &quot;Living&quot;)
+nrow(deceased)</code></pre>
+<pre><code>## [1] 1102</code></pre>
+<p>Another way of doing this is to specify which classes we are
+interested in and use the <strong><code>%in%</code></strong> operator to
+test which observations (rows) contain those values.</p>
+<pre class="r"><code>deceased &lt;- filter(metabric, Vital_status %in% c(&quot;Died of Disease&quot;, &quot;Died of Other Causes&quot;))
+nrow(deceased)</code></pre>
+<pre><code>## [1] 1102</code></pre>
+<p>Another of the tidyverse packages,
+<strong><code>stringr</code></strong>, contains a set of very useful
+functions for operating on text or character strings. One such function,
+<strong><code>str_starts()</code></strong> could be used to find all
+<code>Vital_status</code> values that start with “Died”.</p>
+<pre class="r"><code>deceased &lt;- filter(metabric, str_starts(Vital_status, &quot;Died&quot;))
+nrow(deceased)</code></pre>
+<pre><code>## [1] 1102</code></pre>
+<p>Note that <code>str_starts()</code> returns a logical vector - this
+is important since the filtering condition must evaluate to
+<code>TRUE</code> or <code>FALSE</code> values for each row.</p>
+<p>Unsurprisingly there is an equivalent function,
+<code>str_ends()</code>, for matching the end of text (character) values
+and <code>str_detect()</code> is another useful function that determines
+whether values match a regular expression. Regular expressions are a
+language for search patterns used frequently in computer programming and
+really worth getting to grips with but sadly these are beyond the scope
+of this course.</p>
+<p>Filtering based on a logical variable is the most simple type of
+filtering of all. We don’t have any logical variables in our METABRIC
+data set so we’ll create one from the binary
+<code>Survival_status</code> variable to use as an example.</p>
+<pre class="r"><code># create a new logical variable called &#39;Deceased&#39;
+metabric$Deceased &lt;- metabric$Survival_status == &quot;DECEASED&quot;
+#
+# filtering based on a logical variable - only selects TRUE values
+deceased &lt;- filter(metabric, Deceased)
+#
+# only display those columns we&#39;re interested in
+deceased[, c(&quot;Patient_ID&quot;, &quot;Survival_status&quot;, &quot;Vital_status&quot;, &quot;Deceased&quot;)]</code></pre>
+<pre><code>## # A tibble: 1,103 × 4
+##    Patient_ID Survival_status Vital_status         Deceased
+##    &lt;chr&gt;      &lt;chr&gt;           &lt;chr&gt;                &lt;lgl&gt;   
+##  1 MB-0005    DECEASED        Died of Disease      TRUE    
+##  2 MB-0008    DECEASED        Died of Disease      TRUE    
+##  3 MB-0010    DECEASED        Died of Disease      TRUE    
+##  4 MB-0022    DECEASED        Died of Other Causes TRUE    
+##  5 MB-0028    DECEASED        Died of Other Causes TRUE    
+##  6 MB-0035    DECEASED        Died of Disease      TRUE    
+##  7 MB-0036    DECEASED        Died of Disease      TRUE    
+##  8 MB-0046    DECEASED        Died of Other Causes TRUE    
+##  9 MB-0079    DECEASED        Died of Disease      TRUE    
+## 10 MB-0083    DECEASED        Died of Disease      TRUE    
+## # … with 1,093 more rows</code></pre>
+<p>We can use the <strong><code>!</code></strong> operator to filter
+those patients who are not deceased.</p>
+<pre class="r"><code>filter(metabric, !Deceased)</code></pre>
+<p>The eagle-eyed will have spotted that filtering on our newly created
+Deceased logical variable gave a slightly different number of
+observations (patients) who are considered to be deceased, compared with
+the filtering operations shown above based on the
+<code>Vital_status</code> variable. We get one extra row. This is
+because we have a missing value for the vital status of one of the
+patients. We can filter for this using the
+<strong><code>is.na()</code></strong> function.</p>
+<pre class="r"><code>missing_vital_status &lt;- filter(metabric, is.na(Vital_status))
+missing_vital_status[, c(&quot;Patient_ID&quot;, &quot;Survival_status&quot;, &quot;Vital_status&quot;, &quot;Deceased&quot;)]</code></pre>
+<pre><code>## # A tibble: 1 × 4
+##   Patient_ID Survival_status Vital_status Deceased
+##   &lt;chr&gt;      &lt;chr&gt;           &lt;chr&gt;        &lt;lgl&gt;   
+## 1 MB-5130    DECEASED        &lt;NA&gt;         TRUE</code></pre>
+<p><code>filter()</code> only retains rows where the condition if
+<code>TRUE</code>; both <code>FALSE</code> and <code>NA</code> values
+are filtered out.</p>
+<p>We can apply more than one condition in our filtering operation, for
+example the patients who were still alive at the time of the METABRIC
+study and had survived for more than 10 years (120 months).</p>
+<pre class="r"><code>filter(metabric, Survival_status == &quot;LIVING&quot;, Survival_time &gt; 120)</code></pre>
+<pre><code>## # A tibble: 545 × 33
+##    Patient_ID Cohort Age_at_di…¹ Survi…² Survi…³ Vital…⁴ Chemo…⁵ Radio…⁶ Tumou…⁷
+##    &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;
+##  1 MB-0000         1        75.6    140. LIVING  Living  NO      YES          22
+##  2 MB-0006         1        47.7    165. LIVING  Living  YES     YES          25
+##  3 MB-0014         1        56.4    164. LIVING  Living  YES     YES          10
+##  4 MB-0039         1        70.9    164. LIVING  Living  NO      YES          21
+##  5 MB-0045         1        45.3    165. LIVING  Living  YES     YES          19
+##  6 MB-0053         1        70.0    161. LIVING  Living  NO      YES          23
+##  7 MB-0054         1        66.9    160. LIVING  Living  NO      YES          36
+##  8 MB-0060         1        45.4    141. LIVING  Living  YES     YES          23
+##  9 MB-0062         1        52.1    154. LIVING  Living  YES     YES          17
+## 10 MB-0066         1        61.5    157. LIVING  Living  NO      YES          16
+## # … with 535 more rows, 24 more variables: Tumour_stage &lt;dbl&gt;,
+## #   Neoplasm_histologic_grade &lt;dbl&gt;, Lymph_nodes_examined_positive &lt;dbl&gt;,
+## #   Lymph_node_status &lt;dbl&gt;, Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;,
+## #   PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;, HER2_status_measured_by_SNP6 &lt;chr&gt;,
+## #   PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;, Nottingham_prognostic_index &lt;dbl&gt;,
+## #   Cellularity &lt;chr&gt;, Integrative_cluster &lt;chr&gt;, Mutation_count &lt;dbl&gt;,
+## #   ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, …</code></pre>
+<p>The equivalent using R’s usual subsetting is slightly less
+readable.</p>
+<pre class="r"><code>metabric[metabric$Survival_status == &quot;LIVING&quot; &amp; metabric$Survival_time &gt; 120, ]</code></pre>
+<p>We can add as many conditions as we like separating each with a
+comma. Note that filtering using R subsetting gets more unreadable, and
+more cumbersome to code, the more conditions you add.</p>
+<p>Adding conditions in this way is equivalent to combining the
+conditions using the <strong><code>&amp;</code></strong> (Boolean AND)
+operator.</p>
+<pre class="r"><code>filter(metabric, Survival_status == &quot;LIVING&quot;, Survival_time &gt; 120)
+# is equivalent to
+filter(metabric, Survival_status == &quot;LIVING&quot; &amp; Survival_time &gt; 120)</code></pre>
+<p>Naturally we can also check when either of two conditions holds true
+by using the <strong><code>|</code></strong> (Boolean OR) operator. And
+we can build up more complicated filtering operations using both
+<code>&amp;</code> and <code>|</code>. For example, let’s see which
+patients have stage 3 or stage 4 tumours that are either estrogen
+receptor (ER) positive or progesterone receptor (PR) positive.</p>
+<pre class="r"><code>selected_patients &lt;- filter(metabric, Tumour_stage &gt;= 3, ER_status == &quot;Positive&quot; | PR_status == &quot;Positive&quot;)
+nrow(selected_patients)</code></pre>
+<pre><code>## [1] 79</code></pre>
+<p>In this case, if you used <code>&amp;</code> in place of the comma
+you’d need to be careful about the precedence of the <code>&amp;</code>
+and <code>|</code> operators and use parentheses to make clear what you
+intended.</p>
+<pre class="r"><code>filter(metabric, Tumour_stage &gt;= 3 &amp; (ER_status == &quot;Positive&quot; | PR_status == &quot;Positive&quot;))</code></pre>
+<hr />
+</div>
+<div id="selecting-columns-with-select" class="section level1">
+<h1>Selecting columns with <code>select()</code></h1>
+<p>Another way of “slicing and dicing”” our tabular data set is to
+select just the variables or columns we’re interested in. This can be
+important particularly when the data set contains a very large number of
+variables as is the case for the METABRIC data. Notice how when we print
+the METABRIC data frame it is not possible to display all the columns;
+we only get the first few and then a long list of the additional ones
+that weren’t displayed.</p>
+<p>Using the <code>$</code> operator is quite convenient for selecting a
+single column and extracting the values as a vector. Selecting several
+columns using the <code>[]</code> subsetting operator is a bit more
+cumbersome. For example, in our look at filtering rows, we considered
+two different variables in our data set that are concerned with the
+living/deceased status of patients. When printing out the results we
+selected just those columns along with the patient identifier and the
+newly created <code>Deceased</code> column.</p>
+<pre class="r"><code>deceased[, c(&quot;Patient_ID&quot;, &quot;Survival_status&quot;, &quot;Vital_status&quot;, &quot;Deceased&quot;)]</code></pre>
+<pre><code>## # A tibble: 1,103 × 4
+##    Patient_ID Survival_status Vital_status         Deceased
+##    &lt;chr&gt;      &lt;chr&gt;           &lt;chr&gt;                &lt;lgl&gt;   
+##  1 MB-0005    DECEASED        Died of Disease      TRUE    
+##  2 MB-0008    DECEASED        Died of Disease      TRUE    
+##  3 MB-0010    DECEASED        Died of Disease      TRUE    
+##  4 MB-0022    DECEASED        Died of Other Causes TRUE    
+##  5 MB-0028    DECEASED        Died of Other Causes TRUE    
+##  6 MB-0035    DECEASED        Died of Disease      TRUE    
+##  7 MB-0036    DECEASED        Died of Disease      TRUE    
+##  8 MB-0046    DECEASED        Died of Other Causes TRUE    
+##  9 MB-0079    DECEASED        Died of Disease      TRUE    
+## 10 MB-0083    DECEASED        Died of Disease      TRUE    
+## # … with 1,093 more rows</code></pre>
+<p>The <strong><code>select()</code></strong> function from dplyr is
+simpler.</p>
+<pre class="r"><code>select(metabric, Patient_ID, Survival_status, Vital_status, Deceased)</code></pre>
+<pre><code>## # A tibble: 1,904 × 4
+##    Patient_ID Survival_status Vital_status         Deceased
+##    &lt;chr&gt;      &lt;chr&gt;           &lt;chr&gt;                &lt;lgl&gt;   
+##  1 MB-0000    LIVING          Living               FALSE   
+##  2 MB-0002    LIVING          Living               FALSE   
+##  3 MB-0005    DECEASED        Died of Disease      TRUE    
+##  4 MB-0006    LIVING          Living               FALSE   
+##  5 MB-0008    DECEASED        Died of Disease      TRUE    
+##  6 MB-0010    DECEASED        Died of Disease      TRUE    
+##  7 MB-0014    LIVING          Living               FALSE   
+##  8 MB-0022    DECEASED        Died of Other Causes TRUE    
+##  9 MB-0028    DECEASED        Died of Other Causes TRUE    
+## 10 MB-0035    DECEASED        Died of Disease      TRUE    
+## # … with 1,894 more rows</code></pre>
+<p>Notice the similarities with the <code>filter()</code> function. The
+first argument is the data frame we are operating on and the arguments
+that follow on are specific to the operation in question, in this case,
+the variables (columns) to select. Note that the variables do not need
+to be put in quotes, and the returned value is another data frame, even
+if only one column was selected.</p>
+<p>We can alter the order of the variables (columns).</p>
+<pre class="r"><code>select(metabric, Patient_ID, Vital_status, Survival_status, Deceased)</code></pre>
+<pre><code>## # A tibble: 1,904 × 4
+##    Patient_ID Vital_status         Survival_status Deceased
+##    &lt;chr&gt;      &lt;chr&gt;                &lt;chr&gt;           &lt;lgl&gt;   
+##  1 MB-0000    Living               LIVING          FALSE   
+##  2 MB-0002    Living               LIVING          FALSE   
+##  3 MB-0005    Died of Disease      DECEASED        TRUE    
+##  4 MB-0006    Living               LIVING          FALSE   
+##  5 MB-0008    Died of Disease      DECEASED        TRUE    
+##  6 MB-0010    Died of Disease      DECEASED        TRUE    
+##  7 MB-0014    Living               LIVING          FALSE   
+##  8 MB-0022    Died of Other Causes DECEASED        TRUE    
+##  9 MB-0028    Died of Other Causes DECEASED        TRUE    
+## 10 MB-0035    Died of Disease      DECEASED        TRUE    
+## # … with 1,894 more rows</code></pre>
+<p>We can also select a range of columns using
+<strong><code>:</code></strong>, e.g. to select the patient identifier
+and all the columns between <code>Tumour_size</code> and
+<code>Cancer_type</code> we could run the following
+<code>select()</code> command.</p>
+<pre class="r"><code>select(metabric, Patient_ID, Chemotherapy:Tumour_stage)</code></pre>
+<pre><code>## # A tibble: 1,904 × 5
+##    Patient_ID Chemotherapy Radiotherapy Tumour_size Tumour_stage
+##    &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;
+##  1 MB-0000    NO           YES                   22            2
+##  2 MB-0002    NO           YES                   10            1
+##  3 MB-0005    YES          NO                    15            2
+##  4 MB-0006    YES          YES                   25            2
+##  5 MB-0008    YES          YES                   40            2
+##  6 MB-0010    NO           YES                   31            4
+##  7 MB-0014    YES          YES                   10            2
+##  8 MB-0022    NO           YES                   29            2
+##  9 MB-0028    NO           YES                   16            2
+## 10 MB-0035    NO           NO                    28            2
+## # … with 1,894 more rows</code></pre>
+<p>The help page for <code>select</code> points to some special
+functions that can be used within <code>select()</code>. We can find all
+the columns, for example, that contain the term “status” using
+<code>contains()</code>.</p>
+<pre class="r"><code>select(metabric, contains(&quot;status&quot;))</code></pre>
+<pre><code>## # A tibble: 1,904 × 7
+##    Survival_status Vital_status         Lymph_…¹ ER_st…² PR_st…³ HER2_…⁴ HER2_…⁵
+##    &lt;chr&gt;           &lt;chr&gt;                   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
+##  1 LIVING          Living                      3 Positi… Negati… Negati… NEUTRAL
+##  2 LIVING          Living                      1 Positi… Positi… Negati… NEUTRAL
+##  3 DECEASED        Died of Disease             2 Positi… Positi… Negati… NEUTRAL
+##  4 LIVING          Living                      2 Positi… Positi… Negati… NEUTRAL
+##  5 DECEASED        Died of Disease             3 Positi… Positi… Negati… NEUTRAL
+##  6 DECEASED        Died of Disease             1 Positi… Positi… Negati… NEUTRAL
+##  7 LIVING          Living                      2 Positi… Positi… Negati… LOSS   
+##  8 DECEASED        Died of Other Causes        2 Positi… Negati… Negati… NEUTRAL
+##  9 DECEASED        Died of Other Causes        2 Positi… Negati… Negati… GAIN   
+## 10 DECEASED        Died of Disease             1 Positi… Negati… Negati… LOSS   
+## # … with 1,894 more rows, and abbreviated variable names ¹​Lymph_node_status,
+## #   ²​ER_status, ³​PR_status, ⁴​HER2_status, ⁵​HER2_status_measured_by_SNP6</code></pre>
+<p>If we only wanted those ending with “status” we could use
+<code>ends_with()</code> instead.</p>
+<pre class="r"><code>select(metabric, ends_with(&quot;status&quot;))</code></pre>
+<pre><code>## # A tibble: 1,904 × 6
+##    Survival_status Vital_status         Lymph_node_sta…¹ ER_st…² PR_st…³ HER2_…⁴
+##    &lt;chr&gt;           &lt;chr&gt;                           &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
+##  1 LIVING          Living                              3 Positi… Negati… Negati…
+##  2 LIVING          Living                              1 Positi… Positi… Negati…
+##  3 DECEASED        Died of Disease                     2 Positi… Positi… Negati…
+##  4 LIVING          Living                              2 Positi… Positi… Negati…
+##  5 DECEASED        Died of Disease                     3 Positi… Positi… Negati…
+##  6 DECEASED        Died of Disease                     1 Positi… Positi… Negati…
+##  7 LIVING          Living                              2 Positi… Positi… Negati…
+##  8 DECEASED        Died of Other Causes                2 Positi… Negati… Negati…
+##  9 DECEASED        Died of Other Causes                2 Positi… Negati… Negati…
+## 10 DECEASED        Died of Disease                     1 Positi… Negati… Negati…
+## # … with 1,894 more rows, and abbreviated variable names ¹​Lymph_node_status,
+## #   ²​ER_status, ³​PR_status, ⁴​HER2_status</code></pre>
+<p>We can also select those columns we’re not interested in and that
+shouldn’t be included by prefixing the columns with
+<strong><code>-</code></strong>.</p>
+<pre class="r"><code>select(metabric, -Cohort)</code></pre>
+<pre><code>## # A tibble: 1,904 × 32
+##    Patient_ID Age_at_d…¹ Survi…² Survi…³ Vital…⁴ Chemo…⁵ Radio…⁶ Tumou…⁷ Tumou…⁸
+##    &lt;chr&gt;           &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+##  1 MB-0000          75.6   140.  LIVING  Living  NO      YES          22       2
+##  2 MB-0002          43.2    84.6 LIVING  Living  NO      YES          10       1
+##  3 MB-0005          48.9   164.  DECEAS… Died o… YES     NO           15       2
+##  4 MB-0006          47.7   165.  LIVING  Living  YES     YES          25       2
+##  5 MB-0008          77.0    41.4 DECEAS… Died o… YES     YES          40       2
+##  6 MB-0010          78.8     7.8 DECEAS… Died o… NO      YES          31       4
+##  7 MB-0014          56.4   164.  LIVING  Living  YES     YES          10       2
+##  8 MB-0022          89.1    99.5 DECEAS… Died o… NO      YES          29       2
+##  9 MB-0028          86.4    36.6 DECEAS… Died o… NO      YES          16       2
+## 10 MB-0035          84.2    36.3 DECEAS… Died o… NO      NO           28       2
+## # … with 1,894 more rows, 23 more variables: Neoplasm_histologic_grade &lt;dbl&gt;,
+## #   Lymph_nodes_examined_positive &lt;dbl&gt;, Lymph_node_status &lt;dbl&gt;,
+## #   Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;, PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;,
+## #   HER2_status_measured_by_SNP6 &lt;chr&gt;, PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;,
+## #   Nottingham_prognostic_index &lt;dbl&gt;, Cellularity &lt;chr&gt;,
+## #   Integrative_cluster &lt;chr&gt;, Mutation_count &lt;dbl&gt;, ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;,
+## #   PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, GATA3 &lt;dbl&gt;, FOXA1 &lt;dbl&gt;, …</code></pre>
+<p>You can use a combination of explicit naming, ranges, helper
+functions and negation to select the columns of interest.</p>
+<pre class="r"><code>selected_columns &lt;- select(metabric, Patient_ID, starts_with(&quot;Tumour_&quot;), `3-gene_classifier`:Integrative_cluster, -Cellularity)
+selected_columns</code></pre>
+<pre><code>## # A tibble: 1,904 × 6
+##    Patient_ID Tumour_size Tumour_stage `3-gene_classifier`   Nottingha…¹ Integ…²
+##    &lt;chr&gt;            &lt;dbl&gt;        &lt;dbl&gt; &lt;chr&gt;                       &lt;dbl&gt; &lt;chr&gt;  
+##  1 MB-0000             22            2 ER-/HER2-                    6.04 4ER+   
+##  2 MB-0002             10            1 ER+/HER2- High Prolif        4.02 4ER+   
+##  3 MB-0005             15            2 &lt;NA&gt;                         4.03 3      
+##  4 MB-0006             25            2 &lt;NA&gt;                         4.05 9      
+##  5 MB-0008             40            2 ER+/HER2- High Prolif        6.08 9      
+##  6 MB-0010             31            4 ER+/HER2- High Prolif        4.06 7      
+##  7 MB-0014             10            2 &lt;NA&gt;                         4.02 3      
+##  8 MB-0022             29            2 &lt;NA&gt;                         4.06 3      
+##  9 MB-0028             16            2 ER+/HER2- High Prolif        5.03 9      
+## 10 MB-0035             28            2 ER+/HER2- High Prolif        3.06 3      
+## # … with 1,894 more rows, and abbreviated variable names
+## #   ¹​Nottingham_prognostic_index, ²​Integrative_cluster</code></pre>
+<p>You can also use <code>select()</code> to completely reorder the
+columns so they’re in the order of your choosing. The
+<code>everything()</code> helper function is useful in this context,
+particularly if what you’re really interested in is bringing one or more
+columns to the left hand side and then including everything else
+afterwards in whatever order they were already in.</p>
+<pre class="r"><code>select(metabric, Patient_ID, Survival_status, Tumour_stage, everything())</code></pre>
+<pre><code>## # A tibble: 1,904 × 33
+##    Patient_ID Survival_…¹ Tumou…² Cohort Age_a…³ Survi…⁴ Vital…⁵ Chemo…⁶ Radio…⁷
+##    &lt;chr&gt;      &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
+##  1 MB-0000    LIVING            2      1    75.6   140.  Living  NO      YES    
+##  2 MB-0002    LIVING            1      1    43.2    84.6 Living  NO      YES    
+##  3 MB-0005    DECEASED          2      1    48.9   164.  Died o… YES     NO     
+##  4 MB-0006    LIVING            2      1    47.7   165.  Living  YES     YES    
+##  5 MB-0008    DECEASED          2      1    77.0    41.4 Died o… YES     YES    
+##  6 MB-0010    DECEASED          4      1    78.8     7.8 Died o… NO      YES    
+##  7 MB-0014    LIVING            2      1    56.4   164.  Living  YES     YES    
+##  8 MB-0022    DECEASED          2      1    89.1    99.5 Died o… NO      YES    
+##  9 MB-0028    DECEASED          2      1    86.4    36.6 Died o… NO      YES    
+## 10 MB-0035    DECEASED          2      1    84.2    36.3 Died o… NO      NO     
+## # … with 1,894 more rows, 24 more variables: Tumour_size &lt;dbl&gt;,
+## #   Neoplasm_histologic_grade &lt;dbl&gt;, Lymph_nodes_examined_positive &lt;dbl&gt;,
+## #   Lymph_node_status &lt;dbl&gt;, Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;,
+## #   PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;, HER2_status_measured_by_SNP6 &lt;chr&gt;,
+## #   PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;, Nottingham_prognostic_index &lt;dbl&gt;,
+## #   Cellularity &lt;chr&gt;, Integrative_cluster &lt;chr&gt;, Mutation_count &lt;dbl&gt;,
+## #   ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, …</code></pre>
+<p>Finally, columns can be renamed as part of the selection process.</p>
+<pre class="r"><code>select(metabric, Patient_ID, Classification = `3-gene_classifier`, NPI = Nottingham_prognostic_index)</code></pre>
+<pre><code>## # A tibble: 1,904 × 3
+##    Patient_ID Classification          NPI
+##    &lt;chr&gt;      &lt;chr&gt;                 &lt;dbl&gt;
+##  1 MB-0000    ER-/HER2-              6.04
+##  2 MB-0002    ER+/HER2- High Prolif  4.02
+##  3 MB-0005    &lt;NA&gt;                   4.03
+##  4 MB-0006    &lt;NA&gt;                   4.05
+##  5 MB-0008    ER+/HER2- High Prolif  6.08
+##  6 MB-0010    ER+/HER2- High Prolif  4.06
+##  7 MB-0014    &lt;NA&gt;                   4.02
+##  8 MB-0022    &lt;NA&gt;                   4.06
+##  9 MB-0028    ER+/HER2- High Prolif  5.03
+## 10 MB-0035    ER+/HER2- High Prolif  3.06
+## # … with 1,894 more rows</code></pre>
+<p>Note that dplyr provides the <code>rename()</code> function for when
+we only want to rename a column and not select a subset of columns.</p>
+<hr />
+</div>
+<div id="chaining-operations-using" class="section level1">
+<h1>Chaining operations using <code>%&gt;%</code></h1>
+<p>Let’s consider again an earlier example in which we filtered the
+METABRIC data set to retain just the patients who were still alive at
+the time of the study and had survived for more than 10 years (120
+months). We use <code>filter()</code> to select the rows corresponding
+to the patients meeting these criteria and can then use
+<code>select()</code> to only display the variables (columns) we’re most
+interested in.</p>
+<pre class="r"><code>patients_of_interest &lt;- filter(metabric, Survival_status == &quot;LIVING&quot;, Survival_time &gt; 120)
+patient_details_of_interest &lt;- select(patients_of_interest, Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
+patient_details_of_interest</code></pre>
+<pre><code>## # A tibble: 545 × 4
+##    Patient_ID Survival_time Tumour_stage Nottingham_prognostic_index
+##    &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;                       &lt;dbl&gt;
+##  1 MB-0000             140.            2                        6.04
+##  2 MB-0006             165.            2                        4.05
+##  3 MB-0014             164.            2                        4.02
+##  4 MB-0039             164.            1                        2.04
+##  5 MB-0045             165.            2                        5.04
+##  6 MB-0053             161.            2                        3.05
+##  7 MB-0054             160.            2                        4.07
+##  8 MB-0060             141.            2                        4.05
+##  9 MB-0062             154.            1                        4.03
+## 10 MB-0066             157.            2                        4.03
+## # … with 535 more rows</code></pre>
+<p>Here we’ve used an intermediate variable,
+<code>patients_of_interest</code>, which we only needed in order to get
+to the final result. We could just have used the same name to avoid
+cluttering our environment and overwritten the results from the
+<code>filter()</code> operation with those of the <code>select()</code>
+operation.</p>
+<pre class="r"><code>patients_of_interest &lt;- select(patients_of_interest, Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)</code></pre>
+<p>Another less readable way of writing this code is to nest the
+<code>filter()</code> function call inside the <code>select()</code>.
+Although this looks very unwieldy and is not easy to follow, nested
+function calls are very common in a lot of R code you may come
+across.</p>
+<pre class="r"><code>patients_of_interest &lt;- select(filter(metabric, Survival_status == &quot;LIVING&quot;, Survival_time &gt; 120), Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
+nrow(patients_of_interest)</code></pre>
+<pre><code>## [1] 545</code></pre>
+<p>However, there is another way chaining together a series of
+operations into a mini workflow that is elegant, intuitive and makes for
+very readable R code. For that we need to introduce a new operator, the
+<strong>pipe</strong> operator,
+<strong><code>%&gt;%</code></strong>.</p>
+<div class="rmdblock">
+<p>
+<strong>The pipe operator <code>%&gt;%</code></strong>
+</p>
+<p>
+The pipe operator takes the output from one operation, i.e. whatever is
+on the left-hand side of <code>%&gt;%</code> and passes it in as the
+first argument to the second operation, or function, on the right-hand
+side.
+</p>
+<p>
+<strong><code>x %&gt;% f(y)</code></strong> is equivalent to
+<strong><code>f(x, y)</code></strong>
+</p>
+<p>
+For example:
+</p>
+<p>
+<code>select(starwars, name, height, mass)</code>
+</p>
+<p>
+can be rewritten as
+</p>
+<p>
+<code>starwars %&gt;% select(name, height, mass)</code>
+</p>
+<p>
+This allows for chaining of operations into workflows, e.g.
+</p>
+<p>
+<code>starwars %&gt;%</code><br/>     <code>filter(species == “Droid”)
+%&gt;%</code><br/>     <code>select(name, height, mass)</code>
+</p>
+<p>
+The <code>%&gt;%</code> operator comes from the <code>magrittr</code>
+package (do you get the reference?) and is available when we load the
+tidyverse using <code>library(tidyverse)</code>.
+</p>
+<p>
+Piping in R was motivated by the Unix pipe, <code>|</code>, in which the
+output from one process is redirected to be the input for the next. This
+is so named because the flow from one process or operation to the next
+resembles a pipeline.
+</p>
+</div>
+<p>We can rewrite the code for our filtering and column selection
+operations as follows.</p>
+<pre class="r"><code>patients_of_interest &lt;- metabric %&gt;%
+  filter(Survival_status == &quot;LIVING&quot;, Survival_time &gt; 120) %&gt;%
+  select(Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)</code></pre>
+<p>Note how each operation takes the output from the previous operation
+as its first argument. This way of coding is embraced wholeheartedly in
+the tidyverse hence almost every tidyverse function that works on data
+frames has the data frame as its first argument. It is also the reason
+why tidyverse functions return a data frame regardless of whether the
+output could be recast as a vector or a single value.</p>
+<p>“Piping”, the act of chaining operations together, becomes really
+useful when there are several steps involved in filtering and
+transforming a data set.</p>
+<p>The usual way of developing a workflow is to build it up one step at
+a time, testing the output produced at each stage. Let’s do that for
+this case.</p>
+<p>We start by considering just the patients who are living.</p>
+<pre class="r"><code>patients_of_interest &lt;- metabric %&gt;%
+  filter(Survival_status == &quot;LIVING&quot;)</code></pre>
+<p>We then add another filter for the survival time.</p>
+<pre class="r"><code>patients_of_interest &lt;- metabric %&gt;%
+  filter(Survival_status == &quot;LIVING&quot;) %&gt;%
+  filter(Survival_time &gt; 120)</code></pre>
+<p>At each stage we look at the resulting
+<code>patients_of_interest</code> data frame to check we’re happy with
+the result.</p>
+<p>Finally we only want certain columns, so we add a
+<code>select()</code> operation.</p>
+<pre class="r"><code>patients_of_interest &lt;- metabric %&gt;%
+  filter(Survival_status == &quot;LIVING&quot;) %&gt;%
+  filter(Survival_time &gt; 120) %&gt;%
+  select(Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
+# print out the result
+patients_of_interest</code></pre>
+<pre><code>## # A tibble: 545 × 4
+##    Patient_ID Survival_time Tumour_stage Nottingham_prognostic_index
+##    &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;                       &lt;dbl&gt;
+##  1 MB-0000             140.            2                        6.04
+##  2 MB-0006             165.            2                        4.05
+##  3 MB-0014             164.            2                        4.02
+##  4 MB-0039             164.            1                        2.04
+##  5 MB-0045             165.            2                        5.04
+##  6 MB-0053             161.            2                        3.05
+##  7 MB-0054             160.            2                        4.07
+##  8 MB-0060             141.            2                        4.05
+##  9 MB-0062             154.            1                        4.03
+## 10 MB-0066             157.            2                        4.03
+## # … with 535 more rows</code></pre>
+<p>When continuing our workflow across multiple lines, we need to be
+careful to ensure the <code>%&gt;%</code> is at the end of the line. If
+we try to place this at the start of the next line, R will think we’ve
+finished the workflow prematurely and will report an error at what it
+considers the next statement, i.e. the line that begins with
+<code>%&gt;%</code>.</p>
+<pre class="r"><code># R considers the following to be 2 separate commands, the first of which ends
+# with the first filter operation and runs successfully.
+# The second statement is the third and last line, is not a valid commmand and
+# so you&#39;ll get an error message
+patients_of_interest &lt;- metabric %&gt;%
+  filter(Survival_status == &quot;LIVING&quot;)
+  %&gt;% filter(Survival_time &gt; 120)</code></pre>
+<p>This is very similar to what we saw with adding layers and other
+components to a ggplot using the <code>+</code> operator, where we
+needed the <code>+</code> to be at the end of a line.</p>
+<p>We’ll be using the pipe <code>%&gt;%</code> operator throughout the
+rest of the course so you’d better get used to it. But actually we think
+you’ll come to love it as much as we do.</p>
+<hr />
+</div>
+<div id="sorting-using-arrange" class="section level1">
+<h1>Sorting using <code>arrange()</code></h1>
+<p>It is sometimes quite useful to sort our data frame based on the
+values in one or more of the columns, particularly when displaying the
+contents or saving them to a file. The <code>arrange()</code> function
+in dplyr provides this sorting capability.</p>
+<p>For example, we can sort the METABRIC patients into order of
+increasing survival time.</p>
+<pre class="r"><code>arrange(metabric, Survival_time)</code></pre>
+<pre><code>## # A tibble: 1,904 × 33
+##    Patient_ID Cohort Age_at_di…¹ Survi…² Survi…³ Vital…⁴ Chemo…⁵ Radio…⁶ Tumou…⁷
+##    &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;
+##  1 MB-0284         1        51.4   0     LIVING  Living  NO      NO           NA
+##  2 MB-6229         5        75.3   0.1   DECEAS… Died o… NO      NO           15
+##  3 MB-0627         1        54.1   0.767 LIVING  Living  NO      NO           20
+##  4 MB-0880         1        73.6   1.23  LIVING  Living  NO      NO           30
+##  5 MB-0125         1        74.0   1.27  LIVING  Living  NO      NO            9
+##  6 MB-0374         1        34.7   1.43  LIVING  Living  NO      NO           25
+##  7 MB-0148         1        53.2   1.77  LIVING  Living  NO      NO           19
+##  8 MB-5525         3        63.2   2     LIVING  Living  NO      YES          28
+##  9 MB-6092         5        80.6   2.3   DECEAS… Died o… NO      NO           21
+## 10 MB-0117         1        60.1   2.4   LIVING  Living  NO      YES          23
+## # … with 1,894 more rows, 24 more variables: Tumour_stage &lt;dbl&gt;,
+## #   Neoplasm_histologic_grade &lt;dbl&gt;, Lymph_nodes_examined_positive &lt;dbl&gt;,
+## #   Lymph_node_status &lt;dbl&gt;, Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;,
+## #   PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;, HER2_status_measured_by_SNP6 &lt;chr&gt;,
+## #   PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;, Nottingham_prognostic_index &lt;dbl&gt;,
+## #   Cellularity &lt;chr&gt;, Integrative_cluster &lt;chr&gt;, Mutation_count &lt;dbl&gt;,
+## #   ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, …</code></pre>
+<p>Or we might be more interested in the patients that survived the
+longest so would need the order to be of decreasing survival time. For
+that we can use the helper function <code>desc()</code> that works
+specifically with <code>arrange()</code>.</p>
+<pre class="r"><code>arrange(metabric, desc(Survival_time))</code></pre>
+<pre><code>## # A tibble: 1,904 × 33
+##    Patient_ID Cohort Age_at_di…¹ Survi…² Survi…³ Vital…⁴ Chemo…⁵ Radio…⁶ Tumou…⁷
+##    &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;
+##  1 MB-4189         3        61.0    355. DECEAS… Died o… NO      YES          NA
+##  2 MB-4079         3        63.2    351  DECEAS… Died o… NO      YES          22
+##  3 MB-0270         1        30.0    337. LIVING  Living  NO      NO           14
+##  4 MB-4235         3        67.5    336. DECEAS… Died o… NO      NO           20
+##  5 MB-4292         3        58.8    336. DECEAS… Died o… NO      YES          25
+##  6 MB-4212         3        45.5    330. LIVING  Living  NO      NO           20
+##  7 MB-4548         3        50.4    323. LIVING  Living  YES     YES           1
+##  8 MB-4633         3        67.0    318. LIVING  Living  NO      YES          25
+##  9 MB-4332         3        34.4    308. LIVING  Living  NO      YES          20
+## 10 MB-4418         3        56.1    308. LIVING  Living  NO      YES          20
+## # … with 1,894 more rows, 24 more variables: Tumour_stage &lt;dbl&gt;,
+## #   Neoplasm_histologic_grade &lt;dbl&gt;, Lymph_nodes_examined_positive &lt;dbl&gt;,
+## #   Lymph_node_status &lt;dbl&gt;, Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;,
+## #   PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;, HER2_status_measured_by_SNP6 &lt;chr&gt;,
+## #   PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;, Nottingham_prognostic_index &lt;dbl&gt;,
+## #   Cellularity &lt;chr&gt;, Integrative_cluster &lt;chr&gt;, Mutation_count &lt;dbl&gt;,
+## #   ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, …</code></pre>
+<p>As with the other tidyverse functions and, in particular, the other 4
+key dplyr ‘verbs’, <code>arrange()</code> works rather well in workflows
+in which successive operations are chained using
+<code>%&gt;%</code>.</p>
+<pre class="r"><code>patients_of_interest &lt;- metabric %&gt;%
+  filter(Survival_status == &quot;LIVING&quot;) %&gt;%
+  filter(Survival_time &gt; 120) %&gt;%
+  select(Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index) %&gt;%
+  arrange(desc(Survival_time))
+# print out the result
+patients_of_interest</code></pre>
+<pre><code>## # A tibble: 545 × 4
+##    Patient_ID Survival_time Tumour_stage Nottingham_prognostic_index
+##    &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;                       &lt;dbl&gt;
+##  1 MB-0270             337.            2                        4.03
+##  2 MB-4212             330.           NA                        3.04
+##  3 MB-4548             323.            2                        5.00
+##  4 MB-4633             318.            2                        5.05
+##  5 MB-4332             308.            1                        4.04
+##  6 MB-4418             308.            1                        3.04
+##  7 MB-6021             301.           NA                        3   
+##  8 MB-4702             301.            2                        4.07
+##  9 MB-4839             299.           NA                        1.02
+## 10 MB-4735             298.            2                        3.08
+## # … with 535 more rows</code></pre>
+<p>We can sort by more than one variable by adding more variable
+arguments to <code>arrange()</code>.</p>
+<pre class="r"><code>arrange(patients_of_interest, Tumour_stage, Nottingham_prognostic_index)</code></pre>
+<pre><code>## # A tibble: 545 × 4
+##    Patient_ID Survival_time Tumour_stage Nottingham_prognostic_index
+##    &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;                       &lt;dbl&gt;
+##  1 MB-0230             200.            0                        1.07
+##  2 MB-5186             203.            1                        1.02
+##  3 MB-0245             165.            1                        1.03
+##  4 MB-0318             169.            1                        1.04
+##  5 MB-3797             228.            1                        1.05
+##  6 MB-4897             197.            1                        2.00
+##  7 MB-2721             252.            1                        2.02
+##  8 MB-0275             186.            1                        2.02
+##  9 MB-2564             285.            1                        2.02
+## 10 MB-0244             150.            1                        2.02
+## # … with 535 more rows</code></pre>
+<p>Here we’ve sorted first by tumour stage from lowest to highest value
+and then by the Nottingham prognostic index for when there are ties,
+i.e. where the tumour stage is the same.</p>
+<p>Sorting is most commonly used in workflows as one of the last steps
+before printing out a data frame or writing out the table to a file.</p>
+<hr />
+</div>
+<div id="modifying-data-using-mutate" class="section level1">
+<h1>Modifying data using <code>mutate()</code></h1>
+<p>In one of the examples of filtering observations using
+<code>filter()</code> above, we created a new logical variable called
+<code>Deceased</code>.</p>
+<pre class="r"><code>metabric$Deceased &lt;- metabric$Survival_status == &quot;DECEASED&quot;</code></pre>
+<p>This is an example of a rather common type of data manipulation in
+which we crate a new column based on the values contained in one or more
+other columns. The <code>dplyr</code> package provides the
+<code>mutate()</code> function for this purpose.</p>
+<pre class="r"><code>metabric &lt;- mutate(metabric, Deceased = Survival_status == &quot;DECEASED&quot;)</code></pre>
+<p>Both of these methods adds the new column to the end.</p>
+<p>Note that variables names in the <code>mutate()</code> function call
+do not need to be prefixed by <code>metabric$</code> just as they don’t
+in any of the <code>dplyr</code> functions.</p>
+<p>We can overwrite a column and this is quite commonly done when we
+want to change the units. For example, our tumour size values are in
+millimetres but the formula for the Nottingham prognostic index needs
+the tumour size to be in centimetres. We can convert to
+<code>Tumour_size</code> to centimetres by dividing by 10.</p>
+<pre class="r"><code>metabric &lt;- mutate(metabric, Tumour_size = Tumour_size / 10)</code></pre>
+<div class="rmdblock">
+<p>
+<strong>Nottingham Prognostic Index</strong>
+</p>
+<p>
+The Nottingham prognostic index (<strong>NPI</strong>) is used to
+determine prognosis following surgery for breast cancer. Its value is
+calculated using three pathological criteria: the size of the tumour,
+the number of lymph nodes involved, and the grade of the tumour.
+</p>
+<p>
+The formula for the Nottingham prognostic index is:
+</p>
+<p>
+<strong><code>NPI = (0.2 * S) + N + G</code></strong>
+</p>
+<p>
+where
+</p>
+<ul>
+<li>
+<strong>S</strong> is the size of the tumour in centimetres
+</li>
+<li>
+<strong>N</strong> is the node status (0 nodes = 1, 1-3 nodes = 2, &gt;3
+nodes = 3)
+</li>
+<li>
+<strong>G</strong> is the grade of tumour (Grade I = 1, Grade II = 2,
+Grade III = 3)
+</li>
+</ul>
+</div>
+<p>We’ll recalculate the Nottingham prognostic index using the values
+<code>Tumour_size</code>, <code>Neoplasm_histologic_grade</code> and
+<code>Lymph_node_status</code> columns in our METABRIC data frame.</p>
+<pre class="r"><code>metabric &lt;- mutate(metabric, NPI = 0.2 * Tumour_size + Lymph_node_status + Neoplasm_histologic_grade)
+select(metabric, Tumour_size, Lymph_node_status, Neoplasm_histologic_grade, NPI, Nottingham_prognostic_index)</code></pre>
+<pre><code>## # A tibble: 1,904 × 5
+##    Tumour_size Lymph_node_status Neoplasm_histologic_grade   NPI Nottingham_pr…¹
+##          &lt;dbl&gt;             &lt;dbl&gt;                     &lt;dbl&gt; &lt;dbl&gt;           &lt;dbl&gt;
+##  1         2.2                 3                         3  6.44            6.04
+##  2         1                   1                         3  4.2             4.02
+##  3         1.5                 2                         2  4.3             4.03
+##  4         2.5                 2                         2  4.5             4.05
+##  5         4                   3                         3  6.8             6.08
+##  6         3.1                 1                         3  4.62            4.06
+##  7         1                   2                         2  4.2             4.02
+##  8         2.9                 2                         2  4.58            4.06
+##  9         1.6                 2                         3  5.32            5.03
+## 10         2.8                 1                         2  3.56            3.06
+## # … with 1,894 more rows, and abbreviated variable name
+## #   ¹​Nottingham_prognostic_index</code></pre>
+<p>There is a discrepency. Can you see what the problem is?</p>
+<p>It appears that the tumour size wasn’t correctly converted into
+centimetres in the original NPI calculation or that the wrong scaling
+factor for tumour size was used. This could explain why the plots we
+created in weeks 1 and 2 featuring the Nottingham prognostic index
+looked so odd. We’ll see if they look any better with our recalculated
+values.</p>
+<pre class="r"><code>ggplot(data = metabric) +
+  geom_point(mapping = aes(x = Age_at_diagnosis, y = NPI), na.rm = TRUE)</code></pre>
+<p><img src="week5_files/figure-html/scatter_plot_1-1.png" width="672" /></p>
+<p>There is still some banding but nothing like the NPI values
+downloaded from cBioPortal which line up very closely to whole
+numbers.</p>
+<p>The <strong><code>round()</code></strong> function is really useful
+for rounding numerical values to a specified number of decimal places.
+We’ll read in the METABRIC data again and create a small workflow that
+carries out the tumour size conversion, computes the NPI, rounds the
+tumour size and the resulting NPI value to 1 decimal place and displays
+the results in decreasing order of NPI.</p>
+<pre class="r"><code>read_csv(&quot;data/metabric_clinical_and_expression_data.csv&quot;) %&gt;%
+  mutate(Tumour_size = Tumour_size / 10) %&gt;%
+  mutate(NPI = 0.2 * Tumour_size + Lymph_node_status + Neoplasm_histologic_grade) %&gt;%
+  mutate(Tumour_size = round(Tumour_size, digits = 1)) %&gt;%
+  mutate(NPI = round(NPI, digits = 1)) %&gt;%
+  arrange(desc(NPI)) %&gt;%
+  select(Tumour_size, Lymph_node_status, Neoplasm_histologic_grade, NPI)</code></pre>
+<pre><code>## # A tibble: 1,904 × 4
+##    Tumour_size Lymph_node_status Neoplasm_histologic_grade   NPI
+##          &lt;dbl&gt;             &lt;dbl&gt;                     &lt;dbl&gt; &lt;dbl&gt;
+##  1        18                   3                         3   9.6
+##  2        16                   3                         3   9.2
+##  3        15                   3                         3   9  
+##  4        13                   3                         3   8.6
+##  5        18.2                 2                         3   8.6
+##  6        12                   3                         3   8.4
+##  7        10                   3                         3   8  
+##  8         9.9                 3                         3   8  
+##  9         9.9                 3                         3   8  
+## 10         8.4                 3                         3   7.7
+## # … with 1,894 more rows</code></pre>
+<div id="mutating-multiple-columns" class="section level2">
+<h2>Mutating multiple columns</h2>
+<p>In that last workflow we included the same rounding operation applied
+to two different variables. It would be nice to be able to carry out
+just the one <code>mutate()</code> but apply it to both
+<code>Tumour_size</code> and <code>NPI</code> columns and we can using
+<strong><code>mutate_at()</code></strong>.</p>
+<pre class="r"><code>metabric %&gt;%
+  mutate_at(vars(Tumour_size, NPI), round, digits = 1) %&gt;%
+  select(Patient_ID, Tumour_size, NPI)</code></pre>
+<pre><code>## # A tibble: 1,904 × 3
+##    Patient_ID Tumour_size   NPI
+##    &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt;
+##  1 MB-0000            2.2   6.4
+##  2 MB-0002            1     4.2
+##  3 MB-0005            1.5   4.3
+##  4 MB-0006            2.5   4.5
+##  5 MB-0008            4     6.8
+##  6 MB-0010            3.1   4.6
+##  7 MB-0014            1     4.2
+##  8 MB-0022            2.9   4.6
+##  9 MB-0028            1.6   5.3
+## 10 MB-0035            2.8   3.6
+## # … with 1,894 more rows</code></pre>
+<p>This is slightly more complicated. We had to group the variables for
+which we want the function to apply using <code>vars()</code>. We then
+gave the function name as the next argument and finally any additional
+arguments that the function needs, in this case the number of
+digits.</p>
+<p>We can use the range operator and the same helper functions as we did
+for selecting columns using <code>select()</code> inside
+<code>vars()</code>.</p>
+<p>For example, we might decide that our expression values are given to
+a much higher degree of precision than is strictly necessary.</p>
+<pre class="r"><code>metabric %&gt;%
+  mutate_at(vars(ESR1:MLPH), round, digits = 2) %&gt;%
+  select(Patient_ID, ESR1:MLPH)</code></pre>
+<pre><code>## # A tibble: 1,904 × 9
+##    Patient_ID  ESR1 ERBB2   PGR  TP53 PIK3CA GATA3 FOXA1  MLPH
+##    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 MB-0000     8.93  9.33  5.68  6.34   5.7   6.93  7.95  9.73
+##  2 MB-0002    10.0   9.73  7.51  6.19   5.76 11.2  11.8  12.5 
+##  3 MB-0005    10.0   9.73  7.38  6.4    6.75  9.29 11.7  10.3 
+##  4 MB-0006    10.4  10.3   6.82  6.87   7.22  8.67 11.9  10.5 
+##  5 MB-0008    11.3   9.96  7.33  6.34   5.82  9.72 11.6  12.2 
+##  6 MB-0010    11.2   9.74  5.95  5.42   6.12  9.79 12.1  11.4 
+##  7 MB-0014    10.8   9.28  7.72  5.99   7.48  8.37 11.5  10.8 
+##  8 MB-0022    10.4   8.61  5.59  6.17   7.59  7.87 10.7   9.95
+##  9 MB-0028    12.5  10.7   5.33  6.22   6.25 10.3  12.2  10.9 
+## 10 MB-0035     7.54 11.5   5.59  6.41   5.99 10.2  12.8  13.5 
+## # … with 1,894 more rows</code></pre>
+<p>Or we could decide that all the columns whose names end with
+“_status” are in fact categorical variables and should be converted to
+factors.</p>
+<pre class="r"><code>metabric %&gt;%
+  mutate_at(vars(ends_with(&quot;_status&quot;)), as.factor) %&gt;%
+  select(Patient_ID, ends_with(&quot;_status&quot;))</code></pre>
+<pre><code>## # A tibble: 1,904 × 7
+##    Patient_ID Survival_status Vital_status       Lymph…¹ ER_st…² PR_st…³ HER2_…⁴
+##    &lt;chr&gt;      &lt;fct&gt;           &lt;fct&gt;              &lt;fct&gt;   &lt;fct&gt;   &lt;fct&gt;   &lt;fct&gt;  
+##  1 MB-0000    LIVING          Living             3       Positi… Negati… Negati…
+##  2 MB-0002    LIVING          Living             1       Positi… Positi… Negati…
+##  3 MB-0005    DECEASED        Died of Disease    2       Positi… Positi… Negati…
+##  4 MB-0006    LIVING          Living             2       Positi… Positi… Negati…
+##  5 MB-0008    DECEASED        Died of Disease    3       Positi… Positi… Negati…
+##  6 MB-0010    DECEASED        Died of Disease    1       Positi… Positi… Negati…
+##  7 MB-0014    LIVING          Living             2       Positi… Positi… Negati…
+##  8 MB-0022    DECEASED        Died of Other Cau… 2       Positi… Negati… Negati…
+##  9 MB-0028    DECEASED        Died of Other Cau… 2       Positi… Negati… Negati…
+## 10 MB-0035    DECEASED        Died of Disease    1       Positi… Negati… Negati…
+## # … with 1,894 more rows, and abbreviated variable names ¹​Lymph_node_status,
+## #   ²​ER_status, ³​PR_status, ⁴​HER2_status</code></pre>
+</div>
+<div id="anonymous-functions" class="section level2">
+<h2>Anonymous functions</h2>
+<p>The <code>mutate_at()</code> function, and the related
+<code>mutate_if()</code> and <code>mutate_all()</code> functions, are
+really very powerful but with that comes additional complexity.</p>
+<p>For example, we may come across situations where we’d like to apply
+the same operation to multiple columns but where there is no available
+function in R to do what we want.</p>
+<p>Let’s say we want to convert the petal and sepal measurements in the
+<code>iris</code> data set from centimetres to millimetres. We’d either
+need to create a new function to do this conversion or we could use what
+is known as an anonymous function, also known as a lambda
+expression.</p>
+<p>There is no ‘multiply by 10’ function and it seems a bit pointless to
+create one just for this conversion so we’ll use an anonymous function
+instead – anonymous because it has no name, it’s an <em>in situ</em>
+function only used in our <code>mutate_at()</code> function call.</p>
+<pre class="r"><code>iris %&gt;%
+  as_tibble() %&gt;%
+  mutate_at(vars(Sepal.Length:Petal.Width), ~ . * 10)</code></pre>
+<pre><code>## # A tibble: 150 × 5
+##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+##           &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  
+##  1           51          35           14           2 setosa 
+##  2           49          30           14           2 setosa 
+##  3           47          32           13           2 setosa 
+##  4           46          31           15           2 setosa 
+##  5           50          36           14           2 setosa 
+##  6           54          39           17           4 setosa 
+##  7           46          34           14           3 setosa 
+##  8           50          34           15           2 setosa 
+##  9           44          29           14           2 setosa 
+## 10           49          31           15           1 setosa 
+## # … with 140 more rows</code></pre>
+<p>The <strong><code>~</code></strong> denotes that we’re using an
+anonymous function (it is the symbol for formulae in R) and the
+<code>.</code> is a placeholder for the column being operated on. In
+this case, we’re multiplying each of the columns between
+<code>Sepal.Length</code> and <code>Petal.Width</code> inclusive by
+10.</p>
+<p>If you think this is getting fairly complicated you’d be right. We’ll
+leave it there for now but point you to the help page for
+<code>mutate_at</code> if you’re interested in finding out more.</p>
+<hr />
+</div>
+</div>
+<div id="computing-summary-values-using-summarise"
+class="section level1">
+<h1>Computing summary values using <code>summarise()</code></h1>
+<p>We’ll cover the fifth of the main dplyr ‘verb’ functions,
+<strong><code>summarise()</code></strong>, only briefly here. This
+function computes summary values for one or more variables (columns) in
+a table. Here we will summarise values for the entire table but this
+function is much more useful in combination with <code>group_by()</code>
+in working on groups of observations within the data set. We will look
+at summarizing groups of observations next week.</p>
+<p>Any function that calculates a single scalar value from a vector can
+be used with <code>summarise()</code>. For example, the
+<code>mean()</code> function calculates the arithmetic mean of a numeric
+vector. Let’s calculate the average ESR1 expression for tumour samples
+in the METABRIC data set.</p>
+<pre class="r"><code>mean(metabric$ESR1)</code></pre>
+<pre><code>## [1] 9.607824</code></pre>
+<p>The equivalent operation using <code>summarise()</code> is:</p>
 <pre class="r"><code>summarise(metabric, mean(ESR1))</code></pre>
-<pre><code>## # A tibble: 1 x 1
+<pre><code>## # A tibble: 1 × 1
 ##   `mean(ESR1)`
 ##          &lt;dbl&gt;
 ## 1         9.61</code></pre>
-<p>While the <code>summarise()</code> function is useful on its own, it becomes really powerful when applied to groups of observations within a dataset. For example, we might be more interested in the mean ESR1 expression calculated separately for ER positive and ER negative tumours. We could take each group in turn, filter the data frame to contain only the rows for a given ER status, then apply the <code>summarise()</code> function to compute the mean expression, but that would be somewhat cumbersome. Even more so if we chose to do this for a categorical variable with more than two states, e.g. for each of the integrative clusters. Fortunately, the <strong><code>group_by()</code></strong> function allows this to be done in one simple step.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(ER_status) %&gt;%
-  summarise(mean(ESR1))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 2 x 2
-##   ER_status `mean(ESR1)`
-##   &lt;chr&gt;            &lt;dbl&gt;
-## 1 Negative          6.21
-## 2 Positive         10.6</code></pre>
-<p>We get an additional column in our output for the categorical variable, <code>ER_status</code>, and a row for each category.</p>
-<p>Incidentally, we should expect this result of ER-positive tumours having a higher expression of ESR1 on average than ER-negative tumours. Simple summaries like this are a good way of checking that what we think we know actually holds true in the data we’re looking at. Note that the expression values are on a log<sub>2</sub>scale so ER-positive breast cancers express ESR1 at a level that is approximately 20 times greater, on average, than that of ER-negative tumours.</p>
-<pre class="r"><code>2 ** (10.6 - 6.21)  # equivalent to (2 ** 10.6) / (2 ** 6.21)</code></pre>
-<pre><code>## [1] 20.96629</code></pre>
-<p>Let’s have a look at how ESR1 expression varies between the integrative cluster subtypes defined by the METABRIC study.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(Integrative_cluster) %&gt;%
-  summarise(ESR1 = mean(ESR1))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 11 x 2
-##    Integrative_cluster  ESR1
-##    &lt;chr&gt;               &lt;dbl&gt;
-##  1 1                   10.3 
-##  2 10                   6.39
-##  3 2                   10.9 
-##  4 3                   10.5 
-##  5 4ER-                 6.55
-##  6 4ER+                 9.78
-##  7 5                    7.78
-##  8 6                   10.9 
-##  9 7                   10.9 
-## 10 8                   11.1 
-## 11 9                    9.96</code></pre>
-<p>The following schematic contains another example using a simplified subset of the METABRIC tumour samples to show what’s going on.</p>
-<div class="figure">
-<img src="images/group_and_summarise.png" />
-
+<p>If you prefer Oxford spelling, in which -ize is preferred to -ise,
+you’re in luck as dplyr accommodates the alternative spelling.</p>
+<p>Both of the above statements gave the same average expression value
+but these were output in differing formats. The <code>mean()</code>
+function collapses a vector to single scalar value, which as we know is
+in fact a vector of length 1. The <code>summarise()</code> function, as
+with most tidyverse functions, returns another data frame, albeit one in
+which there is a single row and a single column.</p>
+<p>Returning a data frame might be quite useful, particularly if we’re
+summarising multiple columns or using more than one function, for
+example computing the average and standard deviation.</p>
+<pre class="r"><code>summarise(metabric, ESR1_mean = mean(ESR1), ESR1_sd = sd(ESR1))</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   ESR1_mean ESR1_sd
+##       &lt;dbl&gt;   &lt;dbl&gt;
+## 1      9.61    2.13</code></pre>
+<p>Notice how we also named the output columns in this last example.</p>
+<div class="rmdblock">
+<p>
+<strong><code>summarise()</code></strong>
+</p>
+<p>
+<code>summarise()</code> collapses a data frame into a single row by
+calculating summary values of one or more of the columns.
+</p>
+<p>
+It can take any function that takes a vector of values and returns a
+single value. Some of the more useful functions include:
+</p>
+<ul>
+<li>
+Centre: <strong><code>mean()</code></strong>,
+<strong><code>median()</code></strong>
+</li>
+<li>
+Spread: <strong><code>sd()</code></strong>,
+<strong><code>mad()</code></strong>
+</li>
+<li>
+Range: <strong><code>min()</code></strong>,
+<strong><code>max()</code></strong>,
+<strong><code>quantile()</code></strong>
+</li>
+<li>
+Position: <strong><code>first()</code></strong>,
+<strong><code>last()</code></strong>
+</li>
+<li>
+Count: <strong><code>n()</code></strong>
+</li>
+</ul>
+<p>
+Note the <code>first()</code>, <code>last()</code> and <code>n()</code>
+are only really useful when working on groups of observations using
+<strong><code>group_by()</code></strong>.
+</p>
+<p>
+<strong><code>n()</code></strong> is a special function that returns the
+number of observations; it doesn’t take a vector argument, i.e. a
+column.
+</p>
 </div>
-<p>As we saw last week, we can summarize multiple observations, e.g. the mean expression for other genes of interest, with <code>summarise_at()</code>, this time using the PAM50 classification to define the groups.</p>
+<p>It is also possible to summarise using a function that takes more
+than one value, i.e. from multiple columns. For example, we could
+compute the correlation between the expression of FOXA1 and MLPH.</p>
+<pre class="r"><code>summarise(metabric, correlation = cor(FOXA1, MLPH))</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   correlation
+##         &lt;dbl&gt;
+## 1       0.898</code></pre>
+<div id="summarizing-multiple-columns" class="section level2">
+<h2>Summarizing multiple columns</h2>
+<p>Much like <code>mutate()</code> with its <code>mutate_at()</code>,
+<code>mutate_if()</code> and <code>mutate_all()</code> variants, there
+is a family of <code>summarise()</code> functions similarly named for
+applying the same summarization function to multiple columns in a single
+operation. These work in much the same way as their <code>mutate</code>
+cousins.</p>
+<p><strong><code>summarise_at()</code></strong> allows us to select the
+columns on which to operate using an additional <code>vars()</code>
+argument.</p>
+<pre class="r"><code>summarise_at(metabric, vars(FOXA1, MLPH), mean)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   FOXA1  MLPH
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  10.8  11.4</code></pre>
+<p>Selecting the columns is done in the same way as for
+<code>mutate_at()</code> and <code>select()</code>.</p>
+<p><strong><code>summarise_all()</code></strong> summarises values in
+all columns.</p>
 <pre class="r"><code>metabric %&gt;%
-  group_by(PAM50) %&gt;%
-  summarise_at(vars(ESR1, PGR, ERBB2), mean)</code></pre>
-<pre><code>## # A tibble: 7 x 4
-##   PAM50        ESR1   PGR ERBB2
-##   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 Basal        6.42  5.46 10.2 
-## 2 claudin-low  7.47  5.60  9.85
-## 3 Her2         7.81  5.62 12.6 
-## 4 LumA        10.8   6.75 10.7 
-## 5 LumB        11.0   6.39 10.6 
-## 6 NC          10.9   6.47 10.3 
-## 7 Normal       9.50  6.21 10.8</code></pre>
-<p>We can also refine our groups by using more than one categorical variable. Let’s subdivide the PAM50 groups by HER2 status to illustrate this.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(PAM50, HER2_status) %&gt;%
-  summarise(ESR1_mean = mean(ESR1))</code></pre>
-<pre><code>## `summarise()` regrouping output by &#39;PAM50&#39; (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 13 x 3
-## # Groups:   PAM50 [7]
-##    PAM50       HER2_status ESR1_mean
-##    &lt;chr&gt;       &lt;chr&gt;           &lt;dbl&gt;
-##  1 Basal       Negative         6.39
-##  2 Basal       Positive         6.71
-##  3 claudin-low Negative         7.52
-##  4 claudin-low Positive         6.80
-##  5 Her2        Negative         8.82
-##  6 Her2        Positive         7.04
-##  7 LumA        Negative        10.8 
-##  8 LumA        Positive        10.1 
-##  9 LumB        Negative        11.1 
-## 10 LumB        Positive        10.2 
-## 11 NC          Negative        10.9 
-## 12 Normal      Negative         9.68
-## 13 Normal      Positive         7.77</code></pre>
-<p>It can be quite useful to know how many observations are within each group. We can use a special function, <strong><code>n()</code></strong>, that counts the number of rows rather than computing a summary value from one of the columns.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(PAM50, HER2_status) %&gt;%
-  summarise(N = n(), ESR1_mean = mean(ESR1))</code></pre>
-<pre><code>## `summarise()` regrouping output by &#39;PAM50&#39; (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 13 x 4
-## # Groups:   PAM50 [7]
-##    PAM50       HER2_status     N ESR1_mean
-##    &lt;chr&gt;       &lt;chr&gt;       &lt;int&gt;     &lt;dbl&gt;
-##  1 Basal       Negative      179      6.39
-##  2 Basal       Positive       20      6.71
-##  3 claudin-low Negative      184      7.52
-##  4 claudin-low Positive       15      6.80
-##  5 Her2        Negative       95      8.82
-##  6 Her2        Positive      125      7.04
-##  7 LumA        Negative      658     10.8 
-##  8 LumA        Positive       21     10.1 
-##  9 LumB        Negative      419     11.1 
-## 10 LumB        Positive       42     10.2 
-## 11 NC          Negative        6     10.9 
-## 12 Normal      Negative      127      9.68
-## 13 Normal      Positive       13      7.77</code></pre>
+  select(ESR1:MLPH) %&gt;%
+  summarise_all(mean)</code></pre>
+<pre><code>## # A tibble: 1 × 8
+##    ESR1 ERBB2   PGR  TP53 PIK3CA GATA3 FOXA1  MLPH
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  9.61  10.8  6.24  6.20   5.97  9.50  10.8  11.4</code></pre>
+<p>You have to be careful with <code>summarise_all()</code> that all
+columns can be summarised with the given summary function. For example,
+what happens if we try to compute an average of a set of character
+values?</p>
+<pre class="r"><code>summarise_all(metabric, mean, na.rm = TRUE)</code></pre>
+<pre><code>## Warning: There were 14 warnings in `summarise()`.
+## The first warning was:
+## ℹ In argument: `Patient_ID = (function (x, ...) ...`.
+## Caused by warning in `mean.default()`:
+## ! argument is not numeric or logical: returning NA
+## ℹ Run ]8;;ide:run:dplyr::last_dplyr_warnings()dplyr::last_dplyr_warnings()]8;; to see the 13 remaining warnings.</code></pre>
+<pre><code>## # A tibble: 1 × 34
+##   Patie…¹ Cohort Age_a…² Survi…³ Survi…⁴ Vital…⁵ Chemo…⁶ Radio…⁷ Tumou…⁸ Tumou…⁹
+##     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1      NA   2.64    61.1    125.      NA      NA      NA      NA    2.62    1.75
+## # … with 24 more variables: Neoplasm_histologic_grade &lt;dbl&gt;,
+## #   Lymph_nodes_examined_positive &lt;dbl&gt;, Lymph_node_status &lt;dbl&gt;,
+## #   Cancer_type &lt;dbl&gt;, ER_status &lt;dbl&gt;, PR_status &lt;dbl&gt;, HER2_status &lt;dbl&gt;,
+## #   HER2_status_measured_by_SNP6 &lt;dbl&gt;, PAM50 &lt;dbl&gt;, `3-gene_classifier` &lt;dbl&gt;,
+## #   Nottingham_prognostic_index &lt;dbl&gt;, Cellularity &lt;dbl&gt;,
+## #   Integrative_cluster &lt;dbl&gt;, Mutation_count &lt;dbl&gt;, ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;,
+## #   PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, GATA3 &lt;dbl&gt;, FOXA1 &lt;dbl&gt;, …</code></pre>
+<p>We get a lot of warning messages and <code>NA</code> values for those
+columns for which computing an average does not make sense.</p>
+<p><strong><code>summarise_if()</code></strong> can be used to select
+those values for which a summarization function is appropriate.</p>
+<pre class="r"><code>summarise_if(metabric, is.numeric, mean, na.rm = TRUE)</code></pre>
+<pre><code>## # A tibble: 1 × 19
+##   Cohort Age_a…¹ Survi…² Tumou…³ Tumou…⁴ Neopl…⁵ Lymph…⁶ Lymph…⁷ Notti…⁸ Mutat…⁹
+##    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1   2.64    61.1    125.    2.62    1.75    2.42    2.00    1.64    4.03    5.70
+## # … with 9 more variables: ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;,
+## #   PIK3CA &lt;dbl&gt;, GATA3 &lt;dbl&gt;, FOXA1 &lt;dbl&gt;, MLPH &lt;dbl&gt;, NPI &lt;dbl&gt;, and
+## #   abbreviated variable names ¹​Age_at_diagnosis, ²​Survival_time, ³​Tumour_size,
+## #   ⁴​Tumour_stage, ⁵​Neoplasm_histologic_grade, ⁶​Lymph_nodes_examined_positive,
+## #   ⁷​Lymph_node_status, ⁸​Nottingham_prognostic_index, ⁹​Mutation_count</code></pre>
+<p>It is possible to summarise using more than one function in which
+case a list of functions needs to be provided.</p>
+<pre class="r"><code>summarise_at(metabric, vars(ESR1, ERBB2, PGR), list(mean, sd))</code></pre>
+<pre><code>## # A tibble: 1 × 6
+##   ESR1_fn1 ERBB2_fn1 PGR_fn1 ESR1_fn2 ERBB2_fn2 PGR_fn2
+##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1     9.61      10.8    6.24     2.13      1.36    1.02</code></pre>
+<p>Pretty neat but I’m not sure about those column headings in the
+output – fortunately we have some control over these.</p>
+<pre class="r"><code>summarise_at(metabric, vars(ESR1, ERBB2, PGR), list(average = mean, stdev = sd))</code></pre>
+<pre><code>## # A tibble: 1 × 6
+##   ESR1_average ERBB2_average PGR_average ESR1_stdev ERBB2_stdev PGR_stdev
+##          &lt;dbl&gt;         &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+## 1         9.61          10.8        6.24       2.13        1.36      1.02</code></pre>
 </div>
-<div id="counts" class="section level2">
-<h2>Counts</h2>
-<p>Counting observations within groups is such a common operation that dplyr provides a <strong><code>count()</code></strong> function to do just that. So we could count the number of patient samples in each of the PAM50 classes as follows.</p>
-<pre class="r"><code>count(metabric, PAM50)</code></pre>
-<pre><code>## # A tibble: 7 x 2
-##   PAM50           n
-##   &lt;chr&gt;       &lt;int&gt;
-## 1 Basal         199
-## 2 claudin-low   199
-## 3 Her2          220
-## 4 LumA          679
-## 5 LumB          461
-## 6 NC              6
-## 7 Normal        140</code></pre>
-<p>This is much like the <code>table()</code> function we’ve used several times already to take a quick look at what values are contained in one of the columns in a data frame. They return different data structures however, with <code>count()</code> always returning a data frame (or tibble) that can then be passed to subsequent steps in a ‘piped’ workflow.</p>
-<p>If we wanted to subdivide our categories by HER2 status, we can add this as an additional categorical variable just as we did with the previous <code>group_by()</code> examples.</p>
-<pre class="r"><code>count(metabric, PAM50, HER2_status)</code></pre>
-<pre><code>## # A tibble: 13 x 3
-##    PAM50       HER2_status     n
-##    &lt;chr&gt;       &lt;chr&gt;       &lt;int&gt;
-##  1 Basal       Negative      179
-##  2 Basal       Positive       20
-##  3 claudin-low Negative      184
-##  4 claudin-low Positive       15
-##  5 Her2        Negative       95
-##  6 Her2        Positive      125
-##  7 LumA        Negative      658
-##  8 LumA        Positive       21
-##  9 LumB        Negative      419
-## 10 LumB        Positive       42
-## 11 NC          Negative        6
-## 12 Normal      Negative      127
-## 13 Normal      Positive       13</code></pre>
-<p>The count column is named ‘n’ by default but you can change this.</p>
-<pre class="r"><code>count(metabric, PAM50, HER2_status, name = &quot;Samples&quot;)</code></pre>
-<pre><code>## # A tibble: 13 x 3
-##    PAM50       HER2_status Samples
-##    &lt;chr&gt;       &lt;chr&gt;         &lt;int&gt;
-##  1 Basal       Negative        179
-##  2 Basal       Positive         20
-##  3 claudin-low Negative        184
-##  4 claudin-low Positive         15
-##  5 Her2        Negative         95
-##  6 Her2        Positive        125
-##  7 LumA        Negative        658
-##  8 LumA        Positive         21
-##  9 LumB        Negative        419
-## 10 LumB        Positive         42
-## 11 NC          Negative          6
-## 12 Normal      Negative        127
-## 13 Normal      Positive         13</code></pre>
-<p><code>count()</code> is equivalent to grouping observations with <code>group_by()</code> and calling <code>summarize()</code> using the special <code>n()</code> function to count the number of rows. So the above statement could have been written in a more long-winded way as follows.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(PAM50, HER2_status) %&gt;%
-  summarize(Samples = n())</code></pre>
-<p>Summarizing with <code>n()</code> is useful when showing the number of observations in a group alongside a summary value, as we did earlier looking at the mean ESR1 expression within specified groups; it allows you to see if you’re drawing conclusions from only a few data points.</p>
-</div>
-<div id="missing-values" class="section level2">
-<h2>Missing values</h2>
-<p>Many summarization functions return <code>NA</code> if any of the values are missing, i.e. the column contains <code>NA</code> values. As an example, we’ll compute the average size of ER-negative and ER-positive tumours.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(ER_status) %&gt;%
-  summarize(N = n(), `Average tumour size` = mean(Tumour_size))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 2 x 3
-##   ER_status     N `Average tumour size`
-##   &lt;chr&gt;     &lt;int&gt;                 &lt;dbl&gt;
-## 1 Negative    445                    NA
-## 2 Positive   1459                    NA</code></pre>
-<p>The <code>mean()</code> function, along with many similar summarization functions, has an <code>na.rm</code> argument that can be set to <code>TRUE</code> to exclude those missing values from the calculation.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(ER_status) %&gt;%
-  summarize(N = n(), `Average tumour size` = mean(Tumour_size, na.rm = TRUE))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 2 x 3
-##   ER_status     N `Average tumour size`
-##   &lt;chr&gt;     &lt;int&gt;                 &lt;dbl&gt;
-## 1 Negative    445                  28.5
-## 2 Positive   1459                  25.6</code></pre>
-<p>An alternative would be to filter out the observations with missing values but then the number of samples in each ER status group would take on a different meaning, which may or may not be what we actually want.</p>
-<pre class="r"><code>metabric %&gt;%
-  filter(!is.na(Tumour_size)) %&gt;%
-  group_by(ER_status) %&gt;%
-  summarize(N = n(), `Average tumour size` = mean(Tumour_size))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 2 x 3
-##   ER_status     N `Average tumour size`
-##   &lt;chr&gt;     &lt;int&gt;                 &lt;dbl&gt;
-## 1 Negative    438                  28.5
-## 2 Positive   1446                  25.6</code></pre>
-</div>
-<div id="counts-and-proportions" class="section level2">
-<h2>Counts and proportions</h2>
-<p>The <code>sum()</code> and <code>mean()</code> summarization functions are often used with logical values. It might seem surprising to compute a summary for a logical variable but but this turns out to be quite a useful thing to do, for counting the number of <code>TRUE</code> values or obtaining the proportion of values that are <code>TRUE</code>.</p>
-<p>Following on from the previous example we could add a column to our summary of average tumour size for ER-positive and ER-negative patients that contains the number of missing values.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(ER_status) %&gt;%
-  summarize(N = n(), Missing = sum(is.na(Tumour_size)), `Average tumour size` = mean(Tumour_size, na.rm = TRUE))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 2 x 4
-##   ER_status     N Missing `Average tumour size`
-##   &lt;chr&gt;     &lt;int&gt;   &lt;int&gt;                 &lt;dbl&gt;
-## 1 Negative    445       7                  28.5
-## 2 Positive   1459      13                  25.6</code></pre>
-<p>Why does this work? Well, the <code>is.na()</code> function takes a vector and sees which values are <code>NA</code>, returning a logical vector of <code>TRUE</code> where the value was <code>NA</code> and <code>FALSE</code> if not.</p>
-<pre class="r"><code>test_vector &lt;- c(1, 3, 2, NA, 6, 5, NA, 10)
-is.na(test_vector)</code></pre>
-<pre><code>## [1] FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE</code></pre>
-<p>The <code>sum()</code> function treats the logical vector as a set of <code>0</code>s and <code>1</code>s where <code>FALSE</code> is <code>0</code> and <code>TRUE</code> is <code>1</code>. In effect <code>sum()</code> counts the number of <code>TRUE</code> values.</p>
-<pre class="r"><code>sum(is.na(test_vector))</code></pre>
-<pre><code>## [1] 2</code></pre>
-<p>Similarly, <code>mean()</code> will compute the proportion of the values that are <code>TRUE</code>.</p>
-<pre class="r"><code>mean(is.na(test_vector))</code></pre>
-<pre><code>## [1] 0.25</code></pre>
-<p>So let’s calculate the number and proportion of samples that do not have a recorded tumour size in each of the ER-negative and ER-positive groups.</p>
-<pre class="r"><code>metabric %&gt;%
-  group_by(ER_status) %&gt;%
-  summarize(N = n(), `Missing tumour size` = sum(is.na(Tumour_size)), `Proportion missing` = mean(is.na(Tumour_size)))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 2 x 4
-##   ER_status     N `Missing tumour size` `Proportion missing`
-##   &lt;chr&gt;     &lt;int&gt;                 &lt;int&gt;                &lt;dbl&gt;
-## 1 Negative    445                     7              0.0157 
-## 2 Positive   1459                    13              0.00891</code></pre>
-<p>We can use <code>sum()</code> and <code>mean()</code> for any condition that returns a logical vector. We could, for example, find the number and proportion of patients that survived longer than 10 years (120 months) in each of the ER-negative and ER-positive groups.</p>
-<pre class="r"><code>metabric %&gt;%
-  filter(Survival_status == &quot;DECEASED&quot;) %&gt;%
-  group_by(ER_status) %&gt;%
-  summarise(N = n(), N_long_survival = sum(Survival_time &gt; 120), Proportion_long_survival = mean(Survival_time &gt; 120))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 2 x 4
-##   ER_status     N N_long_survival Proportion_long_survival
-##   &lt;chr&gt;     &lt;int&gt;           &lt;int&gt;                    &lt;dbl&gt;
-## 1 Negative    250              40                    0.16 
-## 2 Positive    853             325                    0.381</code></pre>
-</div>
-<div id="selecting-or-counting-distinct-things" class="section level2">
-<h2>Selecting or counting distinct things</h2>
-<p>There are occassions when we want to count the number of distinct values in a variable or a combination of variables. In this week’s assignment, we introduce another set of data from the METABRIC study which contains details of the mutations detected by targeted sequencing of a panel of 173 genes. We’ll read this data into R now as this provides a good example of having multiple observations in different rows for a single observational unit, in this case several mutations detected in each tumour sample.</p>
-<pre class="r"><code>mutations &lt;- read_csv(&quot;data/metabric_mutations.csv&quot;)
-select(mutations, Patient_ID, Chromosome, Position = Start_Position, Ref = Reference_Allele, Alt = Tumor_Seq_Allele1, Type = Variant_Type, Gene)</code></pre>
-<pre><code>## # A tibble: 17,272 x 7
-##    Patient_ID Chromosome  Position Ref   Alt   Type  Gene 
-##    &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
-##  1 MTS-T0058  17           7579344 &lt;NA&gt;  &lt;NA&gt;  INS   TP53 
-##  2 MTS-T0058  17           7579346 &lt;NA&gt;  &lt;NA&gt;  INS   TP53 
-##  3 MTS-T0058  6          168299111 G     G     SNP   MLLT4
-##  4 MTS-T0058  22          29999995 G     G     SNP   NF2  
-##  5 MTS-T0059  2          198288682 A     A     SNP   SF3B1
-##  6 MTS-T0059  6           86195125 T     T     SNP   NT5E 
-##  7 MTS-T0059  7           55241717 C     C     SNP   EGFR 
-##  8 MTS-T0059  10           6556986 C     C     SNP   PRKCQ
-##  9 MTS-T0059  11          62300529 T     T     SNP   AHNAK
-## 10 MTS-T0059  15          74912475 G     G     SNP   CLK3 
-## # … with 17,262 more rows</code></pre>
-<p>We can see from just these few rows that each patient sample has multiple mutations and sometimes there are more than one mutation in the same gene within a sample, as can be seen in the first two rows at the top of the table above.</p>
-<p>If we want to count the number of patients in which mutations were detected we could select the distinct set of patient identifiers using the <strong><code>distinct()</code></strong> function.</p>
-<pre class="r"><code>mutations %&gt;%
-  distinct(Patient_ID) %&gt;%
-  nrow()</code></pre>
-<pre><code>## [1] 2369</code></pre>
-<p>Similarly, we could select the distinct set of mutated genes for each patient as follows.</p>
-<pre class="r"><code>mutations %&gt;%
-  distinct(Patient_ID, Gene)</code></pre>
-<pre><code>## # A tibble: 15,656 x 2
-##    Patient_ID Gene 
-##    &lt;chr&gt;      &lt;chr&gt;
-##  1 MTS-T0058  TP53 
-##  2 MTS-T0058  MLLT4
-##  3 MTS-T0058  NF2  
-##  4 MTS-T0059  SF3B1
-##  5 MTS-T0059  NT5E 
-##  6 MTS-T0059  EGFR 
-##  7 MTS-T0059  PRKCQ
-##  8 MTS-T0059  AHNAK
-##  9 MTS-T0059  CLK3 
-## 10 MTS-T0059  TP53 
-## # … with 15,646 more rows</code></pre>
-<p>This has reduced the number of rows as only distinct combinations of patient and gene are retained. This would be necessary if we wanted to count the number of patients that have mutations in each gene rather than the number of mutations for that gene regardless of the patient.</p>
-<pre class="r"><code># number of mutations for each gene
-count(mutations, Gene)</code></pre>
-<pre><code>## # A tibble: 173 x 2
-##    Gene       n
-##    &lt;chr&gt;  &lt;int&gt;
-##  1 ACVRL1    20
-##  2 AFF2      70
-##  3 AGMO      43
-##  4 AGTR2     14
-##  5 AHNAK    327
-##  6 AHNAK2   859
-##  7 AKAP9    182
-##  8 AKT1     115
-##  9 AKT2      23
-## 10 ALK       98
-## # … with 163 more rows</code></pre>
-<pre class="r"><code># number of tumour samples in which each gene is mutated
-mutations %&gt;%
-  distinct(Patient_ID, Gene) %&gt;%
-  count(Gene)</code></pre>
-<pre><code>## # A tibble: 173 x 2
-##    Gene       n
-##    &lt;chr&gt;  &lt;int&gt;
-##  1 ACVRL1    20
-##  2 AFF2      69
-##  3 AGMO      43
-##  4 AGTR2     14
-##  5 AHNAK    272
-##  6 AHNAK2   530
-##  7 AKAP9    173
-##  8 AKT1     115
-##  9 AKT2      23
-## 10 ALK       95
-## # … with 163 more rows</code></pre>
-<p>The genes that differ in these two tables are those that have more than one mutation within a patient tumour sample.</p>
+<div id="anonymous-functions-1" class="section level2">
+<h2>Anonymous functions</h2>
+<p>The <code>mutate_</code> functions and <code>summarise_</code>
+functions work in a very similar manner, very much in line with the
+coherent and consistent framework provided by <code>dplyr</code> and the
+entire tidyverse. For example, we could use an anonymous function in a
+<code>summarise_at()</code> operation applied to multiple variables. In
+the assignment from last week, we asked you to compute the correlation
+of the expression for FOXA1 against all other genes to see which was
+most strongly correlated. Here is how we could do this in a single
+<code>summarise_at()</code> statement using an anonymous function.</p>
+<pre class="r"><code>summarise_at(metabric, vars(ESR1:MLPH, -FOXA1), ~ cor(., FOXA1))</code></pre>
+<pre><code>## # A tibble: 1 × 7
+##    ESR1 ERBB2   PGR    TP53 PIK3CA GATA3  MLPH
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 0.724 0.280 0.390 -0.0700 -0.149 0.781 0.898</code></pre>
+<p>Notice how we selected all genes between ESR1, the first gene column
+in our data frame, and MLPH, the last gene column, but then excluded
+FOXA1 as we’re not all that interested in the correlation of FOXA1 with
+itself (we know the answer is 1).</p>
 <hr />
 </div>
 </div>
-<div id="joining-data" class="section level1">
-<h1>Joining data</h1>
-<p>In many real life situations, data are spread across multiple tables or spreadsheets. Usually this occurs because different types of information about a subject, e.g. a patient, are collected from different sources. It may be desirable for some analyses to combine data from two or more tables into a single data frame based on a common column, for example, an attribute that uniquely identifies the subject such as a patient identifier.</p>
-<p>dplyr provides a set of join functions for combining two data frames based on matches within specified columns. These operations are very similar to carrying out join operations between tables in a relational database using SQL.</p>
-<div id="left_join" class="section level2">
-<h2><code>left_join</code></h2>
-<p>To illustrate join operations we’ll first consider the most common type, a “left join”. In the schematic below the two data frames share a common column, V1. We can combine the two data frames into a single data frame by matching rows in the first data frame with those in the second data frame that share the same value of variable V1.</p>
-<div class="figure">
-<img src="images/dplyr_left_join.png" alt="dplyr left join" />
-<p class="caption">dplyr left join</p>
-</div>
-<p><code>left_join()</code> returns all rows from the first data frame regardless of whether there is a match in the second data frame. Rows with no match are included in the resulting data frame but have <code>NA</code> values in the additional columns coming from the second data frame.</p>
-<p>Here’s an example in which details about members of the Beatles and Rolling Stones are contained in two tables, using data frames conveniently provided by dplyr (we’ll look at a real example shortly).</p>
-<p>The name column identifies each of the band members and is used for matching rows from the two tables.</p>
-<pre class="r"><code>band_members</code></pre>
-<pre><code>## # A tibble: 3 x 2
-##   name  band   
-##   &lt;chr&gt; &lt;chr&gt;  
-## 1 Mick  Stones 
-## 2 John  Beatles
-## 3 Paul  Beatles</code></pre>
-<pre class="r"><code>band_instruments</code></pre>
-<pre><code>## # A tibble: 3 x 2
-##   name  plays 
-##   &lt;chr&gt; &lt;chr&gt; 
-## 1 John  guitar
-## 2 Paul  bass  
-## 3 Keith guitar</code></pre>
-<pre class="r"><code>left_join(band_members, band_instruments, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 3 x 3
-##   name  band    plays 
-##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
-## 1 Mick  Stones  &lt;NA&gt;  
-## 2 John  Beatles guitar
-## 3 Paul  Beatles bass</code></pre>
-<p>We have joined the band members and instruments tables based on the common <code>name</code> column. Because this is a left join, only observations for band members in the ‘left’ table (<code>band_members</code>) are included with information brought in from the ‘right’ table (<code>band_instruments</code>) where such exists. There is no entry in <code>band_instruments</code> for Mick so an <code>NA</code> value is inserted into the <code>plays</code> column that gets added in the combined data frame. Keith is only included in the <code>band_instruments</code> data frame so doesn’t make it into the final output as this is based on those band members in the ‘left’ table.</p>
-<p><code>right_join()</code> is similar but returns all rows from the second data frame, i.e. the ‘right’ data frame, that have a match with rows in the first data frame.</p>
-<pre class="r"><code>right_join(band_members, band_instruments, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 3 x 3
-##   name  band    plays 
-##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
-## 1 John  Beatles guitar
-## 2 Paul  Beatles bass  
-## 3 Keith &lt;NA&gt;    guitar</code></pre>
-<p><code>right_join()</code> is used very infrequently compared with <code>left_join()</code>.</p>
-</div>
-<div id="inner_join" class="section level2">
-<h2><code>inner_join</code></h2>
-<p>Another joining operation is the “inner join” in which only observations that are common to both data frames are included.</p>
-<div class="figure">
-<img src="images/dplyr_inner_join.png" alt="dplyr inner join" />
-<p class="caption">dplyr inner join</p>
-</div>
-<pre class="r"><code>inner_join(band_members, band_instruments, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 2 x 3
-##   name  band    plays 
-##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
-## 1 John  Beatles guitar
-## 2 Paul  Beatles bass</code></pre>
-<p>In this case when considering observations identified by <code>name</code>, only John and Paul are contained in both the <code>band_members</code> and <code>band_instruments</code> tables, so only these make it into the combined table.</p>
-</div>
-<div id="full_join" class="section level2">
-<h2><code>full_join</code></h2>
-<p>We’ve seen how missing rows from one table can be retained in the joined data frame using <code>left_join</code> or <code>right_join</code> but sometimes data for a given subject may be missing from either of the tables and we still want that subject to appear in the combined table. A <code>full_join</code> will return all rows and all columns from the two tables and where there are no matching values, <code>NA</code> values are used to fill in the missing values.</p>
-<div class="figure">
-<img src="images/dplyr_full_join.png" alt="dplyr full join" />
-<p class="caption">dplyr full join</p>
-</div>
-<pre class="r"><code>full_join(band_members, band_instruments, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 4 x 3
-##   name  band    plays 
-##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
-## 1 Mick  Stones  &lt;NA&gt;  
-## 2 John  Beatles guitar
-## 3 Paul  Beatles bass  
-## 4 Keith &lt;NA&gt;    guitar</code></pre>
-<p>Now, with <code>full_join()</code>, we have rows for both Mick and Keith even though they are only in one or other of the tables being joined.</p>
-</div>
-<div id="joining-on-columns-with-different-headers" class="section level2">
-<h2>Joining on columns with different headers</h2>
-<p>It isn’t uncommon for the columns used for joining two tables to have different names in each table. Of course we could rename one of the two columns, e.g. using the dplyr <code>rename()</code> function, but the dplyr join functions allow you to match using differently-named columns as illustrated using another version of the <code>band_instruments</code> data frame.</p>
-<pre class="r"><code>band_instruments2</code></pre>
-<pre><code>## # A tibble: 3 x 2
-##   artist plays 
-##   &lt;chr&gt;  &lt;chr&gt; 
-## 1 John   guitar
-## 2 Paul   bass  
-## 3 Keith  guitar</code></pre>
-<pre class="r"><code>left_join(band_members, band_instruments2, by = c(&quot;name&quot; = &quot;artist&quot;))</code></pre>
-<pre><code>## # A tibble: 3 x 3
-##   name  band    plays 
-##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
-## 1 Mick  Stones  &lt;NA&gt;  
-## 2 John  Beatles guitar
-## 3 Paul  Beatles bass</code></pre>
-<p>The name for the column used for joining is the one given in the first table, i.e. the ‘left’ table, so <code>name</code> rather than <code>artist</code> in this case.</p>
-</div>
-<div id="multiple-matches-in-join-operations" class="section level2">
-<h2>Multiple matches in join operations</h2>
-<p>You may be wondering what happens if there are multiple rows in one of both of the two tables for the thing that is being joined, for example what would happen if our second table had two entries for instruments that Paul plays.</p>
-<pre class="r"><code>band_instruments3 &lt;- tibble(
-  name =  c(&quot;John&quot;,   &quot;Paul&quot;, &quot;Paul&quot;,   &quot;Keith&quot;),
-  plays = c(&quot;guitar&quot;, &quot;bass&quot;, &quot;guitar&quot;, &quot;guitar&quot;)
-)
-band_instruments3</code></pre>
-<pre><code>## # A tibble: 4 x 2
-##   name  plays 
-##   &lt;chr&gt; &lt;chr&gt; 
-## 1 John  guitar
-## 2 Paul  bass  
-## 3 Paul  guitar
-## 4 Keith guitar</code></pre>
-<pre class="r"><code>left_join(band_members, band_instruments3, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 4 x 3
-##   name  band    plays 
-##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
-## 1 Mick  Stones  &lt;NA&gt;  
-## 2 John  Beatles guitar
-## 3 Paul  Beatles bass  
-## 4 Paul  Beatles guitar</code></pre>
-<p>We get both entries from the second table added to the first table.</p>
-<p>Let’s add an entry for Paul being in a second band and see what happens then when we combine the two tables, each with two entries for Paul.</p>
-<pre class="r"><code>band_members3 &lt;- tibble(
-  name = c(&quot;Mick&quot;,   &quot;John&quot;,    &quot;Paul&quot;,    &quot;Paul&quot;),
-  band = c(&quot;Stones&quot;, &quot;Beatles&quot;, &quot;Beatles&quot;, &quot;Wings&quot;)
-)
-band_members3</code></pre>
-<pre><code>## # A tibble: 4 x 2
-##   name  band   
-##   &lt;chr&gt; &lt;chr&gt;  
-## 1 Mick  Stones 
-## 2 John  Beatles
-## 3 Paul  Beatles
-## 4 Paul  Wings</code></pre>
-<pre class="r"><code>left_join(band_members3, band_instruments3, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 6 x 3
-##   name  band    plays 
-##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
-## 1 Mick  Stones  &lt;NA&gt;  
-## 2 John  Beatles guitar
-## 3 Paul  Beatles bass  
-## 4 Paul  Beatles guitar
-## 5 Paul  Wings   bass  
-## 6 Paul  Wings   guitar</code></pre>
-<p>The resulting table includes all combinations of band and instrument for Paul.</p>
-</div>
-<div id="joining-by-matching-on-multiple-columns" class="section level2">
-<h2>Joining by matching on multiple columns</h2>
-<p>Sometimes the observations being combined are identified by multiple columns, for example, a forename and a surname. We can specify a vector of column names to be used in the join operation.</p>
-<pre class="r"><code>band_members4 &lt;- tibble(
-  forename = c(&quot;Mick&quot;,   &quot;John&quot;,    &quot;Paul&quot;,      &quot;Mick&quot;,  &quot;John&quot;),
-  surname =  c(&quot;Jagger&quot;, &quot;Lennon&quot;,  &quot;McCartney&quot;, &quot;Avory&quot;, &quot;Squire&quot;),
-  band =     c(&quot;Stones&quot;, &quot;Beatles&quot;, &quot;Beatles&quot;,   &quot;Kinks&quot;, &quot;Roses&quot;)
-)
-band_instruments4 &lt;- tibble(
-  forename = c(&quot;John&quot;,   &quot;Paul&quot;,      &quot;Keith&quot;,    &quot;Mick&quot;,  &quot;John&quot;),
-  surname =  c(&quot;Lennon&quot;, &quot;McCartney&quot;, &quot;Richards&quot;, &quot;Avory&quot;, &quot;Squire&quot;),
-  plays =    c(&quot;guitar&quot;, &quot;bass&quot;,      &quot;guitar&quot;,   &quot;drums&quot;, &quot;guitar&quot;)
-)
-full_join(band_members4, band_instruments4, by = c(&quot;forename&quot;, &quot;surname&quot;))</code></pre>
-<pre><code>## # A tibble: 6 x 4
-##   forename surname   band    plays 
-##   &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt; 
-## 1 Mick     Jagger    Stones  &lt;NA&gt;  
-## 2 John     Lennon    Beatles guitar
-## 3 Paul     McCartney Beatles bass  
-## 4 Mick     Avory     Kinks   drums 
-## 5 John     Squire    Roses   guitar
-## 6 Keith    Richards  &lt;NA&gt;    guitar</code></pre>
-</div>
-<div id="clashing-column-names" class="section level2">
-<h2>Clashing column names</h2>
-<p>Occasionally we may find that there are duplicated columns in the two tables we want to join, columns that aren’t those used for joining. These variables may even contain different data but happen to have the same name. In such cases dplyr joins add a suffix to each column in the combined table.</p>
-<pre class="r"><code>band_members5 &lt;- tibble(
-  name = c(&quot;John&quot;, &quot;Paul&quot;, &quot;Ringo&quot;, &quot;George&quot;, &quot;Mick&quot;),
-  birth_year = c(1940, 1942, 1940, 1943, 1943),
-  band = c(&quot;Beatles&quot;, &quot;Beatles&quot;, &quot;Beatles&quot;, &quot;Beatles&quot;, &quot;Stones&quot;)
-)
-band_instruments5 &lt;- tibble(
-  name = c(&quot;John&quot;, &quot;Paul&quot;, &quot;Ringo&quot;, &quot;George&quot;),
-  birth_year = c(1940, 1942, 1940, 1943),
-  instrument = c(&quot;guitar&quot;, &quot;bass&quot;, &quot;drums&quot;, &quot;guitar&quot;)
-)
-left_join(band_members5, band_instruments5, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 5 x 5
-##   name   birth_year.x band    birth_year.y instrument
-##   &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;     
-## 1 John           1940 Beatles         1940 guitar    
-## 2 Paul           1942 Beatles         1942 bass      
-## 3 Ringo          1940 Beatles         1940 drums     
-## 4 George         1943 Beatles         1943 guitar    
-## 5 Mick           1943 Stones            NA &lt;NA&gt;</code></pre>
-<p>It is advisable to rename or remove the duplicated columns that aren’t used for joining.</p>
-</div>
-<div id="filtering-joins" class="section level2">
-<h2>Filtering joins</h2>
-<p>A variation on the join operations we’ve considered are <code>semi_join()</code> and <code>anti_join()</code> that filter the rows in one table based on matches or lack of matches to rows in another table.</p>
-<p><code>semi_join()</code> returns all rows from the first table where there are matches in the other table.</p>
-<pre class="r"><code>semi_join(band_members, band_instruments, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 2 x 2
-##   name  band   
-##   &lt;chr&gt; &lt;chr&gt;  
-## 1 John  Beatles
-## 2 Paul  Beatles</code></pre>
-<p><code>anti_join()</code> returns all rows where there is no match in the other table, i.e. those that are unique to the first table.</p>
-<pre class="r"><code>anti_join(band_members, band_instruments, by = &quot;name&quot;)</code></pre>
-<pre><code>## # A tibble: 1 x 2
-##   name  band  
-##   &lt;chr&gt; &lt;chr&gt; 
-## 1 Mick  Stones</code></pre>
-</div>
-<div id="a-real-example-joining-the-metabric-clinical-and-mrna-expression-data" class="section level2">
-<h2>A real example: joining the METABRIC clinical and mRNA expression data</h2>
-<p>Let’s move on to a real example of joining data from two different tables that we used in putting together the combined METABRIC clinical and expression data set.</p>
-<p>We first read the clinical data into R and then just select a small number of columns to make it easier to see what is going on when combining the data.</p>
-<pre class="r"><code>clinical_data &lt;- read_csv(&quot;data/metabric_clinical_data.csv&quot;)
-clinical_data &lt;- select(clinical_data, Patient_ID, ER_status, PAM50)
-clinical_data</code></pre>
-<pre><code>## # A tibble: 2,509 x 3
-##    Patient_ID ER_status PAM50      
-##    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;      
-##  1 MB-0000    Positive  claudin-low
-##  2 MB-0002    Positive  LumA       
-##  3 MB-0005    Positive  LumB       
-##  4 MB-0006    Positive  LumB       
-##  5 MB-0008    Positive  LumB       
-##  6 MB-0010    Positive  LumB       
-##  7 MB-0014    Positive  LumB       
-##  8 MB-0020    Negative  Normal     
-##  9 MB-0022    Positive  claudin-low
-## 10 MB-0025    Positive  &lt;NA&gt;       
-## # … with 2,499 more rows</code></pre>
-<p>We then read in the mRNA expression data that was downloaded separately from <a href="https://www.cbioportal.org/study/summary?id=brca_metabric">cBioPortal</a>.</p>
-<pre class="r"><code>mrna_expression_data &lt;- read_tsv(&quot;data/metabric_mrna_expression.txt&quot;)
-mrna_expression_data</code></pre>
-<pre><code>## # A tibble: 2,509 x 10
-##    STUDY_ID      SAMPLE_ID  ESR1 ERBB2   PGR  TP53 PIK3CA GATA3 FOXA1  MLPH
-##    &lt;chr&gt;         &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1 brca_metabric MB-0000    8.93  9.33  5.68  6.34   5.70  6.93  7.95  9.73
-##  2 brca_metabric MB-0002   10.0   9.73  7.51  6.19   5.76 11.3  11.8  12.5 
-##  3 brca_metabric MB-0005   10.0   9.73  7.38  6.40   6.75  9.29 11.7  10.3 
-##  4 brca_metabric MB-0006   10.4  10.3   6.82  6.87   7.22  8.67 11.9  10.5 
-##  5 brca_metabric MB-0008   11.3   9.96  7.33  6.34   5.82  9.72 11.6  12.2 
-##  6 brca_metabric MB-0010   11.2   9.74  5.95  5.42   6.12  9.79 12.1  11.4 
-##  7 brca_metabric MB-0014   10.8   9.28  7.72  5.99   7.48  8.37 11.5  10.8 
-##  8 brca_metabric MB-0020   NA    NA    NA    NA     NA    NA    NA    NA   
-##  9 brca_metabric MB-0022   10.4   8.61  5.59  6.17   7.59  7.87 10.7   9.95
-## 10 brca_metabric MB-0025   NA    NA    NA    NA     NA    NA    NA    NA   
-## # … with 2,499 more rows</code></pre>
-<p>Now we have both sets of data loaded into R as data frames, we can combine them into a single data frame using an <code>inner_join()</code>. Our resulting table will only contain entries for the patients for which expression data are available.</p>
-<pre class="r"><code>combined_data &lt;- inner_join(clinical_data, mrna_expression_data, by = c(&quot;Patient_ID&quot; = &quot;SAMPLE_ID&quot;))
-combined_data</code></pre>
-<pre><code>## # A tibble: 2,509 x 12
-##    Patient_ID ER_status PAM50 STUDY_ID  ESR1 ERBB2   PGR  TP53 PIK3CA GATA3
-##    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
-##  1 MB-0000    Positive  clau… brca_me…  8.93  9.33  5.68  6.34   5.70  6.93
-##  2 MB-0002    Positive  LumA  brca_me… 10.0   9.73  7.51  6.19   5.76 11.3 
-##  3 MB-0005    Positive  LumB  brca_me… 10.0   9.73  7.38  6.40   6.75  9.29
-##  4 MB-0006    Positive  LumB  brca_me… 10.4  10.3   6.82  6.87   7.22  8.67
-##  5 MB-0008    Positive  LumB  brca_me… 11.3   9.96  7.33  6.34   5.82  9.72
-##  6 MB-0010    Positive  LumB  brca_me… 11.2   9.74  5.95  5.42   6.12  9.79
-##  7 MB-0014    Positive  LumB  brca_me… 10.8   9.28  7.72  5.99   7.48  8.37
-##  8 MB-0020    Negative  Norm… brca_me… NA    NA    NA    NA     NA    NA   
-##  9 MB-0022    Positive  clau… brca_me… 10.4   8.61  5.59  6.17   7.59  7.87
-## 10 MB-0025    Positive  &lt;NA&gt;  brca_me… NA    NA    NA    NA     NA    NA   
-## # … with 2,499 more rows, and 2 more variables: FOXA1 &lt;dbl&gt;, MLPH &lt;dbl&gt;</code></pre>
-<p>Having combined the data, we can carry out exploratory data analysis using elements from both data sets.</p>
-<pre class="r"><code>combined_data %&gt;%
-  filter(!is.na(PAM50), !is.na(ESR1)) %&gt;%
-  ggplot(mapping = aes(x = PAM50, y = ESR1, colour = PAM50)) +
-  geom_boxplot(show.legend = FALSE)</code></pre>
-<p><img src="week5_files/figure-html/box_plot_1-1.png" width="672" /></p>
-<hr />
-</div>
-</div>
-<div id="customizing-plots-with-ggplot2" class="section level1">
-<h1>Customizing plots with ggplot2</h1>
-<p>Finally, we’ll turn our attention back to visualization using ggplot2 and how we can customize our plots by adding or changing titles and labels, changing the scales used on the x and y axes, and choosing colours.</p>
-<div id="titles-and-labels" class="section level2">
-<h2>Titles and labels</h2>
-<p>Adding titles and subtitles to a plot and changing the x- and y-axis labels is very straightforward using the <code>labs()</code> function.</p>
-<pre class="r"><code>plot &lt;- ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  labs(
-    title = &quot;mRNA expression in the METABRIC breast cancer data set&quot;,
-    subtitle = &quot;GATA3 and ESR1 mRNA expression measured using Illumina HT-12 bead arrays&quot;,
-    x = &quot;log2 GATA3 expression&quot;,
-    y = &quot;log2 ESR1 expression&quot;,
-    colour = &quot;ER status&quot;
-  )
-plot</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_1-1.png" width="672" /></p>
-<p>The labels are another component of the plot object that we’ve constructed, along with aesthetic mappings and layers (geoms). The plot object is a list and contains various elements including those mappings and layers and one element named <code>labels</code>.</p>
-<p><code>labs()</code> is a simple function for creating a list of labels you want to specify as name-value pairs as in the above example. You can name any aesthetic (in this case x and y) to override the default values (the column names) and you can add a title, subtitle and caption if you wish. In addition to changing the x- and y-axis labels, we also removed the underscore from the legend title by setting the label for the colour aesthetic.</p>
-</div>
-<div id="scales" class="section level2">
-<h2>Scales</h2>
-<p>Take a look at the x and y scales in the above plot. ggplot2 has chosen the x and y scales and where to put breaks and ticks.</p>
-<p>Let’s have a look at the elements of the list object we created that specifies how the plot should be displayed.</p>
-<pre class="r"><code>names(plot)</code></pre>
-<pre><code>## [1] &quot;data&quot;        &quot;layers&quot;      &quot;scales&quot;      &quot;mapping&quot;     &quot;theme&quot;      
-## [6] &quot;coordinates&quot; &quot;facet&quot;       &quot;plot_env&quot;    &quot;labels&quot;</code></pre>
-<p>One of the components of the plot is called <code>scales</code>. ggplot2 automatically adds default scales behind the scenes equivalent to the following:</p>
-<pre class="r"><code>plot &lt;- ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_x_continuous() +
-  scale_y_continuous() +
-  scale_colour_discrete()</code></pre>
-<p>Note that we have three aesthetics and ggplot2 adds a scale for each.</p>
-<pre class="r"><code>plot$mapping</code></pre>
-<pre><code>## Aesthetic mapping: 
-## * `x`      -&gt; `GATA3`
-## * `y`      -&gt; `ESR1`
-## * `colour` -&gt; `ER_status`</code></pre>
-<p>The x and y variables (<code>GATA3</code> and <code>ESR1</code>) are continuous so ggplot2 adds a continuous scale for each. <code>ER_status</code> is a discrete variable in this case so ggplot2 adds a discrete scale for colour.</p>
-<p>Generalizing, the scales that are required follow the naming scheme:</p>
-<pre><code>scale_&lt;NAME_OF_AESTHETIC&gt;_&lt;NAME_OF_SCALE&gt;</code></pre>
-<p>Look at the help page for <code>scale_y_continuous</code> to see what we can change about the y-axis scale.</p>
-<p>First we’ll change the breaks, i.e. where ggplot2 puts ticks and numeric labels, on the y axis.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_y_continuous(breaks = seq(5, 15, by = 2.5))</code></pre>
+<div id="faceting-with-ggplot2" class="section level1">
+<h1>Faceting with ggplot2</h1>
+<p>Finally, let’s change tack completely and take a look at a very
+useful feature of ggplot2 – <strong>faceting</strong>.</p>
+<p>Faceting allows you to split your plot into subplots, or facets,
+based on one or more categorical variables. Each of the subplots
+displays a subset of the data.</p>
+<p>There are two faceting functions,
+<strong><code>facet_wrap()</code></strong> and
+<strong><code>facet_grid()</code></strong>.</p>
+<p>Let’s create a scatter plot of GATA3 and ESR1 expression values where
+we’re displaying the PR positive and PR negative patients using
+different colours. This is a very similar to a plot we created last
+week.</p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PR_status)) +
+  geom_point(size = 0.5, alpha = 0.5)</code></pre>
 <p><img src="week5_files/figure-html/scatter_plot_2-1.png" width="672" /></p>
-<p><code>seq()</code> is a useful function for generating regular sequences of numbers. In this case we wanted numbers from 5 to 15 going up in steps of 2.5.</p>
-<pre class="r"><code>seq(5, 15, by = 2.5)</code></pre>
-<pre><code>## [1]  5.0  7.5 10.0 12.5 15.0</code></pre>
-<p>We could do the same thing for the x axis using <code>scale_x_continuous()</code>.</p>
-<p>We can also adjust the extents of the x or y axis.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_y_continuous(breaks = seq(5, 15, by = 2.5), limits = c(4, 12))</code></pre>
-<pre><code>## Warning: Removed 160 rows containing non-finite values (stat_smooth).</code></pre>
-<pre><code>## Warning: Removed 160 rows containing missing values (geom_point).</code></pre>
+<p>An alternative is to use faceting with
+<strong><code>facet_wrap()</code></strong>.</p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_wrap(vars(PR_status))</code></pre>
 <p><img src="week5_files/figure-html/scatter_plot_3-1.png" width="672" /></p>
-<p>Here, just for demonstration purposes, we set the upper limit to be less than the largest values of ESR1 expression and ggplot2 warned us that some rows have been removed from the plot.</p>
-<p>We can change the minor breaks, e.g. to add more lines that act as guides. These are shown as thin white lines when using the default theme (we’ll take a look at alternative themes next week).</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_y_continuous(breaks = seq(5, 12.5, by = 2.5), minor_breaks = seq(5, 13.5, 0.5), limits = c(5, 13.5))</code></pre>
+<p>This produces two plots, side-by-side, one for each of the categories
+in the <code>PR_status</code> variable, with a banner across the top of
+each for the category.</p>
+<p>The variable(s) used for faceting are specified using
+<code>vars()</code> in a similar way to the selection of variables for
+<code>mutate_at()</code> and <code>summarise_at()</code>.</p>
+<p>We can still use separate colours if we prefer things to be, well,
+colourful.</p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PR_status)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_wrap(vars(PR_status))</code></pre>
 <p><img src="week5_files/figure-html/scatter_plot_4-1.png" width="672" /></p>
-<p>Or we can remove the minor breaks entirely.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_y_continuous(breaks = seq(6, 14, by = 2), minor_breaks = NULL, limits = c(5, 13.5))</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_5-1.png" width="672" /></p>
-<p>Similarly we could remove all breaks entirely.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_y_continuous(breaks = NULL)</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_6-1.png" width="672" /></p>
-<p>A more typical scenario would be to keep the breaks, because we want to display the ticks and their lables, but remove the grid lines. Somewhat confusingly the position of grid lines are controlled by a scale but preventing these from being displayed requires changing the theme. The theme controls the way in which non-data components are displayed – we’ll look at how these can be customized next week. For now, though, here’s an example of turning off the display of all grid lines for major and minor breaks for both axes.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_y_continuous(breaks = seq(4, 14, by = 2), limits = c(4, 14)) +
-  theme(panel.grid = element_blank())</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_7-1.png" width="672" /></p>
-<p>By default, the scales are expanded by 5% of the range on either side. We can add or reduce the space as follows.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_x_continuous(expand = expand_scale(mult = 0.01)) +
-  scale_y_continuous(expand = expand_scale(mult = 0.25))</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_8-1.png" width="672" /></p>
-<p>Here we only added 1% (0.01) of the range of GATA3 expression values on either side along the x axis but we added 25% (0.25) of the range of ESR1 expression on either side along the y axis.</p>
-<p>We can move the axis to the other side of the plot –- not sure why you’d want to do this but with ggplot2 just about anything is possible.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_x_continuous(position = &quot;top&quot;)</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_9-1.png" width="672" /></p>
-</div>
-<div id="colours" class="section level2">
-<h2>Colours</h2>
-<p>The colour asthetic is used with a categorical variable, <code>ER_status</code>, in the scatter plots we’ve been customizing. The default colour scale used by ggplot2 for categorical variables is <code>scale_colour_discrete</code>. We can manually set the colours we wish to use using <code>scale_colour_manual</code> instead.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_colour_manual(values = c(&quot;dodgerblue2&quot;, &quot;firebrick2&quot;))</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_10-1.png" width="672" /></p>
-<p>Setting colours manually is ok when we only have two or three categories but when we have a larger number it would be handy to be able to choose from a selection of carefully-constructed colour palettes. Helpfully, ggplot2 provides access to the <a href="http://colorbrewer2.org">ColorBrewer</a> palettes through the functions <code>scale_colour_brewer()</code> and <code>scale_fill_brewer()</code>.</p>
+<p>Faceting is usually better than displaying groups using different
+colours when there are more than two or three groups when it can be
+difficult to really tell which points belong to each group. A case in
+point is for the 3-gene classification in the GATA3 vs ESR1 scatter plot
+we created last week. Let’s create a faceted version of that plot.</p>
 <pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`)) +
-  geom_point(size = 0.6, alpha = 0.5, na.rm = TRUE) +
-  scale_colour_brewer(palette = &quot;Set1&quot;)</code></pre>
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_wrap(vars(`3-gene_classifier`))</code></pre>
+<p><img src="week5_files/figure-html/scatter_plot_5-1.png" width="672" /></p>
+<p>This helps explain why the function is called
+<code>facet_wrap()</code>. When it has too many subplots to fit across
+the page, it wraps around to another row. We can control how many rows
+or columns to use with the <code>nrow</code> and <code>ncol</code>
+arguments.</p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_wrap(vars(`3-gene_classifier`), nrow = 1)</code></pre>
+<p><img src="week5_files/figure-html/scatter_plot_6-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_wrap(vars(`3-gene_classifier`), ncol = 2)</code></pre>
+<p><img src="week5_files/figure-html/scatter_plot_7-1.png" width="672" /></p>
+<p>We can combine faceting on one variable with a colour aesthetic for
+another variable. For example, let’s show the tumour stage status using
+faceting and the HER2 status using colours.</p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = HER2_status)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_wrap(vars(Neoplasm_histologic_grade))</code></pre>
+<p><img src="week5_files/figure-html/scatter_plot_8-1.png" width="672" /></p>
+<p>Instead of this we could facet on more than variable.</p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_wrap(vars(Neoplasm_histologic_grade, HER2_status))</code></pre>
+<p><img src="week5_files/figure-html/scatter_plot_9-1.png" width="672" /></p>
+<p>Faceting on two variables is usually better done using the other
+faceting function, <strong><code>facet_grid()</code></strong>. Note the
+change in how the formula is written.</p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_grid(vars(Neoplasm_histologic_grade), vars(HER2_status))</code></pre>
+<p><img src="week5_files/figure-html/scatter_plot_10-1.png" width="672" /></p>
+<p>Again we can use colour aesthetics alongside faceting to add further
+information to our visualization.</p>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_grid(vars(Neoplasm_histologic_grade), vars(HER2_status))</code></pre>
 <p><img src="week5_files/figure-html/scatter_plot_11-1.png" width="672" /></p>
-<p>Look at the help page for <code>scale_colour_brewer</code> to see what other colour palettes are available and visit the <a href="http://colorbrewer2.org">ColorBrewer</a> website to see what these look like.</p>
-<p>Interestingly, you can set other attributes other than just the colours at the same time.</p>
-<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;) +
-  scale_colour_manual(values = c(&quot;dodgerblue2&quot;, &quot;firebrick2&quot;), labels = c(&quot;ER-negative&quot;, &quot;ER-positive&quot;)) +
-  labs(colour = NULL)  # remove legend title for colour now that the labels are self-explanatory</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_12-1.png" width="672" /></p>
-<p>We have applied our own set of mappings from levels in the data to aesthetic values.</p>
-<p>For continuous variables we may wish to be able to change the colours used in the colour gradient. To demonstrate this we’ll correct the Nottingham prognostic index (NPI) values and use this to colour points in the scatter plot of ESR1 vs GATA3 expression on a continuous scale.</p>
-<pre class="r"><code># Nottingham_prognostic_index is incorrectly calculated in the data downloaded from cBioPortal
-metabric &lt;- mutate(metabric, Nottingham_prognostic_index = 0.02 * Tumour_size + Lymph_node_status + Neoplasm_histologic_grade)
+<p>Finally, we can use a <code>labeller</code> to change the labels for
+each of the categorical values so that these are more meaningful in the
+context of this plot.</p>
+<pre class="r"><code>grade_labels &lt;- c(&quot;1&quot; = &quot;Grade I&quot;, &quot;2&quot; = &quot;Grade II&quot;, &quot;3&quot; = &quot;Grade III&quot;)
+her2_status_labels &lt;- c(&quot;Positive&quot; = &quot;HER2 positive&quot;, &quot;Negative&quot; = &quot;HER2 negative&quot;)
 #
-metabric %&gt;%
-  filter(!is.na(Nottingham_prognostic_index)) %&gt;%
-  ggplot(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index)) +
-  geom_point(size = 0.5)</code></pre>
+ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_grid(vars(Neoplasm_histologic_grade),
+             vars(HER2_status),
+             labeller = labeller(
+               Neoplasm_histologic_grade = grade_labels,
+               HER2_status = her2_status_labels
+              )
+            )</code></pre>
+<p><img src="week5_files/figure-html/scatter_plot_12-1.png" width="672" /></p>
+<p>This would certainly be necessary if we were to use ER and HER2
+status on one side of the grid.</p>
+<pre class="r"><code>er_status_labels &lt;- c(&quot;Positive&quot; = &quot;ER positive&quot;, &quot;Negative&quot; = &quot;ER negative&quot;)
+#
+ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  facet_grid(vars(Neoplasm_histologic_grade),
+             vars(ER_status, HER2_status),
+             labeller = labeller(
+               Neoplasm_histologic_grade = grade_labels,
+               ER_status = er_status_labels,
+               HER2_status = her2_status_labels
+              )
+            )</code></pre>
 <p><img src="week5_files/figure-html/scatter_plot_13-1.png" width="672" /></p>
-<p>Higher NPI scores correspond to worse prognosis and lower chance of 5 year survival. We’ll emphasize those points on the scatter plot by adjusting our colour scale.</p>
-<pre class="r"><code>metabric %&gt;%
-  filter(!is.na(Nottingham_prognostic_index)) %&gt;%
-  ggplot(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index)) +
-  geom_point(size = 0.75) +
-  scale_colour_gradient(low = &quot;white&quot;, high = &quot;firebrick2&quot;)</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_14-1.png" width="672" /></p>
-<p>In some cases it might make sense to specify two colour gradients either side of a mid-point.</p>
-<pre class="r"><code>metabric %&gt;%
-  filter(!is.na(Nottingham_prognostic_index)) %&gt;%
-  ggplot(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index)) +
-  geom_point(size = 0.75) +
-  scale_colour_gradient2(low = &quot;dodgerblue1&quot;, mid = &quot;grey90&quot;, high = &quot;firebrick1&quot;, midpoint = 4.5)</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_15-1.png" width="672" /></p>
-<p>As before we can override the default labels and other aspects of the colour scale within the scale function.</p>
-<pre class="r"><code>metabric %&gt;%
-  filter(!is.na(Nottingham_prognostic_index)) %&gt;%
-  ggplot(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index)) +
-  geom_point(size = 0.5) +
-  scale_colour_gradient(
-    low = &quot;lightblue&quot;, high = &quot;darkblue&quot;,
-    name = &quot;NPI&quot;,
-    breaks = 2:6,
-    limits = c(1.5, 6.5)
-  )</code></pre>
-<p><img src="week5_files/figure-html/scatter_plot_16-1.png" width="672" /></p>
 <hr />
-</div>
 </div>
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>In this session we have covered the following:</p>
+<p>In this session we have covered the following concepts:</p>
 <ul>
-<li>Computing summary values for groups of observations</li>
-<li>Counting the numbers of observations within categories</li>
-<li>Combining data from two tables through join operations</li>
-<li>Customizing plots created with ggplot2 by changing labels, scales and colours</li>
+<li>Filtering rows in a data frame based on their values</li>
+<li>Selecting and reordering of columns</li>
+<li>Sorting rows based on values in one or more columns</li>
+<li>Modifying a data frame by either adding new columns or modifying
+existing ones</li>
+<li>Summarizing the values in one or more columns</li>
+<li>Building up workflows by chaining operations together using the pipe
+operator</li>
+<li>Faceting of ggplot2 visualizations</li>
 </ul>
 <hr />
 </div>
 <div id="assignment" class="section level1">
 <h1>Assignment</h1>
-<p>Assignment: <a href="assignments/assignment5.Rmd">assignment5.Rmd</a></p>
-<p>Solutions: <a href="assignments/assignment5_solutions.Rmd">assignment5_solutions.Rmd</a> and <a href="assignments/assignment5_solutions.html">assignment5_solutions.html</a></p>
+<p>Assignment: <a
+href="assignments/assignment4.Rmd">assignment4.Rmd</a></p>
+<p>Solutions: <a
+href="assignments/assignment4_solutions.Rmd">assignment4_solutions.Rmd</a>
+and <a
+href="assignments/assignment4_solutions.html">assignment4_solutions.html</a></p>
 </div>
 
 
@@ -1237,7 +1755,7 @@ metabric %&gt;%
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -1255,7 +1773,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -1264,6 +1782,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')
@@ -1276,7 +1797,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

@@ -1,1023 +1,778 @@
 ---
-title: "Week 4 -- Data manipulation with dplyr"
+title: "Week 4 -- Visualizing tabular data with ggplot2"
 ---
 
 > #### Learning objectives
 >
-> * Learn the five key **dplyr** functions for manipulating your data
->     * **`select()`** for selecting a subset of variables, i.e. selecting columns in your table
->     * **`filter()`** for selecting observations based on their values, i.e. selecting rows in your table
->     * **`arrange()`** for sorting the observations in your table 
->     * **`mutate()`** for creating a new variable or modifying an existing variable
->     * **`summarise()`** for collapsing values in one of more columns to a single summary value
-> * Chain operations together into a workflow using pipes
-> * Learn about faceting in ggplot2 to split your data into separate categories and create a series of sub-plots arranged in a grid
+> * Understand ggplot2's grammar of graphics
+> * Apply the grammar to create a variety of plots including scatter plots, box plots and histograms
+> * Learn about how R handles categorical data
 
----
+# Visualizing data with ggplot2
 
-# Data manipulation with dplyr
+In this session we will focus our attention on the popular **ggplot2** package
+for visualizing tabular data and will be learning how to create various
+different kinds of plot.
 
-**dplyr** is one of the packages that gets loaded as part of the tidyverse.
+## METABRIC data set
 
-```{r}
-library(tidyverse)
-```
+We'll be using an extended version of the METABRIC data set (from last week) in
+which columns have been added for the mRNA expression values for selected genes,
+including estrogen receptor alpha (ESR1), progesterone receptor (PGR), GATA3 and
+FOXA1.
 
-dplyr is the Swiss army knife in the tidyverse, providing many useful functions
-for manipulating tabular data in data frames or tibbles. We're going to look at
-the key functions for filtering our data, modifying the contents and computing
-summary statistics.
+The METABRIC study characterized the genomic mutations and gene expression
+profiles for over 2000 primary breast tumours. In addition to the gene
+expression data generated using microarrays, genome-wide copy number profiles
+were obtained using SNP microarrays and targeted sequencing was performed using
+a panel of 40 driver-mutation genes to detect mutations (single nucleotide
+variants).
 
-We'll also introduce the pipe operator, **`%>%`**, for chaining operations
-together into mini workflows in a way that makes for more readable and
-maintainable code.
+[Curtis *et al.*, Nature 486:346-52, 2012](https://pubmed.ncbi.nlm.nih.gov/22522925)
 
-Finally, we'll return to plotting and look at a powerful feature of ggplot2,
-**faceting**, that allows you to divide your plots into subplots by splitting
-the observations based on one or more categorical variables.
+[Pereira *et al.*, Nature Communications 7:11479, 2016](https://www.ncbi.nlm.nih.gov/pubmed/27161491)
 
-We'll again use the METABRIC data set to illustrate how these operations work.
+Both the clinical data and the gene expression values were downloaded from
+[cBioPortal](https://www.cbioportal.org/study/summary?id=brca_metabric).
+
+These have been combined into a single table using techniques we will cover
+later in the course. We've removed observations for patient tumour samples for
+which expression data are not available, so our table has fewer rows.
+
+In addition, we have replaced spaces in column names with underscores so we
+don't have to constantly refer to these using backticks ( **`` ` ``** ). Note,
+however, that even after renaming some of the column names, we have one column,
+'3-gene classifier', that is not strictly a valid name in R as it starts with a
+number and contains a hyphen. Valid names for variables in R contain only
+letters, numbers and the dot (**`.`**) and underscore (**`_`**) characters and
+should not begin with a number. So when we refer to the '3-gene classifier'
+column we'll have to use backticks, e.g. ``metabric$`3-gene_classifier` ``.
 
 ```{r message = FALSE}
+library(tidyverse)
 metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
 metabric
 ```
 
----
-
-# Data semantics
-
-We use the terms 'observation' and 'variable' a lot in this course. As a
-reminder from week 2, when we talk about an observation, we're talking about a
-set of values measured for the same unit or thing, e.g. a person or a date, and
-when we talk about a variable we are really talking about the attribute that we
-are measuring or recording, e.g. height, temperature or expression value.
-
-**Observations are represented as rows** in our data frames or tibbles, while
-the **columns correspond to variables**.
-
-```{block type = "rmdblock"}
-From **"Tidy Data"** by **Hadley Wickham**, [*The Journal of Statistical
-Software*, vol. 59, 2014](https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf).
-
-A data set is a collection of **values**, usually either numbers (if
-quantitative) or character strings (if qualitative). Values are organised in
-two ways. Every value belongs to a variable and an observation.
-
-A **variable** contains all values that measure the same underlying attribute
-(like height, temperature, duration) across units.
-
-An **observation** contains all values measured on the same unit (like a person
-or a day) across attributes.
-```
-
----
-
-# dplyr verbs
-
-We will be looking at the 5 key dplyr functions this week:
-
-* **`filter()`** for filtering rows
-* **`select()`** for selecting columns
-* **`arrange()`** for sorting rows
-* **`mutate()`** for modifying columns or creating new ones
-* **`summarise()`** for computing summary values
-
-In looking at each of these in turn, we'll be applying these to the entire data
-set. It is possible to combine these with the `group_by()` function to instead
-operate on separate groups within our data set but this is something we'll cover
-in detail next week.
-
-The dplyr operations are commonly referred to as "verbs" in a data manipulation
-grammar. These verbs have a common syntax and work together in a consistent and
-uniform manner. They all have the following shared behaviours:
-
-* The first argument in each function is a data frame (or tibble)
-
-* Any additional arguments describe what operation to perform on the data frame
-
-* Variable names, i.e. column names, are referred to without using quotes
-
-* The result of an operation is a new data frame
-
----
-
-# Filtering rows with `filter()`
-
-The **`filter`** verb allows you to choose rows from a data frame that match
-some specified criteria. The criteria are based on values of variables and can
-make use of comparison operators such as `==`, `>`, `<` and `!=`.
-
-For example, to filter the METABRIC data set so that it only contains
-observations for those patients who died of breast cancer we can use `filter()`
-as follows.
-
-```{r}
-deceased <- filter(metabric, Vital_status == "Died of Disease")
-deceased
-```
-
-Remember that the **`==`** operator tests for equality, i.e. is the value for
-`Vital_status` for each patient (observation) equal to "Died of Disease".
-
-This filtering operation is equivalent to subsetting the rows based on a logical
-vector resulting from our comparison of vital status values with "Died of
-Disease".
-
-```{r eval = FALSE}
-filter(metabric, Vital_status == "Died of Disease")
-# is equivalent to
-metabric[metabric$Vital_status == "Died of Disease", ]
-```
-
-Both achieve the same result but the dplyr filter method is arguably a little
-easier to read. We haven't had to write `metabric` twice for one thing; we just
-referred to the variable name as it is, unquoted and without any fuss.
-
-Let's have a look at the various categories in the `Vital_status` variable.
-
-```{r}
-table(metabric$Vital_status)
-```
-
-We could use the `!=` comparison operator to select all deceased patients
-regardless of whether they died of the disease or other causes, by filtering for
-those that don't have the value "Living".
-
-```{r}
-deceased <- filter(metabric, Vital_status != "Living")
-nrow(deceased)
-```
-
-Another way of doing this is to specify which classes we are interested in and
-use the **`%in%`** operator to test which observations (rows) contain those
-values.
-
-```{r}
-deceased <- filter(metabric, Vital_status %in% c("Died of Disease", "Died of Other Causes"))
-nrow(deceased)
-```
-
-Another of the tidyverse packages, **`stringr`**, contains a set of very useful
-functions for operating on text or character strings. One such function,
-**`str_starts()`** could be used to find all `Vital_status` values that start
-with "Died".
-
-```{r}
-deceased <- filter(metabric, str_starts(Vital_status, "Died"))
-nrow(deceased)
-```
-
-Note that `str_starts()` returns a logical vector - this is important since the
-filtering condition must evaluate to `TRUE` or `FALSE` values for each row.
-
-Unsurprisingly there is an equivalent function, `str_ends()`, for matching the
-end of text (character) values and `str_detect()` is another useful function
-that determines whether values match a regular expression. Regular expressions
-are a language for search patterns used frequently in computer programming and
-really worth getting to grips with but sadly these are beyond the scope of this
-course.
-
-Filtering based on a logical variable is the most simple type of filtering of
-all. We don't have any logical variables in our METABRIC data set so we'll
-create one from the binary `Survival_status` variable to use as an example.
-
-```{r}
-# create a new logical variable called 'Deceased'
-metabric$Deceased <- metabric$Survival_status == "DECEASED"
-#
-# filtering based on a logical variable - only selects TRUE values
-deceased <- filter(metabric, Deceased)
-#
-# only display those columns we're interested in
-deceased[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
-```
-
-We can use the **`!`** operator to filter those patients who are not
-deceased.
-
-```{r eval = FALSE}
-filter(metabric, !Deceased)
-```
-
-The eagle-eyed will have spotted that filtering on our newly created Deceased
-logical variable gave a slightly different number of observations (patients) who
-are considered to be deceased, compared with the filtering operations shown
-above based on the `Vital_status` variable. We get one extra row. This is
-because we have a missing value for the vital status of one of the patients. We
-can filter for this using the **`is.na()`** function.
-
-```{r}
-missing_vital_status <- filter(metabric, is.na(Vital_status))
-missing_vital_status[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
-```
-
-`filter()` only retains rows where the condition if `TRUE`; both `FALSE` and
-`NA` values are filtered out.
-
-We can apply more than one condition in our filtering operation, for example
-the patients who were still alive at the time of the METABRIC study and had
-survived for more than 10 years (120 months).
-
-```{r}
-filter(metabric, Survival_status == "LIVING", Survival_time > 120)
-```
-
-The equivalent using R's usual subsetting is slightly less readable.
-
-```{r eval = FALSE}
-metabric[metabric$Survival_status == "LIVING" & metabric$Survival_time > 120, ]
-```
-
-We can add as many conditions as we like separating each with a comma. Note that
-filtering using R subsetting gets more unreadable, and more cumbersome to code,
-the more conditions you add.
-
-Adding conditions in this way is equivalent to combining the conditions using
-the **`&`** (Boolean AND) operator.
-
-```{r eval = FALSE}
-filter(metabric, Survival_status == "LIVING", Survival_time > 120)
-# is equivalent to
-filter(metabric, Survival_status == "LIVING" & Survival_time > 120)
-```
-
-Naturally we can also check when either of two conditions holds true by using
-the **`|`** (Boolean OR) operator. And we can build up more complicated
-filtering operations using both `&` and `|`. For example, let's see which
-patients have stage 3 or stage 4 tumours that are either estrogen receptor (ER)
-positive or progesterone receptor (PR) positive.
-
-```{r}
-selected_patients <- filter(metabric, Tumour_stage >= 3, ER_status == "Positive" | PR_status == "Positive")
-nrow(selected_patients)
-```
-
-In this case, if you used `&` in place of the comma you'd need to be careful
-about the precedence of the `&` and `|` operators and use parentheses to make
-clear what you intended.
-
-```{r eval = FALSE}
-filter(metabric, Tumour_stage >= 3 & (ER_status == "Positive" | PR_status == "Positive"))
-```
-
----
-
-# Selecting columns with `select()`
-
-Another way of "slicing and dicing"" our tabular data set is to select just the
-variables or columns we're interested in. This can be important particularly
-when the data set contains a very large number of variables as is the case for
-the METABRIC data. Notice how when we print the METABRIC data frame it is not
-possible to display all the columns; we only get the first few and then a long
-list of the additional ones that weren't displayed.
-
-Using the `$` operator is quite convenient for selecting a single column and
-extracting the values as a vector. Selecting several columns using the `[]`
-subsetting operator is a bit more cumbersome. For example, in our look at
-filtering rows, we considered two different variables in our data set that
-are concerned with the living/deceased status of patients. When printing out
-the results we selected just those columns along with the patient identifier
-and the newly created `Deceased` column.
-
-```{r}
-deceased[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
-```
-
-The **`select()`** function from dplyr is simpler.
-
-```{r}
-select(metabric, Patient_ID, Survival_status, Vital_status, Deceased)
-```
-
-Notice the similarities with the `filter()` function. The first argument is the
-data frame we are operating on and the arguments that follow on are specific to
-the operation in question, in this case, the variables (columns) to select. Note
-that the variables do not need to be put in quotes, and the returned value is
-another data frame, even if only one column was selected.
-
-We can alter the order of the variables (columns).
-
-```{r}
-select(metabric, Patient_ID, Vital_status, Survival_status, Deceased)
-```
-
-We can also select a range of columns using **`:`**, e.g. to select the patient
-identifier and all the columns between `Tumour_size` and `Cancer_type` we could
-run the following `select()` command.
-
-```{r}
-select(metabric, Patient_ID, Chemotherapy:Tumour_stage)
-```
-
-The help page for `select` points to some special functions that can be used
-within `select()`. We can find all the columns, for example, that contain the
-term "status" using `contains()`.
-
-```{r}
-select(metabric, contains("status"))
-```
-
-If we only wanted those ending with "status" we could use `ends_with()`
-instead.
-
-```{r}
-select(metabric, ends_with("status"))
-```
-
-We can also select those columns we're not interested in and that shouldn't be
-included by prefixing the columns with **`-`**.
-
-```{r}
-select(metabric, -Cohort)
-```
-
-You can use a combination of explicit naming, ranges, helper functions and
-negation to select the columns of interest.
-
-```{r}
-selected_columns <- select(metabric, Patient_ID, starts_with("Tumour_"), `3-gene_classifier`:Integrative_cluster, -Cellularity)
-selected_columns
-```
-
-You can also use `select()` to completely reorder the columns so they're in the
-order of your choosing. The `everything()` helper function is useful in this
-context, particularly if what you're really interested in is bringing one or
-more columns to the left hand side and then including everything else
-afterwards in whatever order they were already in.
-
-```{r}
-select(metabric, Patient_ID, Survival_status, Tumour_stage, everything())
-```
-
-Finally, columns can be renamed as part of the selection process.
-
-```{r}
-select(metabric, Patient_ID, Classification = `3-gene_classifier`, NPI = Nottingham_prognostic_index)
-```
-
-Note that dplyr provides the `rename()` function for when we only want to rename
-a column and not select a subset of columns.
-
----
-
-# Chaining operations using `%>%`
-
-Let's consider again an earlier example in which we filtered the METABRIC data
-set to retain just the patients who were still alive at the time of the study
-and had survived for more than 10 years (120 months). We use `filter()` to
-select the rows corresponding to the patients meeting these criteria and can
-then use `select()` to only display the variables (columns) we're most
-interested in.
-
-```{r}
-patients_of_interest <- filter(metabric, Survival_status == "LIVING", Survival_time > 120)
-patient_details_of_interest <- select(patients_of_interest, Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
-patient_details_of_interest
-```
-
-Here we've used an intermediate variable, `patients_of_interest`, which we only
-needed in order to get to the final result. We could just have used the same
-name to avoid cluttering our environment and overwritten the results from the
-`filter()` operation with those of the `select()` operation.
-
-```{r eval = FALSE}
-patients_of_interest <- select(patients_of_interest, Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
-```
-
-Another less readable way of writing this code is to nest the `filter()`
-function call inside the `select()`. Although this looks very unwieldy and is
-not easy to follow, nested function calls are very common in a lot of R code
-you may come across.
-
-```{r}
-patients_of_interest <- select(filter(metabric, Survival_status == "LIVING", Survival_time > 120), Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
-nrow(patients_of_interest)
-```
-
-However, there is another way chaining together a series of operations into a
-mini workflow that is elegant, intuitive and makes for very readable R code.
-For that we need to introduce a new operator, the **pipe** operator, **`%>%`**.
-
-```{block type = "rmdblock"}
-**The pipe operator `%>%`**
-
-The pipe operator takes the output from one operation, i.e. whatever is on the
-left-hand side of `%>%` and passes it in as the first argument to the second
-operation, or function, on the right-hand side.
-
-**`x %>% f(y)`** is equivalent to **`f(x, y)`**
-
-For example:
-
-`select(starwars, name, height, mass)`
-
-can be rewritten as
-
-`starwars %>% select(name, height, mass)`
-
-This allows for chaining of operations into workflows, e.g.
-
-`starwars %>%`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`filter(species == "Droid") %>%`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`select(name, height, mass)`
-
-The `%>%` operator comes from the `magrittr` package (do you get the reference?)
-and is available when we load the tidyverse using `library(tidyverse)`.
-
-Piping in R was motivated by the Unix pipe, `|`, in which the output from one
-process is redirected to be the input for the next. This is so named because the
-flow from one process or operation to the next resembles a pipeline.
-```
-
-We can rewrite the code for our filtering and column selection operations as
-follows.
-
-```{r}
-patients_of_interest <- metabric %>%
-  filter(Survival_status == "LIVING", Survival_time > 120) %>%
-  select(Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
-```
-
-Note how each operation takes the output from the previous operation as its
-first argument. This way of coding is embraced wholeheartedly in the tidyverse
-hence almost every tidyverse function that works on data frames has the data
-frame as its first argument. It is also the reason why tidyverse functions
-return a data frame regardless of whether the output could be recast as a vector
-or a single value.
-
-"Piping", the act of chaining operations together, becomes really useful when
-there are several steps involved in filtering and transforming a data set.
-
-The usual way of developing a workflow is to build it up one step at a time,
-testing the output produced at each stage. Let's do that for this case.
-
-We start by considering just the patients who are living.
-
-```{r}
-patients_of_interest <- metabric %>%
-  filter(Survival_status == "LIVING")
-```
-
-We then add another filter for the survival time.
-
-```{r}
-patients_of_interest <- metabric %>%
-  filter(Survival_status == "LIVING") %>%
-  filter(Survival_time > 120)
-```
-
-At each stage we look at the resulting `patients_of_interest` data frame to check
-we're happy with the result.
-
-Finally we only want certain columns, so we add a `select()` operation.
-
-```{r}
-patients_of_interest <- metabric %>%
-  filter(Survival_status == "LIVING") %>%
-  filter(Survival_time > 120) %>%
-  select(Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
-# print out the result
-patients_of_interest
-```
-
-When continuing our workflow across multiple lines, we need to be careful to
-ensure the `%>%` is at the end of the line. If we try to place this at the start
-of the next line, R will think we've finished the workflow prematurely and will
-report an error at what it considers the next statement, i.e. the line that
-begins with `%>%`.
-
-```{r eval = FALSE}
-# R considers the following to be 2 separate commands, the first of which ends
-# with the first filter operation and runs successfully.
-# The second statement is the third and last line, is not a valid commmand and
-# so you'll get an error message
-patients_of_interest <- metabric %>%
-  filter(Survival_status == "LIVING")
-  %>% filter(Survival_time > 120)
-```
-
-This is very similar to what we saw with adding layers and other components to
-a ggplot using the `+` operator, where we needed the `+` to be at the end of a
-line.
-
-We'll be using the pipe `%>%` operator throughout the rest of the course so
-you'd better get used to it. But actually we think you'll come to love it as
-much as we do.
-
----
-
-# Sorting using `arrange()`
-
-It is sometimes quite useful to sort our data frame based on the values in one
-or more of the columns, particularly when displaying the contents or saving them
-to a file. The `arrange()` function in dplyr provides this sorting capability.
-
-For example, we can sort the METABRIC patients into order of increasing
-survival time.
-
-```{r}
-arrange(metabric, Survival_time)
-```
-
-Or we might be more interested in the patients that survived the longest so
-would need the order to be of decreasing survival time. For that we can use
-the helper function `desc()` that works specifically with `arrange()`.
-
-```{r}
-arrange(metabric, desc(Survival_time))
-```
-
-As with the other tidyverse functions and, in particular, the other 4 key dplyr
-'verbs', `arrange()` works rather well in workflows in which successive
-operations are chained using `%>%`.
-
-```{r}
-patients_of_interest <- metabric %>%
-  filter(Survival_status == "LIVING") %>%
-  filter(Survival_time > 120) %>%
-  select(Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index) %>%
-  arrange(desc(Survival_time))
-# print out the result
-patients_of_interest
-```
-
-We can sort by more than one variable by adding more variable arguments to
-`arrange()`.
-
-```{r}
-arrange(patients_of_interest, Tumour_stage, Nottingham_prognostic_index)
-```
-
-Here we've sorted first by tumour stage from lowest to highest value and then
-by the Nottingham prognostic index for when there are ties, i.e. where the
-tumour stage is the same.
-
-Sorting is most commonly used in workflows as one of the last steps before
-printing out a data frame or writing out the table to a file.
-
----
-
-# Modifying data using `mutate()`
-
-In one of the examples of filtering observations using `filter()` above, we
-created a new logical variable called `Deceased`.
-
-```{r}
-metabric$Deceased <- metabric$Survival_status == "DECEASED"
-```
-
-This is an example of a rather common type of data manipulation in which we
-crate a new column based on the values contained in one or more other columns.
-The `dplyr` package provides the `mutate()` function for this purpose.
-
-```{r}
-metabric <- mutate(metabric, Deceased = Survival_status == "DECEASED")
-```
-
-Both of these methods adds the new column to the end.
-
-Note that variables names in the `mutate()` function call do not need to be
-prefixed by `metabric$` just as they don't in any of the `dplyr` functions.
-
-We can overwrite a column and this is quite commonly done when we want to change
-the units. For example, our tumour size values are in millimetres but the
-formula for the Nottingham prognostic index needs the tumour size to be in
-centimetres. We can convert to `Tumour_size` to centimetres by dividing by 10.
-
-```{r}
-metabric <- mutate(metabric, Tumour_size = Tumour_size / 10)
-```
-
-```{block type = "rmdblock"}
-**Nottingham Prognostic Index**
-
-The Nottingham prognostic index (**NPI**) is used to determine prognosis
-following surgery for breast cancer. Its value is calculated using three
-pathological criteria: the size of the tumour, the number of lymph nodes
-involved, and the grade of the tumour.
-
-The formula for the Nottingham prognostic index is:
-
-**`NPI = (0.2 * S) + N + G`**
-
-where
-
-* **S** is the size of the tumour in centimetres
-* **N** is the node status (0 nodes = 1, 1-3 nodes = 2, >3 nodes = 3)
-* **G** is the grade of tumour (Grade I = 1, Grade II = 2, Grade III = 3)
-```
-
-We'll recalculate the Nottingham prognostic index using the values
-`Tumour_size`, `Neoplasm_histologic_grade` and `Lymph_node_status` columns in
-our METABRIC data frame.
-
-```{r}
-metabric <- mutate(metabric, NPI = 0.2 * Tumour_size + Lymph_node_status + Neoplasm_histologic_grade)
-select(metabric, Tumour_size, Lymph_node_status, Neoplasm_histologic_grade, NPI, Nottingham_prognostic_index)
-```
-
-There is a discrepency. Can you see what the problem is?
-
-It appears that the tumour size wasn't correctly converted into centimetres in
-the original NPI calculation or that the wrong scaling factor for tumour size
-was used. This could explain why the plots we created in weeks 1 and 2 featuring
-the Nottingham prognostic index looked so odd. We'll see if they look any better
-with our recalculated values.
+# Our first ggplot - a scatter plot
+
+First we'll create a simple scatter plot much like the ones we've created in
+previous sessions using R's `plot()` function. We'll plot the expression of
+estrogen receptor alpha (ESR1) against that of the transcription factor, GATA3.
 
 ```{r scatter_plot_1}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = Age_at_diagnosis, y = NPI), na.rm = TRUE)
+  geom_point(mapping = aes(x = GATA3, y = ESR1))
 ```
 
-There is still some banding but nothing like the NPI values downloaded from
-cBioPortal which line up very closely to whole numbers.
+We specified 3 things to create this plot:
 
-The **`round()`** function is really useful for rounding numerical values to a
-specified number of decimal places. We'll read in the METABRIC data again and
-create a small workflow that carries out the tumour size conversion, computes
-the NPI, rounds the tumour size and the resulting NPI value to 1 decimal place
-and displays the results in decreasing order of NPI.
+1. The **data** -- needs to be a data frame (or a tibble)
+2. The type of plot -- this is called a **geom** in ggplot2 terminology
+3. The mapping of variables in the data to visual properties of objects in the plot - these are called **aesthetics** in ggplot2
 
-```{r message = FALSE}
-read_csv("data/metabric_clinical_and_expression_data.csv") %>%
-  mutate(Tumour_size = Tumour_size / 10) %>%
-  mutate(NPI = 0.2 * Tumour_size + Lymph_node_status + Neoplasm_histologic_grade) %>%
-  mutate(Tumour_size = round(Tumour_size, digits = 1)) %>%
-  mutate(NPI = round(NPI, digits = 1)) %>%
-  arrange(desc(NPI)) %>%
-  select(Tumour_size, Lymph_node_status, Neoplasm_histologic_grade, NPI)
+In this case, the type of plot is a **`geom_point`**, ggplot2's function for a
+scatter plot, and the expression of the genes GATA3 and ESR1 (estrogen receptor
+alpha) are mapped to the **`x`** and **`y`** coordinates, i.e. the positions of
+points on the scatter plot.
+
+Other aesthetics include the size, shape and colour of the points. It might seem
+a little surprising that the x and y coordinates are treated in the same way as
+we wouldn't normally think about these as having aesthetic qualities but this is
+indeed the case with ggplot2.
+
+# Aesthetic mappings
+
+Look up the `geom_point` help page to see the list of aesthetics that are
+available for this geom.
+
+```{r eval = FALSE}
+?geom_point
 ```
 
-## Mutating multiple columns
+If you scroll down to the aesthetics section in the help page for `geom_point`,
+you'll see that the **`x`** and **`y`** aesthetics are in bold face which tells
+us that these are required, i.e. you have to supply them, otherwise you'll get
+an error message from ggplot.
 
-In that last workflow we included the same rounding operation applied to two
-different variables. It would be nice to be able to carry out just the one
-`mutate()` but apply it to both `Tumour_size` and `NPI` columns and we can using
-**`mutate_at()`**.
+Other aesthetics such as size, shape, colour and transparency (`alpha`) are
+optional.
 
-```{r}
-metabric %>%
-  mutate_at(vars(Tumour_size, NPI), round, digits = 1) %>%
-  select(Patient_ID, Tumour_size, NPI)
-```
+So what about those other aesthetics? Colours are usually fun -- let's try to
+use the `colour` aesthetic.
 
-This is slightly more complicated. We had to group the variables for which we
-want the function to apply using `vars()`. We then gave the function name as the
-next argument and finally any additional arguments that the function needs, in
-this case the number of digits.
-
-We can use the range operator and the same helper functions as we did for
-selecting columns using `select()` inside `vars()`.
-
-For example, we might decide that our expression values are given to a much
-higher degree of precision than is strictly necessary.
-
-```{r}
-metabric %>%
-  mutate_at(vars(ESR1:MLPH), round, digits = 2) %>%
-  select(Patient_ID, ESR1:MLPH)
-```
-
-Or we could decide that all the columns whose names end with "_status" are in
-fact categorical variables and should be converted to factors.
-
-```{r}
-metabric %>%
-  mutate_at(vars(ends_with("_status")), as.factor) %>%
-  select(Patient_ID, ends_with("_status"))
-```
-
-## Anonymous functions
-
-The `mutate_at()` function, and the related `mutate_if()` and `mutate_all()` 
-functions, are really very powerful but with that comes additional complexity.
-
-For example, we may come across situations where we'd like to apply the same
-operation to multiple columns but where there is no available function in R
-to do what we want.
-
-Let's say we want to convert the petal and sepal measurements in the `iris`
-data set from centimetres to millimetres. We'd either need to create a new
-function to do this conversion or we could use what is known as an anonymous
-function, also known as a lambda expression.
-
-There is no 'multiply by 10' function and it seems a bit pointless to create
-one just for this conversion so we'll use an anonymous function instead --
-anonymous because it has no name, it's an _in situ_ function only used in our
-`mutate_at()` function call.
-
-```{r}
-iris %>%
-  as_tibble() %>%
-  mutate_at(vars(Sepal.Length:Petal.Width), ~ . * 10)
-```
-
-The **`~`** denotes that we're using an anonymous function (it is the symbol for
-formulae in R) and the `.` is a placeholder for the column being operated on. In
-this case, we're multiplying each of the columns between `Sepal.Length` and
-`Petal.Width` inclusive by 10.
-
-If you think this is getting fairly complicated you'd be right. We'll leave it
-there for now but point you to the help page for `mutate_at` if you're
-interested in finding out more.
-
----
-
-# Computing summary values using `summarise()`
-
-We'll cover the fifth of the main dplyr 'verb' functions, **`summarise()`**,
-only briefly here. This function computes summary values for one or more
-variables (columns) in a table. Here we will summarise values for the entire
-table but this function is much more useful in combination with `group_by()`
-in working on groups of observations within the data set. We will look at
-summarizing groups of observations next week.
-
-Any function that calculates a single scalar value from a vector can be used
-with `summarise()`. For example, the `mean()` function calculates the arithmetic
-mean of a numeric vector. Let's calculate the average ESR1 expression for tumour
-samples in the METABRIC data set.
-
-```{r}
-mean(metabric$ESR1)
-```
-
-The equivalent operation using `summarise()` is:
-
-```{r}
-summarise(metabric, mean(ESR1))
-```
-
-If you prefer Oxford spelling, in which -ize is preferred to -ise, you’re in
-luck as dplyr accommodates the alternative spelling.
-
-Both of the above statements gave the same average expression value but these
-were output in differing formats. The `mean()` function collapses a vector to
-single scalar value, which as we know is in fact a vector of length 1. The
-`summarise()` function, as with most tidyverse functions, returns another data
-frame, albeit one in which there is a single row and a single column.
-
-Returning a data frame might be quite useful, particularly if we’re summarising
-multiple columns or using more than one function, for example computing the
-average and standard deviation.
-
-```{r}
-summarise(metabric, ESR1_mean = mean(ESR1), ESR1_sd = sd(ESR1))
-```
-
-Notice how we also named the output columns in this last example.
-
-```{block type = "rmdblock"}
-**`summarise()`**
-
-`summarise()` collapses a data frame into a single row by calculating summary
-values of one or more of the columns.
-
-It can take any function that takes a vector of values and returns a single
-value. Some of the more useful functions include:
-
-* Centre: **`mean()`**, **`median()`**
-* Spread: **`sd()`**, **`mad()`**
-* Range: **`min()`**, **`max()`**, **`quantile()`**
-* Position: **`first()`**, **`last()`**
-* Count: **`n()`**
-
-Note the `first()`, `last()` and `n()` are only really useful when working on
-groups of observations using **`group_by()`**.
-
-**`n()`** is a special function that returns the number of observations; it
-doesn't take a vector argument, i.e. a column.
-```
-
-It is also possible to summarise using a function that takes more than one
-value, i.e. from multiple columns. For example, we could compute the correlation
-between the expression of FOXA1 and MLPH.
-
-```{r}
-summarise(metabric, correlation = cor(FOXA1, MLPH))
-```
-
-## Summarizing multiple columns
-
-Much like `mutate()` with its `mutate_at()`, `mutate_if()` and `mutate_all()`
-variants, there is a family of `summarise()` functions similarly named for
-applying the same summarization function to multiple columns in a single
-operation. These work in much the same way as their `mutate` cousins.
-
-**`summarise_at()`** allows us to select the columns on which to operate using
-an additional `vars()` argument.
-
-```{r}
-summarise_at(metabric, vars(FOXA1, MLPH), mean)
-```
-
-Selecting the columns is done in the same way as for `mutate_at()` and
-`select()`.
-
-**`summarise_all()`** summarises values in all columns.
-
-```{r}
-metabric %>%
-  select(ESR1:MLPH) %>%
-  summarise_all(mean)
-```
-
-You have to be careful with `summarise_all()` that all columns can be summarised
-with the given summary function. For example, what happens if we try to compute
-an average of a set of character values?
-
-```{r}
-summarise_all(metabric, mean, na.rm = TRUE)
-```
-
-We get a lot of warning messages and `NA` values for those columns for which
-computing an average does not make sense.
-
-**`summarise_if()`** can be used to select those values for which a
-summarization function is appropriate.
-
-```{r}
-summarise_if(metabric, is.numeric, mean, na.rm = TRUE)
-```
-
-It is possible to summarise using more than one function in which case a list of
-functions needs to be provided.
-
-```{r}
-summarise_at(metabric, vars(ESR1, ERBB2, PGR), list(mean, sd))
-```
-
-Pretty neat but I'm not sure about those column headings in the output --
-fortunately we have some control over these.
-
-```{r}
-summarise_at(metabric, vars(ESR1, ERBB2, PGR), list(average = mean, stdev = sd))
-```
-
-## Anonymous functions
-
-The `mutate_` functions and `summarise_` functions work in a very similar
-manner, very much in line with the coherent and consistent framework provided
-by `dplyr` and the entire tidyverse. For example, we could use an anonymous
-function in a `summarise_at()` operation applied to multiple variables. In the
-assignment from last week, we asked you to compute the correlation of the
-expression for FOXA1 against all other genes to see which was most strongly
-correlated. Here is how we could do this in a single `summarise_at()` statement
-using an anonymous function.
-
-```{r}
-summarise_at(metabric, vars(ESR1:MLPH, -FOXA1), ~ cor(., FOXA1))
-```
-
-Notice how we selected all genes between ESR1, the first gene column in our
-data frame, and MLPH, the last gene column, but then excluded FOXA1 as we're not
-all that interested in the correlation of FOXA1 with itself (we know the answer
-is 1).
-
----
-
-# Faceting with ggplot2
-
-Finally, let's change tack completely and take a look at a very useful feature
-of ggplot2 -- **faceting**.
-
-Faceting allows you to split your plot into subplots, or facets, based on one
-or more categorical variables. Each of the subplots displays a subset of the
-data.
-
-There are two faceting functions, **`facet_wrap()`** and **`facet_grid()`**.
-
-Let's create a scatter plot of GATA3 and ESR1 expression values where we're
-displaying the PR positive and PR negative patients using different colours.
-This is a very similar to a plot we created last week.
+We need to map a variable to a colour just like we did for x and y. We'll use
+the ER status as an example.
 
 ```{r scatter_plot_2}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PR_status)) +
-  geom_point(size = 0.5, alpha = 0.5)
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = ER_status))
 ```
 
-An alternative is to use faceting with **`facet_wrap()`**.
+What about colouring points based on a continuous variable?
 
 ```{r scatter_plot_3}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_wrap(vars(PR_status))
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index))
 ```
 
-This produces two plots, side-by-side, one for each of the categories in the
-`PR_status` variable, with a banner across the top of each for the category.
+ggplot2 uses a colour scale for a continous variable but discrete colours for
+discrete or categorical values.
 
-The variable(s) used for faceting are specified using `vars()` in a similar way
-to the selection of variables for `mutate_at()` and `summarise_at()`.
-
-We can still use separate colours if we prefer things to be, well, colourful.
+Size is not usually a good aesthetic to map to a variable. This is particularly
+the case where we have such a large number of observations.
 
 ```{r scatter_plot_4}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PR_status)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_wrap(vars(PR_status))
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, size = ER_status))
 ```
 
-Faceting is usually better than displaying groups using different colours when
-there are more than two or three groups when it can be difficult to really tell
-which points belong to each group. A case in point is for the 3-gene
-classification in the GATA3 vs ESR1 scatter plot we created last week. Let's
-create a faceted version of that plot.
+Some aesthetics, such as size, are designed to be used with continuous
+variables. If you map these to a discrete variable as we have done here, then
+ggplot warns you that this isn't such a good idea.
+
+It would however be useful to be able to decrease the size of the points given
+that there are around 2000 in this data set. We can do so by setting the size
+to a single value rather than mapping it to one of the variables in the data
+set - this has to be done outside the aesthetic mappings, i.e. outside the
+`aes()` bit.
 
 ```{r scatter_plot_5}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_wrap(vars(`3-gene_classifier`))
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index), size = 0.5)
 ```
 
-This helps explain why the function is called `facet_wrap()`. When it has too
-many subplots to fit across the page, it wraps around to another row. We can
-control how many rows or columns to use with the `nrow` and `ncol` arguments.
+Some aesthetics can only be used with categorical variables, e.g. shape.
+
+```{r eval = FALSE}
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, shape = Survival_time))
+```
+
+```
+Error: A continuous variable can not be mapped to shape
+```
+
+Here we set the shape based on the 3-gene classifier.
 
 ```{r scatter_plot_6}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_wrap(vars(`3-gene_classifier`), nrow = 1)
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, shape = `3-gene_classifier`), size = 0.9)
 ```
+
+Note that some of the patient samples have not been classified and ggplot has
+removed those points with missing values for the 3-gene classifier.
+
+It is usually preferable to use colours to distinguish between different
+categories but sometimes colour and shape are used together where we want to
+show which group a data point belongs to in two different categorical variables.
 
 ```{r scatter_plot_7}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_wrap(vars(`3-gene_classifier`), ncol = 2)
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = PAM50, shape = `3-gene_classifier`), size = 0.9)
 ```
 
-We can combine faceting on one variable with a colour aesthetic for another
-variable. For example, let's show the tumour stage status using faceting and the HER2
-status using colours.
+Transparency can be useful when we have a large number of points as we can more
+easily tell when points are overlaid, but like size, it is not usually mapped to
+a variable and sits outside the `aes()`.
 
 ```{r scatter_plot_8}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = HER2_status)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_wrap(vars(Neoplasm_histologic_grade))
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`), size = 0.75, alpha = 0.5)
 ```
 
-Instead of this we could facet on more than variable.
+Colours are more commonly used than shapes, sizes or transparency.
+
+Virtually every aspect of the plots we've created can be customized. We will
+learn how to change the colours used as well as other display parameters later
+in the course.
+
+# ggplot2 grammar
+
+The "gg" in ggplot2 stands for "grammar of graphics". This grammar is a coherent
+system for describing and building graphs.
+
+The basic template is given in the summary box below. This template can be used
+to create any of a wide range of graph types with ggplot2.
+
+```{block type = "rmdblock"}
+**ggplot2 grammar of graphics**
+
+**`ggplot(data = <DATA>) + <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))`**
+
+`ggplot()` creates the plot object.
+
+Layers can be added by adding geoms such as `geom_point()` using the `+`
+operator that ggplot2 has overridden for this purpose.
+```
+
+# Another plot type - bar chart
+
+The range of geoms available in ggplot2 can be obtained by navigating to the
+ggplot2 package in the Packages tab pane in RStudio (bottom right-hand corner)
+and scrolling down the list of functions sorted alphabetically to the `geom_...`
+functions.
+
+The METABRIC study redefined how we think about breast cancer by identifying and
+characterizing several new subtypes, referred to as *integrative clusters*.
+Let's create a bar chart of the number of patients whose cancers fall within
+each subtype in the METABRIC cohort.
+
+`geom_bar` is the geom we need and it requires a single aesthetic mapping of the
+categorical variable of interest to `x`.
+
+```{r bar_plot_1}
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Integrative_cluster))
+```
+
+The dark grey bars are a big ugly - what if we want each bar to be a different
+colour?
+
+```{r bar_plot_2}
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Integrative_cluster, colour = Integrative_cluster))
+```
+
+Colouring the edges wasn't quite what we had in mind. Look at the help for
+`geom_bar` to see what other aesthetic we should have used.
+
+```{r bar_plot_3}
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Integrative_cluster, fill = Integrative_cluster))
+```
+
+What happens if we colour (fill) with something other than the integrative
+cluster?
+
+```{r bar_plot_4}
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Integrative_cluster, fill = ER_status))
+```
+
+We get a stacked bar plot.
+
+Note the similarity in what we did here to what we did with the scatter plot
+- there is a common grammar.
+
+Let's try another stacked bar plot, this time with a categorical variable with
+more than two categories.
+
+```{r bar_plot_5}
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Integrative_cluster, fill = `3-gene_classifier`))
+```
+
+What if want all the bars to be the same colour but not dark grey, e.g. blue?
+
+```{r bar_plot_6}
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Integrative_cluster, fill = "blue"))
+```
+
+That doesn't look right - why not?
+
+You can set the aesthetics to a fixed value but this needs to be outside the
+mapping, just like we did before for size and transparency in the scatter plots.
+
+```{r bar_plot_7}
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Integrative_cluster), fill = "blue")
+```
+
+Setting this inside the `aes()` mapping told ggplot2 to map the colour aesthetic
+to some variable in the data frame, one that doesn't really exist but which is
+created on-the-fly with a value of "blue" for every observation.
+
+## Statistical transformations (ADVANCED)
+
+You may have noticed that ggplot2 didn't just plot values from our data set but
+had to do some calculation first for the bar chart, i.e. it had to sum the
+number of observations in each category.
+
+Each geom has a **statistical transformation**. In the case of the scatter plot,
+`geom_point` uses the "identity" transformation which means just use the values
+as they are, i.e. not really a transformation at all. The statistical
+transformation for `geom_bar` is "count", which means it will count the number
+of observations for each category in the variable mapped to the x aesthetic.
+
+You can see which statistical transformation is being used by a geom by looking
+at the `stat` argument in the help page for that geom.
+
+There are some circumstances where you'd want to change the `stat`, for example
+if we already had count values in our table.
+
+```{r}
+counts <- tibble(
+  `3-gene_classifier` = c("ER-/HER2-", "ER+/HER2- High Prolif", "ER+/HER2- Low Prolif", "HER2+"),
+  count = c(290, 603, 619, 188)
+)
+counts
+```
+
+```{r bar_plot_8}
+ggplot(data = counts) +
+  geom_bar(mapping = aes(x = `3-gene_classifier`, y = count), stat = "identity")
+```
+
+# Multiple layers
+
+Consider again the ggplot2 grammar:
+
+```
+ggplot(data = <DATA>) +
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+Why do we have the ggplot part and geom part joined by a "+" symbol?
+
+The **'+'** operator has been overridden by ggplot2 to add layers (geoms) and
+other components (scales, themes, etc.) to the plot.
+
+We can have multiple geoms in the same plot. Each is a different layer.
+
+Let's create a plot with two geoms.
+
+```{r scatter_line_plot_1}
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1)) +
+  geom_smooth(mapping = aes(x = GATA3, y = ESR1))
+```
+
+What is **`geom_smooth()`** doing? Look up the help page.
+
+Note that the shaded area surrounding blue line represents the standard error
+bounds on the fitted model.
+
+It is important when breaking these ggplot statements across multiple lines to
+ensure that the `+` is at the end of the line so that R knows you haven't
+finished constructing your plot.
+
+There is some annoying duplication of code used to create this plot. We've
+repeated the exact same aesthetic mapping for both geoms. We can avoid this by
+putting the mappings in the `ggplot()` function instead.
+
+```{r scatter_line_plot_2}
+ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
+  geom_point() +
+  geom_smooth()
+```
+
+Let's make the plot look a bit prettier by reducing the size of the points and
+making them transparent. We're not mapping `size` or `alpha` to any variables,
+just setting them to constant values, and we only want these settings to apply
+to the points, so we set them inside `geom_point()`.
+
+```{r scatter_line_plot_3}
+ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  geom_smooth()
+```
+
+Aesthetics set in the `ggplot` function are treated as global mappings for the
+plot and are inherited by all geoms added to the plot.
+
+Let's say we still want to colour the points by ER status.
+
+```{r scatter_line_plot_4}
+ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  geom_smooth()
+```
+
+Well, that wasn't expected, although it's pretty neat. We only wanted to apply
+the colour aesthetic to the points.
+
+We can add the colour aesthetic to the `geom_point()` function instead of as a
+global mapping in the `ggplot()` function.
+
+```{r scatter_line_plot_5}
+ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
+  geom_point(mapping = aes(colour = ER_status), size = 0.5, alpha = 0.5) +
+  geom_smooth()
+```
+
+Or suppose you've spent a bit of time getting your scatter plot just right and
+decide to add another layer but you're a bit worried about interfering with the
+the code you so lovingly crafted, you can set the `inherit.aes` option to
+`FALSE` and set the aesthetic mappings explicitly for your new layer.
+
+```{r scatter_line_plot_6}
+ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  geom_smooth(mapping = aes(x = GATA3, y = ESR1), inherit.aes = FALSE)
+```
+
+# Box plots
+
+Box plots are a particular favourite of Wednesday lunchtime seminars.
+
+```{r box_plot_1}
+ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3)) +
+  geom_boxplot()
+```
+
+See `geom_boxplot` help to explain how the box and whiskers are constructed and
+how it decides which points are outliers and should be displayed as points.
+
+How about adding another layer to display all the points?
+
+```{r box_plot_2}
+ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3)) +
+  geom_boxplot() +
+  geom_point()
+```
+
+Ideally, we'd like these points to be spread out a bit. The `geom_point` help
+points to `geom_jitter` as more suitable when one of the variables is
+categorical.
+
+```{r box_plot_3}
+ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3)) +
+  geom_boxplot() +
+  geom_jitter()
+```
+
+Well, that's a bit of a mess. We need to reduce the spread or jitter and make
+the points smaller and transparent.
+
+```{r box_plot_4}
+ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.3, size = 0.5, alpha = 0.25)
+```
+
+Displaying points in this way makes much more sense when we only have a few
+observations and where the box plot masks the fact, perhaps giving the false
+impression that the sample size is larger than it actually is. Here it makes
+less sense as we have very many observations.
+
+Let's try a colour aesthetic to also look at how estrogen receptor expression
+differs between HER2 positive and negative tumours.
+
+```{r box_plot_5}
+ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3, colour = HER2_status)) +
+  geom_boxplot()
+```
+
+# Time series data
+
+The next type of plot we're going to look at is a **line plot**. Line plots are
+a common visualization for time series data but we don't have data of this kind
+in the METABRIC data set so we'll turn our attention to a more topical data set.
+
+## COVID-19 data set
+
+Every day the UK Government presents a series of plots showing data relating to
+the coronavirus (COVID-19) pandemic. Both the plots and the data are published
+on the Government's
+[website](https://www.gov.uk/government/collections/slides-and-datasets-to-accompany-coronavirus-press-conferences).
+
+One of the plots shows the reduction in different types oftransport use over
+time in the UK in the week leading up to and since the lockdown restrictions
+were introduced in response to the pandemic.
+
+Reading these data into R from the downloaded Excel spreadsheet requires a bit
+more care as the spreadsheet contains multiple sheets and each table has header
+lines and footnotes. The date column doesn't have a column heading, so in the
+code below we've skipped that row as well and told `read_excel()` what column
+names to use. We've also given it a heads-up about which type of data are in
+each column. Look up the help page for `read_excel()` for more details about the
+arguments we've used below.
+
+```{r message = FALSE, warning = FALSE}
+library(readxl)
+transport_use <- read_excel("data/2020-04-26_COVID-19_Press_Conference_Data.xlsx",
+                            sheet = "Transport use",
+                            col_names = c("date", "transport_type", "percentage"),
+                            col_types = c("date", "text", "numeric"),
+                            skip = 4,
+                            n_max = 186)
+transport_use$percentage <- transport_use$percentage * 100
+transport_use
+```
+
+In this data set each row represents an observation of the current traffic
+volume for various modes of transport (motor vehicle, bus, train, etc.) since
+16 March as a percentage of the volume measured during the first week of
+February.
+
+So let's get a feel for this data set. Firstly, what modes of transport are
+included and how many observations do we have for each?
+
+```{r}
+table(transport_use$transport_type)
+```
+
+We'll focus solely on rail use to start with.
+
+```{r}
+rail_use <- transport_use[transport_use$transport_type == "National rail", ]
+rail_use
+```
+
+## Dates
+
+There is something unfamiliar about the `date` column that needs some
+explanation. Let's check the type and class of `date`.
+
+```{r}
+typeof(rail_use$date)
+class(rail_use$date)
+```
+
+So the `date` column is stored as a double and is a suitable continuous variable
+for a line plot but it's also got some special properties, afforded to it by its
+`POSIXct` class, that allows it to be treated as a date.
+
+The `POSIXct` class is how R represents dates, where POSIX is a standardization
+scheme in the world of computers, spanning multiple operating systems and
+programming languages, and the `ct` part stands for calendar time. We won't go
+into the details here but note that the numeric representation of a date, i.e.
+the `double` value, is the number of seconds since 1 January 1970. For example,
+the date in our first row is:
+
+```{r}
+rail_use$date[1]
+as.double(rail_use$date[1])
+```
+
+## Line plot
+
+We're going to plot the volume of traffic on each date with each measurement
+represented as a point on our graph and observations on successive dates
+connected by a line. Looking at the geoms available in ggplot2 (see the list of
+functions available for ggplot2 by navigating to the ggplot2 package in the
+Packages tab in RStudio), it looks like **`geom_line`** is the one we need.
+
+The aesthetics section in the help page for `geom_line` tells us we need an x
+and y mapping. Our x aesthetic will be `date` and the y aesthetic will be
+`percentage`.
+
+```{r line_plot_1}
+ggplot(data = rail_use) +
+  geom_line(mapping = aes(x = date, y = percentage))
+```
+
+We can return to our original `transport_use` table containing data for all
+transport modes and use another aesthetic, e.g. colour,  to plot a line for
+each.
+
+```{r line_plot_2}
+ggplot(data = transport_use) +
+  geom_line(mapping = aes(x = date, y = percentage, colour = transport_type))
+```
+
+Another aesthetic available for `geom_line` is `linetype`.
+
+```{r line_plot_3}
+ggplot(data = transport_use) +
+  geom_line(mapping = aes(x = date, y = percentage, linetype = transport_type))
+```
+
+# Histograms
+
+The geom for creating histograms is, rather unsurprisingly, `geom_histogram()`.
+
+```{r histogram_plot_1}
+ggplot(data = metabric) +
+  geom_histogram(mapping = aes(x = Age_at_diagnosis))
+```
+
+The warning message hints at picking a more optimal number of bins by specifying
+the `binwidth` argument.
+
+```{r histogram_plot_2}
+ggplot(data = metabric) +
+  geom_histogram(mapping = aes(x = Age_at_diagnosis), binwidth = 5)
+```
+
+Or we can set the number of bins.
+
+```{r histogram_plot_3}
+ggplot(data = metabric) +
+  geom_histogram(mapping = aes(x = Age_at_diagnosis), bins = 20)
+```
+
+These histograms are not very pleasing, aesthetically speaking - how about some
+better aesthetics?
+
+```{r histogram_plot_4}
+ggplot(data = metabric) +
+  geom_histogram(mapping = aes(x = Age_at_diagnosis), bins = 20, colour = "darkblue", fill = "grey")
+```
+
+# Categorical variables -- factors
+
+Several of the variables in the METABRIC data set are categorical, i.e. they can
+take one of a limited set of values. Some of these have been read into R as
+character types (e.g. the 3-gene classifier), other as numerical values, e.g.
+tumour stage. We also have some binary variables that are essentially categorical
+variables but with only 2 possible values, e.g. ER status.
+
+In many of the plots given above, ggplot2 has treated character variables as
+categorical in situtations where a categorical variable is expected. For example,
+when we displayed points on a scatter plot using different colours for each
+3-gene classification, or when we created separate box plots in the same graph
+for ER positive and negative patients.
+
+But what about when our categorical variable has been read into R as a
+continuous variable, e.g. `Tumour_stage`, which is read in as a double type.
 
 ```{r scatter_plot_9}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_wrap(vars(Neoplasm_histologic_grade, HER2_status))
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Tumour_stage))
 ```
 
-Faceting on two variables is usually better done using the other faceting
-function, **`facet_grid()`**. Note the change in how the formula is written.
+```{r}
+table(metabric$Tumour_stage)
+```
+
+Tumour stage has only 5 discrete states but ggplot2 doesn't know these are
+supposed to be a restricted set of values and has used a colour scale to show
+them as if they were continuous. We need to tell R that these are categorical.
+
+R has a special type for categorical variables called a **factor**. Let's
+convert our tumour stage variable to a factor using the `as.factor()` function.
+
+```{r}
+metabric$Tumour_stage <- as.factor(metabric$Tumour_stage)
+metabric[, c("Patient_ID", "Tumour_stage")]
+```
+
+R actually stores categorical variables as integers but with some additional
+metadata about which of the integer values, or 'levels', corresponds to each
+category.
+
+```{r}
+typeof(metabric$Tumour_stage)
+class(metabric$Tumour_stage)
+levels(metabric$Tumour_stage)
+```
 
 ```{r scatter_plot_10}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_grid(vars(Neoplasm_histologic_grade), vars(HER2_status))
+ggplot(data = metabric) +
+  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Tumour_stage))
 ```
 
-Again we can use colour aesthetics alongside faceting to add further information
-to our visualization.
+In this case the order of the levels makes sense but for other variables you
+may wish for more control over the ordering. Take the integrative cluster
+variable for example. We created a bar plot of the numbers of patients in the
+METABRIC cohort within each integrative cluster. Did you notice the ordering of
+the clusters? 10 came just after 1 and before 2. That looked a bit odd as we'd
+have naturally expected it to come last of all. R, on the other hand, is
+treating this vector as a character vector (mainly because of the 'ER-' and
+'ER+' subtypes of cluster 4, and sorts the values into alphanumerical order.
 
-```{r scatter_plot_11}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_grid(vars(Neoplasm_histologic_grade), vars(HER2_status))
+```{r}
+metabric$Integrative_cluster <- as.factor(metabric$Integrative_cluster)
+levels(metabric$Integrative_cluster)
 ```
 
-Finally, we can use a `labeller` to change the labels for each of the
-categorical values so that these are more meaningful in the context of this
-plot.
+A look at the help page for `as.factor` shows that we can create a factor using
+the `factor()` function and specify the levels using the `levels` argument.
 
-```{r scatter_plot_12}
-grade_labels <- c("1" = "Grade I", "2" = "Grade II", "3" = "Grade III")
-her2_status_labels <- c("Positive" = "HER2 positive", "Negative" = "HER2 negative")
-#
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_grid(vars(Neoplasm_histologic_grade),
-             vars(HER2_status),
-             labeller = labeller(
-               Neoplasm_histologic_grade = grade_labels,
-               HER2_status = her2_status_labels
-              )
-            )
+```{r}
+metabric$Integrative_cluster <- factor(metabric$Integrative_cluster, levels = c("1", "2", "3", "4ER-", "4ER+", "5", "6", "7", "8", "9", "10"))
+levels(metabric$Integrative_cluster)
 ```
 
-This would certainly be necessary if we were to use ER and HER2 status on one
-side of the grid.
-
-```{r scatter_plot_13}
-er_status_labels <- c("Positive" = "ER positive", "Negative" = "ER negative")
-#
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  facet_grid(vars(Neoplasm_histologic_grade),
-             vars(ER_status, HER2_status),
-             labeller = labeller(
-               Neoplasm_histologic_grade = grade_labels,
-               ER_status = er_status_labels,
-               HER2_status = her2_status_labels
-              )
-            )
+```{r bar_plot_9}
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Integrative_cluster, fill = Integrative_cluster))
 ```
+
+# The ggplot object -- a peek under the hood (ADVANCED)
+
+Let's build a ggplot2 plot up in stages to understand what's really going on.
+
+```{r}
+plot <- ggplot(data = metabric)
+```
+
+What is the plot object we've just created?
+
+```{r}
+typeof(plot)
+```
+
+```{r}
+length(plot)
+```
+
+The plot object is a list containing 9 elements. It's actually a special type of
+list.
+
+```{r}
+class(plot)
+```
+
+What are the 9 things in the list?
+
+```{r}
+names(plot)
+```
+
+So far we've constructed ggplots from data, layers (geoms) and aesthetic
+mappings but do you notice the labels, scales, facet and theme elements? We'll
+be looking at how to customize plots later, including changing the labels,
+altering the scales of axes, and applying a different visual theme.
+
+The `data` element is just the metabric tibble that we provided to the
+`ggplot()` function.
+
+```{r}
+plot$data
+```
+
+This `plot` list object is really only a specification for how ggplot2 should
+create the plot. ggplot2 only renders the plot when we ask it to by printing it
+out to the screen by typing `print(plot)` or simply just `plot`.
+
+We haven't added any layers yet so what does our plot look like at this point?
+
+```{r building_up_plot_1}
+plot
+```
+
+ggplot2 doesn't know what to plot yet as we haven't added a layer (geom).
+
+```{r}
+plot$mapping
+plot$layers
+```
+
+Lets add an aesthetic mapping.
+
+```{r building_up_plot_2}
+plot <- ggplot(data = metabric, mapping = aes(x = Nottingham_prognostic_index, y = ESR1, colour = ER_status))
+plot
+```
+
+ggplot2 has automatically added scales for x and y based on the ranges of values
+for the Nottingham prognostic index and ESR1 expression. Still nothing has been
+plotted as we haven't yet specified the type of plot (geom) to add as a layer.
+
+```{r}
+plot$mapping
+plot$layers
+```
+
+Finally, let's add a `geom_point` layer to create a scatter plot.
+
+```{r building_up_plot_3}
+plot <- plot + geom_point()
+plot
+```
+
+```{r}
+plot$layers
+```
+
+We touched on statistical transformations earlier. The `stat` associated with a
+`geom_point` is `stat_identity` which leaves values unchanged. In the case of a
+scatter plot, we already have the x and y values -- they don't need to be
+transformed, just plotted on the x and y axes.
 
 ---
 
@@ -1025,19 +780,20 @@ ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
 
 In this session we have covered the following concepts:
 
-* Filtering rows in a data frame based on their values
-* Selecting and reordering of columns
-* Sorting rows based on values in one or more columns
-* Modifying a data frame by either adding new columns or modifying existing ones
-* Summarizing the values in one or more columns
-* Building up workflows by chaining operations together using the pipe operator
-* Faceting of ggplot2 visualizations
+* How to use ggplot2 to create different types of plot using a common grammar
+* How to map variables to aesthetic features of a plot
+* How to construct a plot with multiple layers (geoms)
+* Various types of plot including scatter plots, box plots, bar plots and histograms
+* Working with dates
+* Plotting time series data as line graphs
+* How to work with time series data
+* Categorical variables and how R handles these with its factor type
 
 ---
 
 # Assignment
 
-Assignment: [assignment4.Rmd](assignments/assignment4.Rmd)
+Assignment: [assignment3.Rmd](assignments/assignment3.Rmd)
 
-Solutions: [assignment4_solutions.Rmd](assignments/assignment4_solutions.Rmd)
-and [assignment4_solutions.html](assignments/assignment4_solutions.html)
+Solutions: [assignment3_solutions.Rmd](assignments/assignment3_solutions.Rmd)
+and [assignment3_solutions.html](assignments/assignment3_solutions.html)

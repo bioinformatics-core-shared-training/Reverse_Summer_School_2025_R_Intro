@@ -5,23 +5,23 @@ navbar:
     - text: "Contents"
       href: index.html
       menu:
-        - text: "Week 0 - Getting ready"
-          href: week0.html
-        - text: "Week 1 - Introduction to R and RStudio"
+        - text: "Week 1 - Getting ready"
           href: week1.html
-        - text: "Week 2 - Working with data in R"
+        - text: "Week 2 - Introduction to R and RStudio"
           href: week2.html
-        - text: "Week 3 - Data visualization with ggplot2"
+        - text: "Week 3 - Working with data in R"
           href: week3.html
-        - text: "Week 4 - Data manipulation using dplyr"
+        - text: "Week 4 - Data visualization with ggplot2"
           href: week4.html
-        - text: "Week 5 - Grouping and combining data"
+        - text: "Week 5 - Data manipulation using dplyr"
           href: week5.html
-        - text: "Week 6 - Restructuring data for analysis"
+        - text: "Week 6 - Grouping and combining data"
           href: week6.html
+        - text: "Week 7 - Restructuring data for analysis"
+          href: week7.html
   right:
     - icon: fa-github fa-lg
-      href: https://github.com/bioinformatics-core-shared-training/r-intro
+      href: https://github.com/bioinformatics-core-shared-training/Bitesize-R
 output_dir: "docs"
 output:
   html_document:
