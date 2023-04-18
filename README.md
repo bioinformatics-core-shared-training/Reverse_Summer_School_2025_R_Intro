@@ -1,3 +1,3 @@
-# Introduction to coding in R
+# Introduction to R for Biologists
 
-R training course for CRUK CI staff during the coronavirus lockdown.
+R training course for CRUK CI staff
