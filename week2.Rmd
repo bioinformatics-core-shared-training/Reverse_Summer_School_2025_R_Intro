@@ -4,7 +4,6 @@ title: "Week 2 -- Introduction to R and RStudio"
 
 > #### Aims
 >
-> * To introduce Rstudio that we will be using, to write R scripts, in this course
 > * To demonstrate the ways in which R can store data
 > * To show how R functions can operate on such data
 >
@@ -16,116 +15,7 @@ title: "Week 2 -- Introduction to R and RStudio"
 > * Demonstrate the basic format for using an R function
 > * Teach some simple but useful functions in R
 
-# Introduction to R and RStudio
 
-# Why learn R?
-
-* R involves creating & using scripts which makes the steps you used in your analysis clear and can be inspected by someone else for feedback and error-checking.
-
-* R code is great for reproducibility. An increasing number of journals and funding agencies expect analyses to be reproducible, so knowing R will give you an edge with these requirements.
-
-* R integrates with other tools to generate manuscripts from your code.
-This document (RMarkdown a .Rmd file) is a case in point.
-
-* R is interdisciplinary and extensible and has thousands of installable packages to extend its capabilities. R has packages for image analysis, GIS, time series, population genetics, and a lot more.
-
-* R scales well to work on data of all shapes and sizes.
-
-* R can connect to spreadsheets, databases, and many other data formats, on your computer or on the web.
-
-* R produces high-quality graphics suitable for publication in journals or the web.
-
-* R has a large and welcoming community - Thousands use R daily and many of them are willing to help you through websites such as Stack Overflow or the RStudio community.
-
-* Not only is R free, but it is also open-source and cross-platform.
-
----
-
-# Rstudio  a brief tour
-
-Rstudio provides us with a friendly interface to the R statistical progrmming language.
-It consists of four main "Panes". These can be re-sized and moved around to suit how
-you like to work.
-
-<img src="images/Rstudioataglance.png" alt="Rstudio screenshot" width="90%">
-
-## Editing pane
-
-By default the top left-hand pane is one for creating, editing & running R scripts.
-
-<img src="images/Rstudio_scripting.png" alt="Rstudio edit pane screenshot" width="90%">
-
-A script is an R program that you have written. A good practice is for that script to
-perform only one role in your analysis workflow and so you may have several R scripts which you call, in a particular sequence, to analyse your data.
-
-As you will see, a script is basically a text file that contains R commands and
-(ideally) comments to explain what the codes function is (as a documentation process).
-
-As well as R scripts, there are many types of Rstudio document including Markdown files which we will use in the teaching of this course. These can provide interactive workbooks or pdf and web documents to name but a few possible outcomes.
-
-## Console
-
-Coming down the screen to the bottom left-hand pane we find the console window. This is where we can find output produced by running our R scripts.
-
-<img src="images/Rstudio_console.png" alt="Rstudio screenshot" width="90%">
-
-We can also try out snippets of R code here. Those of you who have only used graphical interfaces like Windows or MacOS where you click on commands using a mouse may find this aspect of R somewhat different. We type in commands to R using the command line.
-
-This area can also be used like a calculator. Let's just type in something like `23 + 45` followed by the return key and see what happens. You should get the following:
-
-```
-> 23 + 45
-[1] 68
-```
-
-Now 68 is clearly the answer but what is that 1 in brackets?
-
-Here is another example to explain. If we type `1:36` and press enter, what happens?
-R generates output counting from 1 to 36 but cannot fit all the output on one line and so starts another like this:
-
-```
-> 1:36
- [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-[26] 26 27 28 29 30 31 32 33 34 35 36
-```
-
-Now we have two lines beginning with a number in square brackets. Note that the
-number of values displayed on each line may differ on your computer; it largely
-depends on the width of your console pane and the font size. Try creating a
-larger sequence of numbers, e.g. `1:100`, if all 36 numbers fit on a single line
-in your case.
-
-This is just R helping us to keep tabs on which number we are looking at. `[1]` denotes that the line starts with the first result and the `[26]` denotes that this line starts with the 26th number. Let's try another one and generate a sequence incrementing in steps of 2:
-
-```
-> 1:36 * 2
- [1]  2  4  6  8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50
-[26] 52 54 56 58 60 62 64 66 68 70 72
-```
-
-There are other tabs on this pane but we shall not be covering these on this course.
-
-## Environment
-
-Next we move to the top right-hand corner pane. Here we have even more tabs (of which we will only consider two Environment and History).
-
-<img src="images/Rstudio_env.png" alt="Rstudio screenshot" width="80%">
-
-Environment keeps track on R variables which we create (more on those later) and their contents. History is like a tally role of all the R commands we have entered in our session.
-
-## Files, Plots & Help
-
-Our final bottom right-hand pane also has several tabs. The Files tab is a file explorer that enable us to move around our directories and select which files we wish to work on. We can also change the default working directory that Rstudio will use.
-
-<img src="images/Rstudio_filexpl.png" alt="Rstudio screenshot" width="80%">
-
-The Plots tab is where any graphs that we create in R will appear. We can move through them using the arrow buttons and the export button will convert them to different graphics formats e.g. for publication in a paper or for the web.
-
-The Packages tab shows which R packages are installed (These expand R's functionallity and again will be covered later) and can also install new packages.
-
-The Help tab is a _massively useful_ tab which enables you to search R help index to get help pages on R functions and provide example code to help you use them in your R scripts.
-
----
 
 # Our first look at the R language
 
