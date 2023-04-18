@@ -608,31 +608,123 @@ heights[!is.na(heights)]
 
 # Challenges
 
+:::exercise
 1. You have given a list of tumour volumes from 5 patients, 2.1, 1.9, 2.6, 1.8, and 3 $cm^3$. Convent this data into a R vector and get the following characteristics of data by applying some of the functions listed above.
     a. How many observations we have?
     b. What is the mean tumour volume?
     c. How many patients has tumour volume less than 2 $cm^3$?
-  
+
+<!--- <details><summary>Answer</summary>
+```{r ex_1, purl=FALSE}
+# Challenge 1 a: How many observations we have?
+tumour_vol <- c(2.1, 1.9, 2.6, 1.8,3)
+length(tumour_vol)
+
+# Challenge 1 b:  What is the mean tumour volume?
+mean(tumour_vol)
+
+# Challenge 1 c: How many patients has tumour volume less than 2
+sum(c(2.1, 1.9, 2.6, 1.8,3) < 2)
+```
+</details> --->  
+:::
+
+
+:::exercise
 2. You have given two vectors of observations data1 <- c(10, 9, 7, 6, 7, 3, 7, 5, 6, 6) and data2 <- c(5, 2, 10, 7, 2, 5, 1, 5, 3, 4).
     a. use the function `cor()` to get the correlation coefficient
     b.  Can you identify the default correlation method the `cor()` function uses? For help use `help()` or `?`
     c. Can you get Spearman correlation coefficient for these two vectors? 
-  
-3. You have given a logical vector, logi_vec <- c(TRUE, FALSE, TRUE, TRUE)
-    a. Can you apply math functions like `sum()`, `mean()` on this logical vector, if so what is the output of sum() and mean()?
-  
+
+<!---<details><summary>Answer</summary>
+
+```{r ex_2, purl=FALSE}
+# Challenge 2 a: use the function `cor()` to get the correlation coefficient
+data1 <- c(10, 9, 7, 6, 7, 3, 7, 5, 6, 6)
+data2 <- c(5, 2, 10, 7, 2, 5, 1, 5, 3, 4)
+cor(x=data1, y=data2)
+
+
+# Challenge 2 b: Can you identify the default correlation method the `cor()` function uses?
+?cor
+# According to the help in the 'cor' file, if no method is specified by default the function will use the 'pearson' method.
+
+# Challenge 2 c: Can you get Spearman correlation coefficient for these two vectors?
+cor(x=data1, y=data2, method = "spearman")
+```
+</details> --->
+:::
+
+
+:::exercise 
+3. You have given a logical vector, logi_vec <- c(TRUE, FALSE, TRUE, TRUE). Can you apply math functions like `sum()`, `mean()` on this logical vector, if so what is the output of sum() and mean()?
+
+<!---<details><summary>Answer</summary>
+
+```{r ex_3, purl=FALSE}
+# Challenge 3: 
+logi_vec <- c(TRUE, FALSE, TRUE, TRUE)
+# Mathematical functions can be applied to logical vectors. Internally, the logical values TURE and FALSE are represented as 1 and 0, respectively.
+sum(logi_vec)
+mean(logi_vec)
+```
+</details> --->
+:::
+
+:::exercise 
+
 4. What is the output of following operations and explain your logic behind it.
     a. c(5, 2, 9, 1, 13) * c(2)
     b. c(5, 2, 9, 1, 13) * c(1,2)
     c. c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
-  
+
+<!---<details><summary>Answer</summary>
+```{r ex_4, purl=FALSE}
+# Challenge 4 a: c(5, 2, 9, 1, 13) * c(2)
+c(5, 2, 9, 1, 13) * c(2)
+# Since the shorter vector has only one value, every value of the longer vector is multiplied by the value of the shorter vector.
+
+# Challenge 4 b: c(5, 2, 9, 1, 13) * c(1,2)
+c(5, 2, 9, 1, 13) * c(1,2) 
+# Since the shorter vector has only two values, these two values are sequentially recycled to multiply the longer vector's values.
+
+# Challenge 4 c: c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
+c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
+# Due to the fact that both vectors have the same length, values are sequentially added together
+
+```
+</details> --->
+:::  
+
+:::exercise
 5. From the vector c(23, 12, 41, 65, 23, 6), can you extract those values that are equal to 23 or less than 15?
 
+<!---<details><summary>Answer</summary>
+
+```{r ex_5, purl=FALSE}
+vec <- c(23, 12, 41, 65, 23, 6)
+vec[ vec == 23 | vec < 15]
+```
+</details>--->
+
+:::
+
+:::exercise
 6. "month.name" is a in-built R vector
     a. What is the index number of "April" in month.name vector? hist: "which" function may help you.
     b. Extract all the months from April to December
+<details><summary>Answer</summary>
 
+```{r ex_6, purl=FALSE}
+# Challenge 6 a: What is the index number of "April" in month.name vector? hist: "which" function may help you.
+which(month.name == "April")
 
+# Challenge 6 b:Extract all the months from April to December
+month.name[which(month.name == "April"):length(month.name)]
+
+```
+</details>
+:::
 #### Credit
 
 These instructions were adapted from [Data Carpentry](https://datacarpentry.org)

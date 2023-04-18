@@ -1104,20 +1104,54 @@ heights[!is.na(heights)]</code></pre>
 </div>
 <div id="challenges" class="section level1">
 <h1>Challenges</h1>
+<div class="exercise">
 <ol style="list-style-type: decimal">
-<li><p>You have given a list of tumour volumes from 5 patients, 2.1,
-1.9, 2.6, 1.8, and 3 <span class="math inline">\(cm^3\)</span>. Convent
-this data into a R vector and get the following characteristics of data
-by applying some of the functions listed above.</p>
+<li>You have given a list of tumour volumes from 5 patients, 2.1, 1.9,
+2.6, 1.8, and 3 <span class="math inline">\(cm^3\)</span>. Convent this
+data into a R vector and get the following characteristics of data by
+applying some of the functions listed above.
 <ol style="list-style-type: lower-alpha">
 <li>How many observations we have?</li>
 <li>What is the mean tumour volume?</li>
 <li>How many patients has tumour volume less than 2 <span
 class="math inline">\(cm^3\)</span>?</li>
 </ol></li>
-<li><p>You have given two vectors of observations data1 &lt;- c(10, 9,
-7, 6, 7, 3, 7, 5, 6, 6) and data2 &lt;- c(5, 2, 10, 7, 2, 5, 1, 5, 3,
-4).</p>
+</ol>
+<!--- <details><summary>Answer</summary>
+
+```r
+# Challenge 1 a: How many observations we have?
+tumour_vol <- c(2.1, 1.9, 2.6, 1.8,3)
+length(tumour_vol)
+```
+
+```
+## [1] 5
+```
+
+```r
+# Challenge 1 b:  What is the mean tumour volume?
+mean(tumour_vol)
+```
+
+```
+## [1] 2.28
+```
+
+```r
+# Challenge 1 c: How many patients has tumour volume less than 2
+sum(c(2.1, 1.9, 2.6, 1.8,3) < 2)
+```
+
+```
+## [1] 2
+```
+</details> --->
+</div>
+<div class="exercise">
+<ol start="2" style="list-style-type: decimal">
+<li>You have given two vectors of observations data1 &lt;- c(10, 9, 7,
+6, 7, 3, 7, 5, 6, 6) and data2 &lt;- c(5, 2, 10, 7, 2, 5, 1, 5, 3, 4).
 <ol style="list-style-type: lower-alpha">
 <li>use the function <code>cor()</code> to get the correlation
 coefficient</li>
@@ -1127,29 +1161,158 @@ coefficient</li>
 <li>Can you get Spearman correlation coefficient for these two
 vectors?</li>
 </ol></li>
-<li><p>You have given a logical vector, logi_vec &lt;- c(TRUE, FALSE,
-TRUE, TRUE)</p>
-<ol style="list-style-type: lower-alpha">
-<li>Can you apply math functions like <code>sum()</code>,
+</ol>
+<!---<details><summary>Answer</summary>
+
+
+```r
+# Challenge 2 a: use the function `cor()` to get the correlation coefficient
+data1 <- c(10, 9, 7, 6, 7, 3, 7, 5, 6, 6)
+data2 <- c(5, 2, 10, 7, 2, 5, 1, 5, 3, 4)
+cor(x=data1, y=data2)
+```
+
+```
+## [1] -0.1572206
+```
+
+```r
+# Challenge 2 b: Can you identify the default correlation method the `cor()` function uses?
+?cor
+# According to the help in the 'cor' file, if no method is specified by default the function will use the 'pearson' method.
+
+# Challenge 2 c: Can you get Spearman correlation coefficient for these two vectors?
+cor(x=data1, y=data2, method = "spearman")
+```
+
+```
+## [1] -0.2839244
+```
+</details> --->
+</div>
+<div class="exercise">
+<ol start="3" style="list-style-type: decimal">
+<li>You have given a logical vector, logi_vec &lt;- c(TRUE, FALSE, TRUE,
+TRUE). Can you apply math functions like <code>sum()</code>,
 <code>mean()</code> on this logical vector, if so what is the output of
 sum() and mean()?</li>
-</ol></li>
-<li><p>What is the output of following operations and explain your logic
-behind it.</p>
+</ol>
+<!---<details><summary>Answer</summary>
+
+
+```r
+# Challenge 3: 
+logi_vec <- c(TRUE, FALSE, TRUE, TRUE)
+# Mathematical functions can be applied to logical vectors. Internally, the logical values TURE and FALSE are represented as 1 and 0, respectively.
+sum(logi_vec)
+```
+
+```
+## [1] 3
+```
+
+```r
+mean(logi_vec)
+```
+
+```
+## [1] 0.75
+```
+</details> --->
+</div>
+<div class="exercise">
+<ol start="4" style="list-style-type: decimal">
+<li>What is the output of following operations and explain your logic
+behind it.
 <ol style="list-style-type: lower-alpha">
 <li>c(5, 2, 9, 1, 13) * c(2)</li>
 <li>c(5, 2, 9, 1, 13) * c(1,2)</li>
 <li>c(5, 2, 9, 1, 13) + c(1,2,3,4,5)</li>
 </ol></li>
-<li><p>From the vector c(23, 12, 41, 65, 23, 6), can you extract those
-values that are equal to 23 or less than 15?</p></li>
-<li><p>“month.name” is a in-built R vector</p>
+</ol>
+<!---<details><summary>Answer</summary>
+
+```r
+# Challenge 4 a: c(5, 2, 9, 1, 13) * c(2)
+c(5, 2, 9, 1, 13) * c(2)
+```
+
+```
+## [1] 10  4 18  2 26
+```
+
+```r
+# Since the shorter vector has only one value, every value of the longer vector is multiplied by the value of the shorter vector.
+
+# Challenge 4 b: c(5, 2, 9, 1, 13) * c(1,2)
+c(5, 2, 9, 1, 13) * c(1,2) 
+```
+
+```
+## Warning in c(5, 2, 9, 1, 13) * c(1, 2): longer object length is not a multiple
+## of shorter object length
+```
+
+```
+## [1]  5  4  9  2 13
+```
+
+```r
+# Since the shorter vector has only two values, these two values are sequentially recycled to multiply the longer vector's values.
+
+# Challenge 4 c: c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
+c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
+```
+
+```
+## [1]  6  4 12  5 18
+```
+
+```r
+# Due to the fact that both vectors have the same length, values are sequentially added together
+```
+</details> --->
+</div>
+<div class="exercise">
+<ol start="5" style="list-style-type: decimal">
+<li>From the vector c(23, 12, 41, 65, 23, 6), can you extract those
+values that are equal to 23 or less than 15?</li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+
+```r
+vec <- c(23, 12, 41, 65, 23, 6)
+vec[ vec == 23 | vec < 15]
+```
+
+```
+## [1] 23 12 23  6
+```
+</details>--->
+</div>
+<div class="exercise">
+<ol start="6" style="list-style-type: decimal">
+<li>“month.name” is a in-built R vector
 <ol style="list-style-type: lower-alpha">
 <li>What is the index number of “April” in month.name vector? hist:
 “which” function may help you.</li>
-<li>Extract all the months from April to December</li>
+<li>Extract all the months from April to December
+<details>
+<summary>
+Answer
+</summary></li>
 </ol></li>
 </ol>
+<pre class="r"><code># Challenge 6 a: What is the index number of &quot;April&quot; in month.name vector? hist: &quot;which&quot; function may help you.
+which(month.name == &quot;April&quot;)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code># Challenge 6 b:Extract all the months from April to December
+month.name[which(month.name == &quot;April&quot;):length(month.name)]</code></pre>
+<pre><code>## [1] &quot;April&quot;     &quot;May&quot;       &quot;June&quot;      &quot;July&quot;      &quot;August&quot;    &quot;September&quot;
+## [7] &quot;October&quot;   &quot;November&quot;  &quot;December&quot;</code></pre>
+</details>
+</div>
 <div id="credit" class="section level4">
 <h4>Credit</h4>
 <p>These instructions were adapted from <a
