@@ -37,7 +37,7 @@ The course will be run over **7 weeks** with the following structure:
 
 # Schedule
 
-1. [Introduction to R](docs/week1.html) (20 April) - An introduction to RStudio, R objects, data types, functions and vectors
+[Introduction to R](./docs/week1.html) (20 April) - An introduction to RStudio, R objects, data types, functions and vectors
 
 2. [Introduction to R](week2.html) (27 April) - An introduction to other data structures
 
