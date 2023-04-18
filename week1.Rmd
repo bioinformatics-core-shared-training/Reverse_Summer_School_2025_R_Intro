@@ -7,6 +7,8 @@ title: "Data types and structures"
 > * Install R and RStudio
 > * Install the tidyverse collection of R packages
 > * To introduce Rstudio that we will be using, to write R scripts, in this course
+> * To introduce data types and data structures
+
 
 
 # Installing software you will need
