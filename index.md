@@ -1,6 +1,5 @@
----
-title: "Introduction to R for Biologists"
----
+# "Introduction to R for Biologists"
+
 
 # Introduction
 
