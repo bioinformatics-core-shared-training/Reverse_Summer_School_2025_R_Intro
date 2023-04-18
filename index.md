@@ -1,5 +1,5 @@
 ---
-title: "Introduction to R for Cancer Scientists"
+title: "Introduction to R for Biologists"
 ---
 
 # Introduction
@@ -38,11 +38,11 @@ The course will be run over **7 weeks** with the following structure:
 
 # Schedule
 
-1. [Getting set up](week1.html) (20 April) - installing R and RStudio
+1. [Getting set up](week1.html) (20 April) - An introduction to RStudio, R objects, data types, functions and vectors
 
-2. [Introduction to R](week2.html) (27 April) - Interacting with R using RStudio and introducing objects, data types and functions
+2. [Introduction to R](week2.html) (27 April) - An introduction to other data structures
 
-3. [Working with data](week3.html) (4 May) - Creating R scripts, working with tabular data and other types of objects in R, reading data into R
+3. [Working with data](week3.html) (4 May) -  Reading data into R tabular data
 
 4. [Data visualization with ggplot2](week4.html) (11 May) - A common grammar to create scatter plots, bar charts, boxplots, histograms and line graphs for time series data
 
