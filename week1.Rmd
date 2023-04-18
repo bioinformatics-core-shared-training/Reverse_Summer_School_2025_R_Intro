@@ -1,5 +1,5 @@
 ---
-title: "Getting Ready"
+title: "Data types and structures"
 ---
 
 > #### Learning objectives
