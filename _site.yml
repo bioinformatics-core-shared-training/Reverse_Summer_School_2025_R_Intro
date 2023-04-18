@@ -6,9 +6,9 @@ navbar:
       href: index.html
       menu:
         - text: "Week 1 - An introduction to RStudio, R objects, data types, functions and vectors"
-          href: docs/week1.html
+          href: week1.html
         - text: "Week 2 - An introduction to other data structures"
-          href: week2.html
+          href: eek2.html
         - text: "Week 3 - Working with data in R"
           href: week3.html
         - text: "Week 4 - Data visualization with ggplot2"
