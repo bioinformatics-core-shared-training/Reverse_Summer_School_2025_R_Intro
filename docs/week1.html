@@ -703,7 +703,8 @@ class="uri">https://www.javatpoint.com/r-data-types</a></p>
 ‘cat’</li>
 <li>Quoted numbers are character type: ‘3.14’</li>
 </ul></li>
-<li><strong>numeric</strong>: Set of all real numbers.
+<li><strong>numeric</strong> or <strong>double</strong>: Set of all real
+numbers.
 <ul>
 <li>A number. Could be a integer or a real number: 3.14, 1.45765, 5,
 1000000</li>
@@ -776,6 +777,12 @@ class="uri">http://venus.ifca.unican.es/Rintro/dataStruct.html</a></p>
 <li>All the other data structures built on vectors</li>
 <li><code>Understanding this structure is absolutely essential</code></li>
 </ul>
+<div class="figure">
+<img src="images/Vectors-in-R.jpg" alt="" />
+<p class="caption">Image source:<a
+href="https://www.geeksforgeeks.org/r-vector/"
+class="uri">https://www.geeksforgeeks.org/r-vector/</a></p>
+</div>
 <pre class="r"><code>x &lt;- 100 # create first vector</code></pre>
 <ul>
 <li>“x” is an <code>object or a variable</code>, both of which are used
@@ -825,7 +832,7 @@ automatically converts the data types, this phenomenon is called <a
 href="https://www.zigya.com/blog/what-is-coercion-in-r/">Coercion</a></li>
 </ul>
 <pre class="r"><code>x &lt;- c(1,2,3,4)
-typeof(x) # </code></pre>
+typeof(x)</code></pre>
 <pre><code>## [1] &quot;double&quot;</code></pre>
 <pre class="r"><code>x &lt;- c(1,&quot;2&quot;,3,4)
 typeof(x)</code></pre>
@@ -896,28 +903,22 @@ x + y</code></pre>
 </ul></li>
 </ul></li>
 </ul>
-<div class="figure">
-<img src="images/Vectors-in-R.jpg" alt="" />
-<p class="caption">Image source:<a
-href="https://www.geeksforgeeks.org/r-vector/"
-class="uri">https://www.geeksforgeeks.org/r-vector/</a></p>
-</div>
-<pre class="r"><code>var &lt;- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
-var</code></pre>
+<pre class="r"><code>vec &lt;- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+vec</code></pre>
 <pre><code>##  [1]  10  20  30  40  50  60  70  80  90 100</code></pre>
 <pre class="r"><code># extract 4th value from the vector var
-var[4] </code></pre>
+vec[4] </code></pre>
 <pre><code>## [1] 40</code></pre>
-<pre class="r"><code>var[c(4)] # good idea to use c() function even for single value</code></pre>
+<pre class="r"><code>vec[c(4)] # good idea to use c() function even for single value</code></pre>
 <pre><code>## [1] 40</code></pre>
 <pre class="r"><code># extract 4th and 7th values from the vector var
-var[c(4,7)]</code></pre>
+vec[c(4,7)]</code></pre>
 <pre><code>## [1] 40 70</code></pre>
 <ul>
 <li>One can inverse using “-” symbol</li>
 </ul>
 <pre class="r"><code># extract all the values except 4th and 7th value
-var[c(-4,-7)]</code></pre>
+vec[c(-4,-7)]</code></pre>
 <pre><code>## [1]  10  20  30  50  60  80  90 100</code></pre>
 <ul>
 <li>Extracting values using logical vectors</li>
