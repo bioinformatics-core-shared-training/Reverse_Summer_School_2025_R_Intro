@@ -331,24 +331,6 @@ div.tocify {
     <li>
       <a href="week1.html">Week 1 - An introduction to RStudio, R objects, data types, functions and vectors</a>
     </li>
-    <li>
-      <a href="week2.html">Week 2 - An introduction to other data structures</a>
-    </li>
-    <li>
-      <a href="week3.html">Week 3 - Working with data in R</a>
-    </li>
-    <li>
-      <a href="week4.html">Week 4 - Data visualization with ggplot2</a>
-    </li>
-    <li>
-      <a href="week5.html">Week 5 - Data manipulation using dplyr</a>
-    </li>
-    <li>
-      <a href="week6.html">Week 6 - Grouping and combining data</a>
-    </li>
-    <li>
-      <a href="week7.html">Week 7 - Restructuring data for analysis</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -794,6 +776,26 @@ interchangeably in this course.</li>
 <pre class="r"><code>x &lt;- 100 
 x = 100 </code></pre>
 <ul>
+<li>After a variable/object is created, it can be used as many times as
+needed.</li>
+</ul>
+<pre class="r"><code>y &lt;- 10
+y*y</code></pre>
+<pre><code>## [1] 100</code></pre>
+<pre class="r"><code>y + y</code></pre>
+<pre><code>## [1] 20</code></pre>
+<pre class="r"><code>100 + y</code></pre>
+<pre><code>## [1] 110</code></pre>
+<ul>
+<li>Variable values can be replaced</li>
+</ul>
+<pre class="r"><code>x &lt;- &quot;Tom&quot;
+x</code></pre>
+<pre><code>## [1] &quot;Tom&quot;</code></pre>
+<pre class="r"><code>x &lt;- &quot;Jerry&quot;
+x</code></pre>
+<pre><code>## [1] &quot;Jerry&quot;</code></pre>
+<ul>
 <li>variable names can not start with a number or a special characters
 like (_, -, etc)</li>
 </ul>
@@ -979,6 +981,15 @@ x[x &gt; 10] # get all the values &gt; 10</code></pre>
 <pre><code>## [1] 20</code></pre>
 <pre class="r"><code>x[ !x == 20] # equivalent to x[ x != 20]</code></pre>
 <pre><code>## [1] 10 30 40</code></pre>
+<ul>
+<li>It is possible to selectively replace vector values.</li>
+</ul>
+<pre class="r"><code>x &lt;- c(10, 20, 30)
+x[2]</code></pre>
+<pre><code>## [1] 20</code></pre>
+<pre class="r"><code>x[2] &lt;- 1000
+x</code></pre>
+<pre><code>## [1]   10 1000   30</code></pre>
 </div>
 <div id="functions-and-their-arguments" class="section level3">
 <h3>Functions and their arguments</h3>

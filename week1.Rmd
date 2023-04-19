@@ -330,6 +330,25 @@ x <- 100 # create first vector
 x <- 100 
 x = 100 
 ```
+
+* After a variable/object is created, it can be used as many times as needed.
+
+```{r}
+y <- 10
+y*y
+y + y
+100 + y
+```
+
+* Variable values can be replaced
+
+```{r}
+x <- "Tom"
+x
+x <- "Jerry"
+x
+```
+
 * variable names can not start with a number or a special characters like (_, -, etc)
 
 ```{r, eval=FALSE}
@@ -509,7 +528,14 @@ x[ x == 20] # get values that are equal to 20
 x[ !x == 20] # equivalent to x[ x != 20]
 ```
 
+* It is possible to selectively replace vector values.
 
+```{r}
+x <- c(10, 20, 30)
+x[2]
+x[2] <- 1000
+x
+```
 
 ### Functions and their arguments
 
