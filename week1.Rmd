@@ -382,6 +382,12 @@ x <- 100, 200 # gives error
 x <- c(100, 200) # no error
 ```
 
+* ":" operator that generates a range of values
+
+```{r}
+x <- c(1:100) # create values from 1 to 100
+```
+
 
 * The values in a vector can be of one and only one type, such as numerics, integers, characters, logic, complexes, or raw data.
 * When we attempt to mix different data types in a single vector, R automatically converts the data types, this phenomenon is called [Coercion](https://www.zigya.com/blog/what-is-coercion-in-r/)
