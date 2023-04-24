@@ -7,4 +7,216 @@ title: "Week 2 -- Introduction to other data structures"
 > * To demonstrate the other R data structures like data frames, lists etc
 
 
+## The structure of data in R continues
 
+![Image source:http://venus.ifca.unican.es/Rintro/dataStruct.html](./images/dataStructures.png)
+
+
+* R has many data structures. These include
+  - [x] Atomic vector
+  - [ ] factors
+  - [ ] matrix
+  - [ ] data frame
+  - [ ] list
+  
+
+### Factors
+
+* A factor is very similar to a vector
+* Factors are used to represent categorical data such as , sex (male or female), tumour stage (stage 1, stage 2 ...)
+* Factors are useful for statistical analysis and plotting
+
+```{r}
+x <- c("male", "female", "female", "male")
+x
+sex <- factor(x) # convert vector x into a factor
+sex
+```
+
+* Once created, factors can only contain a pre-defined set values, known as levels.
+
+```{r}
+levels(sex) # what are the levels in sex object
+nlevels(sex) # how many levels in sex object
+```
+
+* In R’s memory, these factors are represented by integers (1,2,3,4 ...)
+
+```{r}
+x <- c("low", "high", "medium", "high", "low", "medium", "high")
+typeof(x) 
+food <- factor(x) # convert x into a factor
+levels(food) # get the levels
+typeof(sex) 
+food_relevel <- factor(x, levels = c("low", "medium", "high")) # re-level the levels
+food_relevel
+levels(food_relevel)
+nlevels(food_relevel)
+typeof(food_relevel)
+```
+
+
+### Matrices 
+
+* In R matrices are an extension of the numeric or character vectors.
+* As with atomic vectors, the elements of a matrix must be of the same data type.
+
+```{r}
+x <- c(1:9)
+dim(x)
+y <- matrix(data=1:9, nrow = 3, ncol = 3) # create a matrix 
+dim(y) # get dimensions of an object
+class(y)
+typeof(y)
+```
+
+* Like vector subscript operator "[]" is used to access the values
+* Unlike vector, matrix is a two dimentional data structure
+* First dimension: rows
+* Second dimension: columns
+* general syntax: matrix[ rows , columns ]
+
+```{r}
+y[] # gives all the values in a matrix
+y[1,2] # get the value from 1st row and 2 columns
+y[1,] # get all the values from 1st row
+y[,3] # get all the values from 3rd column
+y[c(1,3), c(2,3)] # get 1st and 3rd values from 2nd and 3rd column
+```
+
+* Like vector matrix can hold only one type of data, if we try to mix two are more difftenrt data type, R implicitly convert into one type
+
+```{r}
+typeof(y)
+y
+y[2,3]
+y[2,3] <- "A" # replace 
+typeof(y)
+```
+
+
+### Lists
+
+R’s simplest structure that combines data of different types is a list. A list is a collection of vectors. Vectors in a list can be of different types and different lengths.
+
+```{r}
+my_first_list <- list(1:10, c("a", "b", "c"), 
+                      c(TRUE, FALSE), 100, 
+                      c(1.3, 2.2, 0.75, 3.8))
+my_first_list
+```
+
+my_first_list has five elements and when printed out like this looks quite strange at first sight. Note how each of the elements of a list is referred to by an index within 2 sets of square brackets or one set of square. This gives a clue to how you can access individual elements in the list.
+* How to access the elements from the list?
+  * Using one of the following three operator ...
+    1. "[]": Standard subscript operator, works like in a vector. The output is still a list. 
+    2. "[[]]": This operator can only take one index number at a time and the output will be the data structure for that element.
+    3. "$": to extract an element from a list or a column from a data frame by name.
+
+
+```{r}
+length(my_first_list)
+my_first_list[1] # get element one from the list
+my_first_list[1:3] # get element one from the list
+```
+
+
+```{r}
+length(my_first_list)
+my_first_list[[1]] # get element one from the list
+my_first_list[[5]] # get element one from the list
+```
+
+* Elements in lists are normally named, e.g.
+
+```{r}
+named_list <- list( city_name=c("Cambridge", "London", "Oxford"),
+                    population=c(1.62, 8.9, 1.5 )
+                    )
+named_list
+
+named_list$city_name # equivalent to named_list[[1]]
+named_list$population # equivalent to named_list[[2]]
+```
+
+* You can modify lists either by adding addition elements or modifying existing ones.
+
+```{r}
+named_list$city_name[2] <- "LONDON"
+named_list
+```
+
+
+
+Lists can be thought of as a ragbag collection of things without a very clear structure. You probably won’t find yourself creating list objects of the kind we’ve seen above when analyzing your own data. However, the list provides the basic underlying structure to the data frame that we’ll be using throughout the rest of this course.
+
+The other area where you’ll come across lists is as the return value for many of the statistical tests and procedures such as linear regression that you can carry out in R.
+
+To demonstrate, we’ll run a t-test comparing two sets of samples drawn from subtly different normal distributions. We’ve already come across the rnorm() function for creating random numbers based on a normal distribution.
+
+```{r}
+
+sample_1 <- rnorm(n = 100, mean=5, sd=1)
+sample_2 <- rnorm(n = 100, mean=7, sd=1)
+
+result <- t.test(x=sample_1, y=sample_2)
+
+is.list(result) # test if object is a list
+result
+names(result) # list names of the object
+result$statistic
+result$p.value
+```
+
+### Data frames
+
+
+A much more useful data structure and the one we will mostly be using for the rest of the course is the data frame. This is actually a special type of list in which all the elements are vectors of the same length. 
+
+```{r}
+df <- data.frame( city_name=c("Cambridge", "London", "Oxford"),
+                    population=c(1.62, 8.9, 1.5 )
+                    )
+df
+class(df)
+dim(df)
+```
+
+There are a number of example data frames lurking in the background just waiting for you to call on them. Many of the examples for functions given in the help pages make use of these. Two such data frames that are often used in example code snippets are iris and mtcars. See, for example, the help page for the unique() function in which iris appears in the last code example without any explanation of what the mysterious iris is and potentially causing some confusion to the uninitiated.
+
+
+To bring one of these internal data sets to the fore, you can just start using it by name.
+
+```{r}
+iris
+```
+
+
+Here we’ve only displayed the first few rows. If you type iris into the console pane you’ll notice that it prints the entire table with row numbers that indicate that the data frame contains measurements for 150 irises.
+
+You can also get help for a data set such as iris in the usual way.
+
+```{r}
+?iris # get help for iris data
+```
+This reveals that iris is a rather famous old data set of measurements taken by the esteemed British statistician and geneticist, Ronald Fisher (he of Fisher’s exact test fame).
+
+A data frame is a special type of list so you can access its elements in the same way as we saw previously for lists.
+
+```{r}
+names(iris)
+iris$Petal.Width # or equivalently iris[["Petal.Width"]] or iris[[4]]
+```
+
+
+In that last example we extracted the Petal.Width column which itself is a vector. We can further subset the values in that column to, say, return the first 10 values only.
+
+```{r}
+iris$Petal.Length[1:10]
+```
+
+Data frames have rows and columns both of which have names that can be used to extract subsets of our tabular data. You can get those names using `rownames()` and `colnames()`.
+
+```{r}
+
+```

@@ -331,24 +331,6 @@ div.tocify {
     <li>
       <a href="week1.html">Week 1 - An introduction to RStudio, R objects, data types, functions and vectors</a>
     </li>
-    <li>
-      <a href="week2.html">Week 2 - An introduction to other data structures</a>
-    </li>
-    <li>
-      <a href="week3.html">Week 3 - Working with data in R</a>
-    </li>
-    <li>
-      <a href="week4.html">Week 4 - Data visualization with ggplot2</a>
-    </li>
-    <li>
-      <a href="week5.html">Week 5 - Data manipulation using dplyr</a>
-    </li>
-    <li>
-      <a href="week6.html">Week 6 - Grouping and combining data</a>
-    </li>
-    <li>
-      <a href="week7.html">Week 7 - Restructuring data for analysis</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -381,6 +363,167 @@ structures</h1>
 etc</li>
 </ul>
 </blockquote>
+<div id="the-structure-of-data-in-r-continues" class="section level2">
+<h2>The structure of data in R continues</h2>
+<div class="figure">
+<img src="images/dataStructures.png" alt="" />
+<p class="caption">Image source:<a
+href="http://venus.ifca.unican.es/Rintro/dataStruct.html"
+class="uri">http://venus.ifca.unican.es/Rintro/dataStruct.html</a></p>
+</div>
+<ul>
+<li>R has many data structures. These include
+<ul class="task-list">
+<li><input type="checkbox" disabled="" checked="" />Atomic vector</li>
+<li><input type="checkbox" disabled="" />factors</li>
+<li><input type="checkbox" disabled="" />matrix</li>
+<li><input type="checkbox" disabled="" />data frame</li>
+<li><input type="checkbox" disabled="" />list</li>
+</ul></li>
+</ul>
+<div id="factors" class="section level3">
+<h3>Factors</h3>
+<ul>
+<li>A factor is very similar to a vector</li>
+<li>Factors are used to represent categorical data such as , sex (male
+or female), tumour stage (stage 1, stage 2 …)</li>
+<li>Factors are useful for statistical analysis and plotting</li>
+</ul>
+<pre class="r"><code>x &lt;- c(&quot;male&quot;, &quot;female&quot;, &quot;female&quot;, &quot;male&quot;)
+x</code></pre>
+<pre><code>## [1] &quot;male&quot;   &quot;female&quot; &quot;female&quot; &quot;male&quot;</code></pre>
+<pre class="r"><code>sex &lt;- factor(x) # convert vector x into a factor
+sex</code></pre>
+<pre><code>## [1] male   female female male  
+## Levels: female male</code></pre>
+<ul>
+<li>Once created, factors can only contain a pre-defined set values,
+known as levels.</li>
+</ul>
+<pre class="r"><code>levels(sex) # what are the levels in sex object</code></pre>
+<pre><code>## [1] &quot;female&quot; &quot;male&quot;</code></pre>
+<pre class="r"><code>nlevels(sex) # how many levels in sex object</code></pre>
+<pre><code>## [1] 2</code></pre>
+<ul>
+<li>In R’s memory, these factors are represented by integers (1,2,3,4
+…)</li>
+</ul>
+<pre class="r"><code>x &lt;- c(&quot;low&quot;, &quot;high&quot;, &quot;medium&quot;, &quot;high&quot;, &quot;low&quot;, &quot;medium&quot;, &quot;high&quot;)
+typeof(x) </code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<pre class="r"><code>food &lt;- factor(x) # convert x into a factor
+levels(food) # get the levels</code></pre>
+<pre><code>## [1] &quot;high&quot;   &quot;low&quot;    &quot;medium&quot;</code></pre>
+<pre class="r"><code>typeof(sex) </code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>food_relevel &lt;- factor(x, levels = c(&quot;low&quot;, &quot;medium&quot;, &quot;high&quot;)) # re-level the levels
+food_relevel</code></pre>
+<pre><code>## [1] low    high   medium high   low    medium high  
+## Levels: low medium high</code></pre>
+<pre class="r"><code>levels(food_relevel)</code></pre>
+<pre><code>## [1] &quot;low&quot;    &quot;medium&quot; &quot;high&quot;</code></pre>
+<pre class="r"><code>nlevels(food_relevel)</code></pre>
+<pre><code>## [1] 3</code></pre>
+<pre class="r"><code>typeof(food_relevel)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+</div>
+<div id="matrices" class="section level3">
+<h3>Matrices</h3>
+<ul>
+<li>In R matrices are an extension of the numeric or character
+vectors.</li>
+<li>As with atomic vectors, the elements of a matrix must be of the same
+data type.</li>
+</ul>
+<pre class="r"><code>x &lt;- c(1:9)
+dim(x)</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>y &lt;- matrix(data=1:9, nrow = 3, ncol = 3) # create a matrix 
+dim(y) # get dimensions of an object</code></pre>
+<pre><code>## [1] 3 3</code></pre>
+<pre class="r"><code>class(y)</code></pre>
+<pre><code>## [1] &quot;matrix&quot; &quot;array&quot;</code></pre>
+<pre class="r"><code>typeof(y)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<ul>
+<li>Like vector subscript operator “[]” is used to access the
+values</li>
+<li>Unlike vector, matrix is a two dimentional data structure</li>
+<li>First dimension: rows</li>
+<li>Second dimension: columns</li>
+<li>general syntax: matrix[ rows , columns ]</li>
+</ul>
+<pre class="r"><code>y[] # gives all the values in a matrix</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9</code></pre>
+<pre class="r"><code>y[1,2] # get the value from 1st row and 2 columns</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>y[1,] # get all the values from 1st row</code></pre>
+<pre><code>## [1] 1 4 7</code></pre>
+<pre class="r"><code>y[,3] # get all the values from 3rd column</code></pre>
+<pre><code>## [1] 7 8 9</code></pre>
+<pre class="r"><code>y[c(1,3), c(2,3)] # get 1st and 3rd values from 2nd and 3rd column</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    4    7
+## [2,]    6    9</code></pre>
+<ul>
+<li>Like vector matrix can hold only one type of data, if we try to mix
+two are more difftenrt data type, R implicitly convert into one
+type</li>
+</ul>
+<pre class="r"><code>typeof(y)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>y</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9</code></pre>
+<pre class="r"><code>y[2,3]</code></pre>
+<pre><code>## [1] 8</code></pre>
+<pre class="r"><code>y[2,3] &lt;- &quot;A&quot; # replace 
+typeof(y)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+</div>
+<div id="lists" class="section level3">
+<h3>Lists</h3>
+<p>R’s simplest structure that combines data of different types is a
+list. A list is a collection of vectors. Vectors in a list can be of
+different types and different lengths.</p>
+<pre class="r"><code>my_first_list &lt;- list(1:10, c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), 
+                      c(TRUE, FALSE), 100, 
+                      c(1.3, 2.2, 0.75, 3.8))
+my_first_list</code></pre>
+<pre><code>## [[1]]
+##  [1]  1  2  3  4  5  6  7  8  9 10
+## 
+## [[2]]
+## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
+## 
+## [[3]]
+## [1]  TRUE FALSE
+## 
+## [[4]]
+## [1] 100
+## 
+## [[5]]
+## [1] 1.30 2.20 0.75 3.80</code></pre>
+<p>my_first_list has five elements and when printed out like this looks
+quite strange at first sight. Note how each of the elements of a list is
+referred to by an index within 2 sets of square brackets. This gives a
+clue to how you can access individual elements in the list.</p>
+<pre class="r"><code>length(my_first_list)</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>my_first_list[[1]] # get element one from the list</code></pre>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>my_first_list[[5]] # get element one from the list</code></pre>
+<pre><code>## [1] 1.30 2.20 0.75 3.80</code></pre>
+<ul>
+<li>Elements in lists are normally named, e.g.</li>
+</ul>
+</div>
+</div>
 
 
 
