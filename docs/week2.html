@@ -361,6 +361,7 @@ structures</h1>
 <ul>
 <li>To demonstrate the other R data structures like data frames, lists
 etc</li>
+<li>To demonstrate the R markdown</li>
 </ul>
 </blockquote>
 <div id="the-structure-of-data-in-r-continues" class="section level2">
@@ -426,6 +427,79 @@ food_relevel</code></pre>
 <pre><code>## [1] 3</code></pre>
 <pre class="r"><code>typeof(food_relevel)</code></pre>
 <pre><code>## [1] &quot;integer&quot;</code></pre>
+<ul>
+<li><p>“is” family functions</p>
+<ul>
+<li><p>Is function start with “is.” like is.vector(),
+is.character()</p></li>
+<li><p>Output of is family of functions is a logical value TRUE or
+FALSE</p>
+<ul>
+<li>What type of data does the object contain?
+<ul>
+<li>typeof(): Indicates the type of data contained in the object</li>
+<li>is.character(): to test if the object holds character type data</li>
+<li>is.double(): to test if the object holds decimal type data</li>
+<li>is.numeric(): to test if the object holds numeric type data</li>
+<li>is.integer(): to test if the object holds integer type data</li>
+<li>is.logical(): to test if the object holds logical type data</li>
+</ul></li>
+<li>What type of data structure does the object represent?
+<ul>
+<li>class(): Describes the type of data structure that the object
+represents</li>
+<li>is.vector(): To determine if the object is a vector</li>
+<li>is.factor(): To determine if the object is a factor</li>
+<li>is.matrix(): To determine if the object is a matrix</li>
+<li>is.data.frame(): To determine if the object is a data frame</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<pre class="r"><code>x &lt;- 1:100
+typeof(x)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>is.integer(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>is.vector(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>is.factor(x)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<ul>
+<li><p>“as” family functions</p>
+<ul>
+<li><p>For converting one data type to another data type or one data
+structure to another data structure</p></li>
+<li><p>As function start with “as.” like as.vector(), as.character()</p>
+<ul>
+<li>Convert one data type to another data type
+<ul>
+<li>as.character(): convert to character type data</li>
+<li>as.numeric()</li>
+<li>as.integer()</li>
+<li>as.logical()</li>
+</ul></li>
+<li>Convert one type of data structure to another
+<ul>
+<li>as.vector()</li>
+<li>as.matrix()</li>
+<li>as.factor()</li>
+<li>as.data.frame()</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<pre class="r"><code>x &lt;- 1:100
+typeof(x)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>y &lt;- as.character(x)
+typeof(y)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<pre class="r"><code>is.vector(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>z &lt;- as.matrix(x)
+is.matrix(z)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
 </div>
 <div id="matrices" class="section level3">
 <h3>Matrices</h3>
@@ -434,23 +508,46 @@ food_relevel</code></pre>
 vectors.</li>
 <li>As with atomic vectors, the elements of a matrix must be of the same
 data type.</li>
+<li>The matrix can be viewed as a collection of vectors
+<ul>
+<li>Matrix rows and columns are vectors</li>
+<li>All the vectors hold identical data type</li>
+<li>The vectors must have the same length</li>
+</ul></li>
 </ul>
 <pre class="r"><code>x &lt;- c(1:9)
-dim(x)</code></pre>
-<pre><code>## NULL</code></pre>
+is.vector(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>typeof(x)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
 <pre class="r"><code>y &lt;- matrix(data=1:9, nrow = 3, ncol = 3) # create a matrix 
-dim(y) # get dimensions of an object</code></pre>
-<pre><code>## [1] 3 3</code></pre>
-<pre class="r"><code>class(y)</code></pre>
+class(y)</code></pre>
 <pre><code>## [1] &quot;matrix&quot; &quot;array&quot;</code></pre>
 <pre class="r"><code>typeof(y)</code></pre>
 <pre><code>## [1] &quot;integer&quot;</code></pre>
 <ul>
-<li>Like vector subscript operator “[]” is used to access the
-values</li>
-<li>Unlike vector, matrix is a two dimentional data structure</li>
+<li>In contrast to vectors, matrices and data frames are two dimensional
+data structures
+<ul>
 <li>First dimension: rows</li>
 <li>Second dimension: columns</li>
+</ul></li>
+<li>dim(): Provides the dimensions of an object</li>
+<li>nrow(): gives number of rows</li>
+<li>ncol(): gives number of columns</li>
+</ul>
+<pre class="r"><code>dim(y) # get dimensions of an object</code></pre>
+<pre><code>## [1] 3 3</code></pre>
+<pre class="r"><code>nrow(y) # gives number of rows</code></pre>
+<pre><code>## [1] 3</code></pre>
+<pre class="r"><code>ncol(y) # gives number of columns</code></pre>
+<pre><code>## [1] 3</code></pre>
+<ul>
+<li>Unlike vectors, sub-setting requires both rows and columns to be
+provided</li>
+<li>Like vector subscript operator “[]” is used to access the
+values</li>
+<li>Unlike vector, matrix is a two dimensional data structure</li>
 <li>general syntax: matrix[ rows , columns ]</li>
 </ul>
 <pre class="r"><code>y[] # gives all the values in a matrix</code></pre>
@@ -470,7 +567,7 @@ values</li>
 ## [2,]    6    9</code></pre>
 <ul>
 <li>Like vector matrix can hold only one type of data, if we try to mix
-two are more difftenrt data type, R implicitly convert into one
+two are more different data type, R implicitly convert into one
 type</li>
 </ul>
 <pre class="r"><code>typeof(y)</code></pre>
@@ -483,14 +580,24 @@ type</li>
 <pre class="r"><code>y[2,3]</code></pre>
 <pre><code>## [1] 8</code></pre>
 <pre class="r"><code>y[2,3] &lt;- &quot;A&quot; # replace 
-typeof(y)</code></pre>
+y</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,] &quot;1&quot;  &quot;4&quot;  &quot;7&quot; 
+## [2,] &quot;2&quot;  &quot;5&quot;  &quot;A&quot; 
+## [3,] &quot;3&quot;  &quot;6&quot;  &quot;9&quot;</code></pre>
+<pre class="r"><code>typeof(y)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 </div>
 <div id="lists" class="section level3">
 <h3>Lists</h3>
-<p>R’s simplest structure that combines data of different types is a
-list. A list is a collection of vectors. Vectors in a list can be of
-different types and different lengths.</p>
+<ul>
+<li>R’s simplest structure that combines data of different types is a
+list.</li>
+<li>A list is a collection of any data structures</li>
+<li>List can be of different types and different lengths.</li>
+<li>A list can be a collection of lists.</li>
+<li>Lists are very flexible data structures that can hold anything.</li>
+</ul>
 <pre class="r"><code>my_first_list &lt;- list(1:10, c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), 
                       c(TRUE, FALSE), 100, 
                       c(1.3, 2.2, 0.75, 3.8))
@@ -511,8 +618,37 @@ my_first_list</code></pre>
 ## [1] 1.30 2.20 0.75 3.80</code></pre>
 <p>my_first_list has five elements and when printed out like this looks
 quite strange at first sight. Note how each of the elements of a list is
-referred to by an index within 2 sets of square brackets. This gives a
-clue to how you can access individual elements in the list.</p>
+referred to by an index within 2 sets of square brackets or one set of
+square. This gives a clue to how you can access individual elements in
+the list.</p>
+<ul>
+<li>How to access the elements from the list?
+<ul>
+<li>Using any one of the following three operator …
+<ol style="list-style-type: decimal">
+<li>“[]”: Standard subscript operator, works like in a vector. The
+output is still a list.</li>
+<li>“[[]]”: This operator can only take one index number at a time and
+the output will be the data structure for that element.</li>
+<li>“$”: to extract an element from a list or a column from a data frame
+by name.</li>
+</ol></li>
+</ul></li>
+</ul>
+<pre class="r"><code>length(my_first_list)</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>my_first_list[1] # get element one from the list</code></pre>
+<pre><code>## [[1]]
+##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>my_first_list[1:3] # get element one from the list</code></pre>
+<pre><code>## [[1]]
+##  [1]  1  2  3  4  5  6  7  8  9 10
+## 
+## [[2]]
+## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
+## 
+## [[3]]
+## [1]  TRUE FALSE</code></pre>
 <pre class="r"><code>length(my_first_list)</code></pre>
 <pre><code>## [1] 5</code></pre>
 <pre class="r"><code>my_first_list[[1]] # get element one from the list</code></pre>
@@ -520,8 +656,614 @@ clue to how you can access individual elements in the list.</p>
 <pre class="r"><code>my_first_list[[5]] # get element one from the list</code></pre>
 <pre><code>## [1] 1.30 2.20 0.75 3.80</code></pre>
 <ul>
-<li>Elements in lists are normally named, e.g.</li>
+<li>Elements in lists are normally named</li>
 </ul>
+<pre class="r"><code>named_list &lt;- list( 
+  city_name=c(&quot;Cambridge&quot;, &quot;London&quot;, &quot;Oxford&quot;),
+  population=c(1.62, 8.9, 1.5 ) )
+
+named_list</code></pre>
+<pre><code>## $city_name
+## [1] &quot;Cambridge&quot; &quot;London&quot;    &quot;Oxford&quot;   
+## 
+## $population
+## [1] 1.62 8.90 1.50</code></pre>
+<pre class="r"><code>named_list$city_name # equivalent to named_list[[1]]</code></pre>
+<pre><code>## [1] &quot;Cambridge&quot; &quot;London&quot;    &quot;Oxford&quot;</code></pre>
+<pre class="r"><code>named_list$population # equivalent to named_list[[2]]</code></pre>
+<pre><code>## [1] 1.62 8.90 1.50</code></pre>
+<ul>
+<li>You can modify lists either by adding addition elements or modifying
+existing ones.</li>
+</ul>
+<pre class="r"><code>named_list$city_name[2] &lt;- &quot;LONDON&quot;
+named_list</code></pre>
+<pre><code>## $city_name
+## [1] &quot;Cambridge&quot; &quot;LONDON&quot;    &quot;Oxford&quot;   
+## 
+## $population
+## [1] 1.62 8.90 1.50</code></pre>
+<p>Lists can be thought of as a ragbag collection of things without a
+very clear structure. You probably won’t find yourself creating list
+objects of the kind we’ve seen above when analyzing your own data.
+However, the list provides the basic underlying structure to the data
+frame that we’ll be using throughout the rest of this course.</p>
+<p>The other area where you’ll come across lists is as the return value
+for many of the statistical tests and procedures such as linear
+regression that you can carry out in R.</p>
+<p>To demonstrate, we’ll run a t-test comparing two sets of samples
+drawn from subtly different normal distributions. We’ve already come
+across the rnorm() function for creating random numbers based on a
+normal distribution.</p>
+<pre class="r"><code>sample_1 &lt;- rnorm(n = 100, mean=5, sd=1)
+sample_2 &lt;- rnorm(n = 100, mean=7, sd=1)
+
+result &lt;- t.test(x=sample_1, y=sample_2)
+
+is.list(result) # test if object is a list</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>result</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  sample_1 and sample_2
+## t = -12.935, df = 197.82, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -1.946324 -1.431361
+## sample estimates:
+## mean of x mean of y 
+##  5.085865  6.774707</code></pre>
+<pre class="r"><code>names(result) # list names of the object</code></pre>
+<pre><code>##  [1] &quot;statistic&quot;   &quot;parameter&quot;   &quot;p.value&quot;     &quot;conf.int&quot;    &quot;estimate&quot;   
+##  [6] &quot;null.value&quot;  &quot;stderr&quot;      &quot;alternative&quot; &quot;method&quot;      &quot;data.name&quot;</code></pre>
+<pre class="r"><code>result$statistic</code></pre>
+<pre><code>##         t 
+## -12.93469</code></pre>
+<pre class="r"><code>result$p.value</code></pre>
+<pre><code>## [1] 3.918639e-28</code></pre>
+</div>
+<div id="data-frames" class="section level3">
+<h3>Data frames</h3>
+<ul>
+<li>A much more useful data structure and the one we will mostly be
+using for the rest of the course is the data frame.</li>
+<li>This is actually a special type of list in which all the elements
+are vectors of the same length.</li>
+</ul>
+<pre class="r"><code>df &lt;- data.frame( 
+  city_name=c(&quot;Cambridge&quot;, &quot;London&quot;, &quot;Oxford&quot;),
+  population=c(1.62, 8.9, 1.5 ))
+df</code></pre>
+<pre><code>##   city_name population
+## 1 Cambridge       1.62
+## 2    London       8.90
+## 3    Oxford       1.50</code></pre>
+<pre class="r"><code>class(df)</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<pre class="r"><code>dim(df)</code></pre>
+<pre><code>## [1] 3 2</code></pre>
+<ul>
+<li>R provides many built-in data sets, most of which are represented as
+data frames.</li>
+<li>data(): lists all the avilable built-in data sets</li>
+<li>One popular data set is <code>iris</code></li>
+<li>To know more about any data set, one can use <code>help()</code> or
+<code>?</code> to get help</li>
+<li>iris:
+<ul>
+<li>data frame with 150 observations (rows)<br />
+</li>
+<li>5 variables (columns)
+<ul>
+<li>Sepal.Length</li>
+<li>Sepal.Width</li>
+<li>Petal.Length</li>
+<li>Petal.Width</li>
+<li>Species</li>
+</ul></li>
+</ul></li>
+<li>To bring one of these internal data sets to the fore, you can just
+start using it by name.</li>
+</ul>
+<pre class="r"><code>head(iris)</code></pre>
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa</code></pre>
+<ul>
+<li>You can also get help for a data set such as iris in the usual
+way.</li>
+</ul>
+<pre class="r"><code>?iris # get help for iris data</code></pre>
+<ul>
+<li><p>This reveals that iris is a rather famous old data set of
+measurements taken by the esteemed British statistician and geneticist,
+Ronald Fisher (he of Fisher’s exact test fame).</p></li>
+<li><p>A data frame is a special type of list so you can access its
+columns in the same way as we saw previously for lists.</p></li>
+</ul>
+<pre class="r"><code>names(iris)</code></pre>
+<pre><code>## [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot;  &quot;Species&quot;</code></pre>
+<pre class="r"><code>iris$Petal.Width # or equivalently iris[[&quot;Petal.Width&quot;]] or iris[[4]]</code></pre>
+<pre><code>##   [1] 0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 0.2 0.2 0.1 0.1 0.2 0.4 0.4 0.3
+##  [19] 0.3 0.3 0.2 0.4 0.2 0.5 0.2 0.2 0.4 0.2 0.2 0.2 0.2 0.4 0.1 0.2 0.2 0.2
+##  [37] 0.2 0.1 0.2 0.2 0.3 0.3 0.2 0.6 0.4 0.3 0.2 0.2 0.2 0.2 1.4 1.5 1.5 1.3
+##  [55] 1.5 1.3 1.6 1.0 1.3 1.4 1.0 1.5 1.0 1.4 1.3 1.4 1.5 1.0 1.5 1.1 1.8 1.3
+##  [73] 1.5 1.2 1.3 1.4 1.4 1.7 1.5 1.0 1.1 1.0 1.2 1.6 1.5 1.6 1.5 1.3 1.3 1.3
+##  [91] 1.2 1.4 1.2 1.0 1.3 1.2 1.3 1.3 1.1 1.3 2.5 1.9 2.1 1.8 2.2 2.1 1.7 1.8
+## [109] 1.8 2.5 2.0 1.9 2.1 2.0 2.4 2.3 1.8 2.2 2.3 1.5 2.3 2.0 2.0 1.8 2.1 1.8
+## [127] 1.8 1.8 2.1 1.6 1.9 2.0 2.2 1.5 1.4 2.3 2.4 1.8 1.8 2.1 2.4 2.3 1.9 2.3
+## [145] 2.5 2.3 1.9 2.0 2.3 1.8</code></pre>
+<ul>
+<li>Viewing data frames is made easier with these functions
+<ul>
+<li>head(): Shows first 6 lines of a data frame</li>
+<li>tail(): Shows first 6 lines of a data frame</li>
+<li>View(): Shows data frame in excel like format</li>
+</ul></li>
+</ul>
+<pre class="r"><code>head(iris)</code></pre>
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa</code></pre>
+<pre class="r"><code>tail(iris)</code></pre>
+<pre><code>##     Sepal.Length Sepal.Width Petal.Length Petal.Width   Species
+## 145          6.7         3.3          5.7         2.5 virginica
+## 146          6.7         3.0          5.2         2.3 virginica
+## 147          6.3         2.5          5.0         1.9 virginica
+## 148          6.5         3.0          5.2         2.0 virginica
+## 149          6.2         3.4          5.4         2.3 virginica
+## 150          5.9         3.0          5.1         1.8 virginica</code></pre>
+<pre class="r"><code>View(iris)</code></pre>
+<ul>
+<li>In that last example we extracted the Petal.Width column which
+itself is a vector. We can further subset the values in that column to,
+say, return the first 10 values only.</li>
+</ul>
+<pre class="r"><code>iris$Petal.Length[1:10]</code></pre>
+<pre><code>##  [1] 1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5</code></pre>
+<ul>
+<li>Matrix-like syntax can be used to access both rows and columns.</li>
+<li>df[ row index, column index]</li>
+</ul>
+<pre class="r"><code># df[ row index, column index]
+iris[ 1:4, 1:3] # rows from 1 to 4 and columns from 1 to 3</code></pre>
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length
+## 1          5.1         3.5          1.4
+## 2          4.9         3.0          1.4
+## 3          4.7         3.2          1.3
+## 4          4.6         3.1          1.5</code></pre>
+<pre class="r"><code>iris[c(1,4,7), c(2,4)] #  rows from1,4 and 7 and columns from 2 and 4</code></pre>
+<pre><code>##   Sepal.Width Petal.Width
+## 1         3.5         0.2
+## 4         3.1         0.2
+## 7         3.4         0.3</code></pre>
+<ul>
+<li>To extract values from a data frame, row/column names may also be
+used</li>
+</ul>
+<pre class="r"><code>iris[c(1,4,7), c(&quot;Sepal.Width&quot;,&quot;Species&quot; )] # iris[c(1,4,7), c(2,5)] </code></pre>
+<pre><code>##   Sepal.Width Species
+## 1         3.5  setosa
+## 4         3.1  setosa
+## 7         3.4  setosa</code></pre>
+<ul>
+<li>We can also use conditional sub-setting to extract the rows that
+meet certain conditions, e.g. all the rows with Sepal.Length of 5.</li>
+</ul>
+<pre class="r"><code>iris[iris$Sepal.Length == 5, ]</code></pre>
+<pre><code>##    Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+## 5             5         3.6          1.4         0.2     setosa
+## 8             5         3.4          1.5         0.2     setosa
+## 26            5         3.0          1.6         0.2     setosa
+## 27            5         3.4          1.6         0.4     setosa
+## 36            5         3.2          1.2         0.2     setosa
+## 41            5         3.5          1.3         0.3     setosa
+## 44            5         3.5          1.6         0.6     setosa
+## 50            5         3.3          1.4         0.2     setosa
+## 61            5         2.0          3.5         1.0 versicolor
+## 94            5         2.3          3.3         1.0 versicolor</code></pre>
+<ul>
+<li>One can use &amp; (and), | (or) and ! (not) logical operators for
+complex sub-setting.</li>
+</ul>
+<pre class="r"><code>iris[iris$Sepal.Length == 5 &amp; iris$Species == &quot;setosa&quot;, ]</code></pre>
+<pre><code>##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 5             5         3.6          1.4         0.2  setosa
+## 8             5         3.4          1.5         0.2  setosa
+## 26            5         3.0          1.6         0.2  setosa
+## 27            5         3.4          1.6         0.4  setosa
+## 36            5         3.2          1.2         0.2  setosa
+## 41            5         3.5          1.3         0.3  setosa
+## 44            5         3.5          1.6         0.6  setosa
+## 50            5         3.3          1.4         0.2  setosa</code></pre>
+<p>A data frame is the most common data structure you will encounter as
+a beginner. As you can see from the examples above, the syntax is tricky
+and not intuitive at all. In order to overcome this problem, R has a
+package called <a href="https://www.tidyverse.org/">tidyverse</a>. The
+tidyverse package combines eight other packages into one. Two important
+packages in tidyverse are <code>dplyr</code> and
+<code>ggplot2</code></p>
+<ul>
+<li>dplyr: Makes working with data frames fun and easy</li>
+<li>ggplot2: Creates beautiful plots with ease.</li>
+</ul>
+<p>From next week you will be working with tidyverse.</p>
+<ul>
+<li><strong><code>summary()</code></strong> is a very useful function
+that summarises each column in a data frame</li>
+</ul>
+<pre class="r"><code>summary(iris)</code></pre>
+<pre><code>##   Sepal.Length    Sepal.Width     Petal.Length    Petal.Width   
+##  Min.   :4.300   Min.   :2.000   Min.   :1.000   Min.   :0.100  
+##  1st Qu.:5.100   1st Qu.:2.800   1st Qu.:1.600   1st Qu.:0.300  
+##  Median :5.800   Median :3.000   Median :4.350   Median :1.300  
+##  Mean   :5.843   Mean   :3.057   Mean   :3.758   Mean   :1.199  
+##  3rd Qu.:6.400   3rd Qu.:3.300   3rd Qu.:5.100   3rd Qu.:1.800  
+##  Max.   :7.900   Max.   :4.400   Max.   :6.900   Max.   :2.500  
+##        Species  
+##  setosa    :50  
+##  versicolor:50  
+##  virginica :50  
+##                 
+##                 
+## </code></pre>
+</div>
+</div>
+<div id="r-markdown-a-brief-introduction" class="section level2">
+<h2>R Markdown: a brief introduction</h2>
+<ul>
+<li><p>Documents created with R Markdown can serve as a neat record of
+your analyses.</p></li>
+<li><p>Reproducible research aims to make your analysis easy to
+understand by other researchers</p></li>
+<li><p>Using RMarkdown, you can view your code along with its output
+(graphs, tables, etc.) with conventional text to explain it, a bit like
+a notebook.</p></li>
+<li><p>Once RMarkdown file (.Rmd) is created, one can easily knit into
+different formats</p>
+<ul>
+<li>html file</li>
+<li>pdf file</li>
+<li>doc file</li>
+<li>slides</li>
+</ul></li>
+<li><p>An R Markdown file is made up of 3 basic components:</p>
+<ul>
+<li>header: contains title, author, date etc</li>
+<li>markdown: contains free text, images etc</li>
+<li>R code chunks: contains actual R code</li>
+</ul></li>
+<li><p>Header:</p>
+<ul>
+<li>The markdown document starts with an optional header in YAML format
+known as the YAML metadata.</li>
+<li>In the example below the title, author and date are specified in the
+header. <img src="images/rmd_header.jpg" /></li>
+</ul></li>
+<li><p>R code chunks</p>
+<ul>
+<li>This contains actual R code just like code in the R script</li>
+<li>A comment can be added to a code by using “#”</li>
+<li>below is the example R code chunk <img
+src="images/rcode_ckunk.jpg" /></li>
+</ul></li>
+<li><p>Markdown</p>
+<ul>
+<li>The text following the header in an R Markdown file is in Markdown
+syntax.</li>
+<li>This is the syntax that gets converted to HTML format once we click
+on the Knit button</li>
+<li>The philosophy behind Markdown is that it should be easy to write
+and easy to read.</li>
+<li>Within markdown, one can add text, add images, links etc</li>
+</ul></li>
+<li></li>
+<li><p>Headings:</p></li>
+<li><p>Heading can be created by stating the line with “#” symbol</p>
+<ul>
+<li><p># Header 1</p></li>
+<li><p>## Header 2</p></li>
+<li><p>### Header 3</p></li>
+</ul></li>
+<li><p>Text type</p>
+<ul>
+<li><strong>This is bold text</strong> or <strong>This is bold
+text</strong></li>
+<li><em>This is Italic text</em> or <em>This is Italic text</em></li>
+</ul></li>
+<li><p>Create links</p>
+<ul>
+<li>general syntax to create a link to a webpage use:
+<code>[text of link](web address)</code></li>
+<li>Example:
+<code>[This is link to bitesize R course](https://bioinformatics-core-shared-training.github.io/Bitesize-R/)</code>
+this is rendered as <a
+href="https://bioinformatics-core-shared-training.github.io/Bitesize-R/">This
+is link to bitesize R course</a></li>
+</ul></li>
+<li><p>Insert images</p>
+<ul>
+<li>general syntax: <code>![Figure caption](path to image)</code></li>
+<li>Example: <code>![R Logo](img/Rlogo.png)</code></li>
+</ul></li>
+<li><p>Lists</p>
+<p>* Item 1<br />
+* Item 2<br />
+* Item 3</p></li>
+</ul>
+<p>After the R markdown file has been prepared, save it and knit it to
+the desired document like shown below.</p>
+<p><img src="images/knit.jpg" /></p>
+<div id="credit" class="section level4">
+<h4>Credit</h4>
+<p>These instructions were adapted from following sources.</p>
+<ul>
+<li><p><a href="https://datacarpentry.org">Data Carpentry</a></p></li>
+<li><p><a href="https://ourcodingclub.github.io/tutorials/rmarkdown/">R
+Markdown tutorial</a></p></li>
+<li><p><a
+href="https://ac812.github.io/reproducibility-training/">Reproducible
+Research in R</a></p></li>
+</ul>
+</div>
+</div>
+<div id="exercises" class="section level2">
+<h2>Exercises</h2>
+<div class="exercise">
+<ol style="list-style-type: decimal">
+<li><p>Using <code>mtcars</code> dataset answer the following.</p>
+<ol style="list-style-type: lower-alpha">
+<li>How many rows and columns in the <code>mtcars</code> data set?</li>
+<li>How many cars in the <code>mtcars</code> data set have 8
+cylinders?</li>
+<li>How many cars in the <code>mtcars</code> data set have 6 cylinders
+and more than 3 gears?</li>
+</ol></li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+
+```r
+# 1 a
+nrow(mtcars)
+```
+
+```
+## [1] 32
+```
+
+```r
+ncol(mtcars)
+```
+
+```
+## [1] 11
+```
+
+```r
+# 1 b
+sum(mtcars$cyl == 8)
+```
+
+```
+## [1] 14
+```
+
+```r
+# 1 c
+sum(mtcars$cyl== 6 & mtcars$gear > 3)
+```
+
+```
+## [1] 5
+```
+</details> --->
+</div>
+<div class="exercise">
+<ol start="2" style="list-style-type: decimal">
+<li>Extract 3rd and 5th rows with 1st and 3rd columns from
+<code>mtcars</code> data set.</li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+
+```r
+mtcars[c(3,5), c(1,3)]
+```
+
+```
+##                    mpg disp
+## Datsun 710        22.8  108
+## Hornet Sportabout 18.7  360
+```
+</details> --->
+</div>
+<div class="exercise">
+<ol start="3" style="list-style-type: decimal">
+<li>From <code>airquality</code> data set
+<ol style="list-style-type: lower-alpha">
+<li>Identify the data structure of the first row by extracting it?</li>
+<li>Identify the data structure of the first column by extracting
+it?</li>
+</ol></li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+
+```r
+# 3 a
+class(airquality[1,])
+```
+
+```
+## [1] "data.frame"
+```
+
+```r
+# 3 b
+class(airquality[,1])
+```
+
+```
+## [1] "integer"
+```
+
+```r
+is.vector(airquality[,1])
+```
+
+```
+## [1] TRUE
+```
+
+```r
+is.data.frame(airquality[,1])
+```
+
+```
+## [1] FALSE
+```
+</details> --->
+</div>
+<div class="exercise">
+<ol start="4" style="list-style-type: decimal">
+<li>Using <code>airquality</code> data set
+<ol style="list-style-type: lower-alpha">
+<li>Show first 10 rows</li>
+<li>Show last 2 rows</li>
+<li>list all the column names available</li>
+</ol></li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+
+```r
+# 4 a
+head(airquality, n=10)
+```
+
+```
+##    Ozone Solar.R Wind Temp Month Day
+## 1     41     190  7.4   67     5   1
+## 2     36     118  8.0   72     5   2
+## 3     12     149 12.6   74     5   3
+## 4     18     313 11.5   62     5   4
+## 5     NA      NA 14.3   56     5   5
+## 6     28      NA 14.9   66     5   6
+## 7     23     299  8.6   65     5   7
+## 8     19      99 13.8   59     5   8
+## 9      8      19 20.1   61     5   9
+## 10    NA     194  8.6   69     5  10
+```
+
+```r
+# 4 b
+tail(airquality, n=2)
+```
+
+```
+##     Ozone Solar.R Wind Temp Month Day
+## 152    18     131  8.0   76     9  29
+## 153    20     223 11.5   68     9  30
+```
+
+```r
+# 4 c
+names(airquality)
+```
+
+```
+## [1] "Ozone"   "Solar.R" "Wind"    "Temp"    "Month"   "Day"
+```
+
+```r
+colnames(airquality)
+```
+
+```
+## [1] "Ozone"   "Solar.R" "Wind"    "Temp"    "Month"   "Day"
+```
+
+```r
+# 3 b
+class(airquality[,1])
+```
+
+```
+## [1] "integer"
+```
+
+```r
+is.vector(airquality[,1])
+```
+
+```
+## [1] TRUE
+```
+
+```r
+is.data.frame(airquality[,1])
+```
+
+```
+## [1] FALSE
+```
+</details>--->
+</div>
+<div class="exercise">
+<ol start="5" style="list-style-type: decimal">
+<li>Using <code>airquality</code> data set, can you test Ozone
+production and solar radiation are correlated and answer the following.
+Hint: Use<code>cor.test</code> function.
+<ol style="list-style-type: lower-alpha">
+<li>Get correlation coefficient confidence interval</li>
+<li>what is the p-value?</li>
+<li>What is the estimated correlation coefficient?</li>
+</ol></li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+
+```r
+# 1 a
+results <- cor.test(airquality$Ozone, airquality$Solar.R)
+results$conf.int
+```
+
+```
+## [1] 0.173194 0.502132
+## attr(,"conf.level")
+## [1] 0.95
+```
+
+```r
+# 1 b
+result$p.value
+```
+
+```
+## [1] 3.918639e-28
+```
+
+```r
+# 1 c
+results$estimate
+```
+
+```
+##       cor 
+## 0.3483417
+```
+</details>--->
 </div>
 </div>
 
