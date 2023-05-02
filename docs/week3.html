@@ -212,6 +212,16 @@ To turn that off, go to <code>Tools</code> –&gt; <code>Global Options</code> a
 <p>The <code>tibble</code> package also contains various useful functions for converting other data structures, e.g. data frames, to tibbles and for working with tibble objects.</p>
 <p>The <code>tibble</code> package is one of a collection of packages that make up the tidyverse. It is usually more convenient to load the core tidyverse packages in one go as follows.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ─────────────────────────────────────────────────────────────────────────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.1     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.1     
+## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <p>The output from this command tells us which packages were loaded, one of which is the <code>tibble</code> package. Another of these is <code>ggplot2</code> that provides excellent plotting functions for visualizing our data and will be the main focus next week.</p>
 <p>We also got a warning about some conflicts. This tells us that there are functions loaded as part of the <code>dplyr</code> package that have the same name as functions that are in the <code>stats</code> package. The <code>stats</code> package was already loaded, from when we first started our R session, and the functions referred to in the warning are now masked; to use these instead of their <code>dplyr</code> namesakes you need to specify them fully by adding the package name and <code>::</code> as shown in the warning message.</p>
 <div id="installing-packages" class="section level2">
@@ -282,7 +292,7 @@ download.file(url=&quot;https://bioinformatics-core-shared-training.github.io/Bi
 <p>This file contains information in tabular form in which values are separated by tab characters so we’ll use the <strong><code>read_tsv()</code></strong> to read these data.</p>
 <pre class="r"><code>metabric &lt;- read_tsv(&quot;data/brca_metabric_clinical_data.tsv&quot;)</code></pre>
 <pre><code>## Rows: 2509 Columns: 20
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;\t&quot;
 ## chr (14): Patient ID, Sample ID, Cancer Type, Cancer Type Detailed, 3-Gene c...
 ## dbl  (6): Mutation Count, Age at Diagnosis, Cohort, Lymph nodes examined pos...
@@ -325,8 +335,13 @@ These functions expect the first line to contain column names and try to make se
 </div>
 <p>To create clean column names we can use <code>clean_names()</code> from <code>janitor</code> package.</p>
 <pre class="r"><code>#install.packages(&quot;janitor&quot;)
-library(janitor)
-metabric &lt;- clean_names(metabric)</code></pre>
+library(janitor)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>metabric &lt;- clean_names(metabric)</code></pre>
 <p>We are now in a position to explore these data. For example, we can use the <strong><code>table()</code></strong> function to count the number of patients in this cohort that had chemotherapy and those that did not.</p>
 <pre class="r"><code>table(metabric$chemotherapy)</code></pre>
 <pre><code>## 

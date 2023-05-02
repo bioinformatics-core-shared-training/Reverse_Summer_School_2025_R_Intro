@@ -1,0 +1,809 @@
+---
+title: "Week 3 -- Working with data in R"
+---
+
+> #### Learning objectives
+>
+> * Create an R Project
+> * Learn how to install and use packages that extend R's basic functionality
+> * Read data in tabular format into R
+> * Calculate summary statistics on your tabular data
+> * Introduce the **`tibble`**, arguably the most important data structure you will use in R
+> * Learn how R deals with missing values
+> * Learn the two key **dplyr** functions for manipulating your data
+>     * **`filter()`** for selecting observations based on their values, i.e. selecting rows in your table
+>     * **`select()`** for selecting a subset of variables, i.e. selecting columns in your table
+>     * **`arrange()`** for sorting the observations in your table 
+
+
+## Create an R Project
+
+Before starting to write code in RStudio, we need to create an R Project.  The idea behind an R project is  to have a workspace where you can keep all the files and settings associated with the project together.  In that way, next time you open the R Project it would be easier to resume work.  
+
+To create an "R Project":
+
+1. Start RStudio.
+2. Under the `File` menu, click on `New Project`. Choose `New Directory`, then
+  `New Project`.
+3. Enter a name for this new folder (or "directory"), and choose a convenient
+  location for it. This will be your **working directory** for the rest of the
+  day (*e.g.,* `~/my_first_project`).
+4. Click on `Create Project`.
+5. (Optional) Set Preferences to 'Never' save workspace in RStudio.
+
+RStudio's default preferences generally work well, but saving a workspace to
+`.RData` can be cumbersome, especially if you are working with larger datasets as this would save all the data that is loaded into R into the `.RData` file.  
+To turn that off, go to `Tools` --> `Global Options` and select the 'Never' option
+for `Save workspace to .RData' on exit.`
+
+# Getting started with data in R
+
+In this course, we'll be mostly focusing on a set of R packages specifically
+designed for the most useful and common operations for interacting with and
+visualizing data, and particularly data in a tabular form. This collection of
+packages is known as the **tidyverse**.
+
+Learning the **tidyverse** is more than just learning about some helpful
+functions to get certain tasks done. The tidyverse packages form a coherant
+system for data manipulation, exploration and visualization that share a common
+design philosophy. There is a certain elegance to code crafted using the
+tidyverse approach that is in stark contrast to the strange and often cryptic
+equivalent using traditional 'base R'. 
+
+We will also start to look at the most important data structure you'll use
+with your data, assuming it is in tabular form, the **data frame**, and its
+superior tidyverse derivative, the **tibble**.
+
+---
+
+# Packages
+
+Before we move on to the tidyverse version of a data frame, the tibble, we have
+to load the tidyverse package that provides the tibble functionality. It doesn't
+come with the set of packages loaded when you first start R.
+
+There are thousands of R packages that extend R's core functionality to provide
+specialized functions for doing all kinds of things. There are R packages that
+provide various kinds of visualizations and plotting functions, others that let
+us manipulate data in interesting and useful ways, and still others that give us
+access to cutting-edge machine learning algorithms. 
+
+You need to load a package using the **`library()`** function in order to be
+able to use the functions and data sets that the package provides. The tibble
+data structure is part of the **`tibble`** package so to make this available you
+would run the following command:
+
+```{r eval = FALSE}
+library(tibble)
+```
+
+The `tibble` package also contains various useful functions for converting other
+data structures, e.g. data frames, to tibbles and for working with tibble
+objects.
+
+The `tibble` package is one of a collection of packages that make up the
+tidyverse. It is usually more convenient to load the core tidyverse packages
+in one go as follows.
+
+```{r}
+library(tidyverse)
+```
+
+The output from this command tells us which packages were loaded, one of which
+is the `tibble` package. Another of these is `ggplot2` that provides excellent
+plotting functions for visualizing our data and will be the main focus next
+week.
+
+We also got a warning about some conflicts. This tells us that there are
+functions loaded as part of the `dplyr` package that have the same name as
+functions that are in the `stats` package. The `stats` package was already
+loaded, from when we first started our R session, and the functions referred to
+in the warning are now masked; to use these instead of their `dplyr` namesakes
+you need to specify them fully by adding the package name and `::` as shown in
+the warning message.
+
+## Installing packages
+
+If you got the following error message when trying to load the tidyverse, then
+you haven't yet installed it.
+
+```
+> library(tidyverse)
+Error in library(tidyverse) : there is no package called ‘tidyverse’
+```
+
+Installing packages should be relatively straightforward using the
+`install.packages()` function.
+
+```{r eval = FALSE}
+install.packages("tidyverse")
+```
+
+If you're using R at a regular console within a terminal window, i.e. not
+RStudio, you may be asked to select one of several mirrors of the CRAN R package
+repository hosted at different locations around the world (in the UK these are
+in Bristol and London).
+
+For some packages you may be asked to choose between a binary and a source
+package, particularly if the latest version of the package is only available in
+source form and that package contains code written in another language such as
+C. This could be a problem if you don't have a C compiler installed on your
+computer.
+
+---
+
+# Tibbles
+
+The tidyverse brings us a special type of data frame called the **`tibble`**.
+
+Data frames have some rather quirky and annoying behaviours and the `tibble`
+addresses some of these issues to make life a little easier. We'll first look at
+how we can create a tibble and then will have a quick look at some of the
+advantages of the tibble over the data frame.
+
+## Creating a tibble
+
+Tibbles can be created using the `tibble()` function in a similar manner to how
+we created a data frame earlier.
+
+```{r}
+beatles <- tibble(
+  name = c("John", "Paul", "Ringo", "George"),
+  birth_year = c(1940, 1942, 1940, 1943),
+  instrument = c("guitar", "bass", "drums", "guitar")
+)
+beatles
+```
+
+A data frame can be converted into a tibble using the `as_tibble()` function.
+
+```{r}
+iris_tibble <- as_tibble(iris)
+```
+
+Our iris tibble is still a data frame but it also has acquired some additional
+types or classes (`tbl_df` and `tbl`).
+
+```{r}
+class(iris)
+class(iris_tibble)
+```
+
+
+## Tibbles vs data frames
+
+So let's now have a look at what capabilities and behaviours these additional
+types confer and what the main differences are between tibbles and data frames.
+
+The first immediate difference from a `data.frame` is that a `tibble` displays 
+the data type of each column under its name and it only prints as many columns 
+as fit on one screen. Another difference is that printing a `tibble` will not 
+print the whole dataset, but just the first 10 rows and only the columns that 
+fit the screen (same as `head` but with 10 rows instead of 6). If you would 
+like to print more than the first 10 rows use the `print` function.
+
+Since printing `tibble` already gives you information about the data structure, 
+the data types of each column and the size of the dataset, the `str` function is
+not as much useful as it was when using `data.frame`.  
+
+```{r, results=TRUE}
+## inspect the data
+str(iris_tibble)
+```
+
+Notice that rather than specifing `tibble` as the data structure of surveys, the first line of `str`'s output now specifies `‘spec_tbl_df’, ‘tbl_df’, ‘tbl’ and 'data.frame'` which can be a bit confusing. These are the classes `tibble` inherts from which in simple terms means that `tibble` is a `data.frame` with a few modifications.  Therefore, most of the functions that were used with `data.frame` can also be used with `tibble`.
+
+---
+
+
+
+# Reading data into R
+
+Another of the tidyverse packages loaded when we ran `library(tidyverse)` is the
+`readr` package, which provides functions for reading tabular data into a tibble
+and writing tibbles to tab-delmited and comma-separated value (CSV) files.
+
+For example, the clinical data for the METABRIC breast cancer dataset generated
+at CRUK CI can be downloaded as a tab-delimited file from
+[cBioPortal](https://www.cbioportal.org/study/clinicalData?id=brca_metabric).
+Targeted sequencing was performed for 2509 primary breast tumours, along with
+548 matched normals, using a panel of 173 of the most frequently mutated breast
+cancer genes as part of the METABRIC study
+([Pereira *et al.*, Nature Communications 7:11479, 2016](https://www.ncbi.nlm.nih.gov/pubmed/27161491)).
+
+Let us first download the file and have a look at the data.  
+
+We are going to use the R function `download.file()` to download the TSV/CSV files that contains the data.  
+```{r, eval=FALSE, purl=TRUE}
+download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/brca_metabric_clinical_data.tsv",destfile = "data/brca_metabric_clinical_data.tsv")
+download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/metabric_clinical_and_expression_data.csv",destfile = "data/metabric_clinical_and_expression_data.csv")
+```
+
+This file contains information in tabular form in which values are separated by
+tab characters so we'll use the **`read_tsv()`** to read these data.
+
+```{r}
+metabric <- read_tsv("data/brca_metabric_clinical_data.tsv")
+```
+
+`read_tsv()` prints a message telling us which types it has assigned to each of
+the columns it has read, although in this case the table has quite a lot of
+columns and it only outputs details about the first few.
+
+If we print the clinical data set we can see that `read_tsv()` created a tibble.
+
+```{r}
+metabric
+```
+
+```{block type = "rmdblock"}
+**`read_csv()`** and **`read_tsv()`**
+  
+`read_csv()` reads data from a comma-separated value (CSV) file into a tibble.
+`read_tsv()` is the equivalent function that works on tab-delmited files.
+
+These functions expect the first line to contain column names and try to make
+sensible guesses at the type of data in each column. You can change this by
+specifying various arguments, e.g. to skip comment lines beginning with a
+specific character (e.g. "#") or to tell the function what the column types
+are.
+
+```
+
+To create clean column names we can use `clean_names()` from `janitor` package.
+
+```{r}
+#install.packages("janitor")
+library(janitor)
+metabric <- clean_names(metabric)
+```
+
+We are now in a position to explore these data. For example, we can use the
+**`table()`** function to count the number of patients in this cohort that had
+chemotherapy and those that did not.
+
+```{r}
+table(metabric$chemotherapy)
+```
+
+We can summarize the numbers of mutations found per patient.
+
+```{r}
+summary(metabric$mutation_count)
+```
+
+
+## Working directory
+
+When reading in the METABRIC dataset we specified the file using a relative
+path, `data/brca_metabric_clinical_data.tsv`. This is relative to the current
+working directory and is in the `data` subdirectory within our working
+directory. The **`getwd()`** function will tell you what the current working
+directory is.
+
+```{r eval = FALSE}
+getwd()
+```
+
+If you open RStudio by clicking on its icon in the task bar or its entry in the
+start menu, your working directory will probably be your home folder.
+
+You can specify a full path for the file you want to read, which is also known
+as an absolute path.
+
+You can explicitly set your working directory using **`setwd()`**.
+
+If you're running an R script from a terminal window (by typing something like
+`Rscript my_script.R` at the command prompt) your working directory will be the
+directory in which you run the script (i.e. the one in which you issue the
+Rscript command). In this case you will probably want to read files from
+locations that are relative to the directory in which you run the script.
+
+If you're writing an R script in RStudio you can set the working directory to be
+the same directory as that which contains your script file using the menu:
+**Session > Set Working Directory > To Source File Location**. You can also
+navigate to the directory of your choosing in the Files tab pane and set this to
+be the working directory by clicking on the **More** menu button and selecting
+**Set As Working Directory**.
+
+---
+
+# Missing values
+
+The METABRIC clinical dataset has some missing values. If you look back to the
+table we printed out earlier you can see 2 missing values for mutation counts
+within the first 10 rows.
+
+```{r}
+metabric$mutation_count[1:10]
+```
+
+```{block type = "rmdblock"}
+**Missing values** (**`NA`**)
+
+Missing values in R are represented as **`NA`**, which stands for 'not available'.
+```
+
+The `summary()` function reported that there are 152 missing mutation counts.
+`summary()` reports the mean and median values for the remaining observations,
+i.e. those for which a mutation count *is* available. Not all functions do this
+though.
+
+```{r}
+mean(metabric$mutation_count)
+```
+
+The `mean()` function, for example, takes a different approach in how it treats
+missing values. It returns `NA`, i.e. a missing value, because it takes the view
+that it cannot compute a mean for a set of values where some are not available.
+You can specify the argument `na.rm = TRUE` when calling `mean()` to instruct it
+to ignore the missing values and calculate the mean of the remaining values.
+
+```{r}
+mean(metabric$mutation_count, na.rm = TRUE)
+```
+
+There are many such functions in R that would be similarly affected by missing
+values and which offer the `na.rm` argument.
+
+You can test for missing values using the `is.na()` function.
+
+```{r}
+first_ten_mutation_counts <- metabric$mutation_count[1:10]
+is.na(first_ten_mutation_counts)
+```
+
+One final handy tip: summing the result of `is.na()` will count the number of
+missing values in a vector.
+
+```{r}
+sum(is.na(metabric$mutation_count))
+```
+
+---
+
+# Data manipulation with dplyr
+
+**dplyr** is one of the packages that gets loaded as part of the tidyverse.
+
+```{r}
+library(tidyverse)
+```
+
+dplyr is the Swiss army knife in the tidyverse, providing many useful functions
+for manipulating tabular data in data frames or tibbles. We're going to look at
+the key functions for filtering our data, modifying the contents and computing
+summary statistics.
+
+We'll also introduce the pipe operator, **`%>%`**, for chaining operations
+together into mini workflows in a way that makes for more readable and
+maintainable code.
+
+We'll again use the METABRIC data set to illustrate how these operations work.
+
+```{r message = FALSE}
+metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
+metabric
+```
+
+---
+
+# Data semantics
+
+We use the terms 'observation' and 'variable' a lot in this course. As a
+reminder from week 2, when we talk about an observation, we're talking about a
+set of values measured for the same unit or thing, e.g. a person or a date, and
+when we talk about a variable we are really talking about the attribute that we
+are measuring or recording, e.g. height, temperature or expression value.
+
+**Observations are represented as rows** in our data frames or tibbles, while
+the **columns correspond to variables**.
+
+```{block type = "rmdblock"}
+From **"Tidy Data"** by **Hadley Wickham**, [*The Journal of Statistical
+Software*, vol. 59, 2014](https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf).
+
+A data set is a collection of **values**, usually either numbers (if
+quantitative) or character strings (if qualitative). Values are organised in
+two ways. Every value belongs to a variable and an observation.
+
+A **variable** contains all values that measure the same underlying attribute
+(like height, temperature, duration) across units.
+
+An **observation** contains all values measured on the same unit (like a person
+or a day) across attributes.
+```
+
+---
+
+# dplyr verbs
+
+We will be looking at the following key dplyr functions in this course:
+
+* **`filter()`** for filtering rows
+* **`select()`** for selecting columns
+* **`arrange()`** for sorting rows
+* **`mutate()`** for modifying columns or creating new ones
+* **`summarise()`** for computing summary values
+
+In looking at each of these in turn, we'll be applying these to the entire data
+set. It is possible to combine these with the `group_by()` function to instead
+operate on separate groups within our data set but this is something we'll cover
+in detail later.
+
+The dplyr operations are commonly referred to as "verbs" in a data manipulation
+grammar. These verbs have a common syntax and work together in a consistent and
+uniform manner. They all have the following shared behaviours:
+
+* The first argument in each function is a data frame (or tibble)
+
+* Any additional arguments describe what operation to perform on the data frame
+
+* Variable names, i.e. column names, are referred to without using quotes
+
+* The result of an operation is a new data frame
+
+---
+
+# Filtering rows with `filter()`
+
+The **`filter`** verb allows you to choose rows from a data frame that match
+some specified criteria. The criteria are based on values of variables and can
+make use of comparison operators such as `==`, `>`, `<` and `!=`.
+
+For example, to filter the METABRIC data set so that it only contains
+observations for those patients who died of breast cancer we can use `filter()`
+as follows.
+
+```{r}
+deceased <- filter(metabric, Vital_status == "Died of Disease")
+deceased
+```
+
+Remember that the **`==`** operator tests for equality, i.e. is the value for
+`Vital_status` for each patient (observation) equal to "Died of Disease".
+
+This filtering operation is equivalent to subsetting the rows based on a logical
+vector resulting from our comparison of vital status values with "Died of
+Disease".
+
+```{r eval = FALSE}
+filter(metabric, Vital_status == "Died of Disease")
+# is equivalent to
+metabric[metabric$Vital_status == "Died of Disease", ]
+```
+
+Both achieve the same result but the dplyr filter method is arguably a little
+easier to read. We haven't had to write `metabric` twice for one thing; we just
+referred to the variable name as it is, unquoted and without any fuss.
+
+Let's have a look at the various categories in the `Vital_status` variable.
+
+```{r}
+table(metabric$Vital_status)
+```
+
+We could use the `!=` comparison operator to select all deceased patients
+regardless of whether they died of the disease or other causes, by filtering for
+those that don't have the value "Living".
+
+```{r}
+deceased <- filter(metabric, Vital_status != "Living")
+nrow(deceased)
+```
+
+Another way of doing this is to specify which classes we are interested in and
+use the **`%in%`** operator to test which observations (rows) contain those
+values.
+
+```{r}
+deceased <- filter(metabric, Vital_status %in% c("Died of Disease", "Died of Other Causes"))
+nrow(deceased)
+```
+
+Another of the tidyverse packages, **`stringr`**, contains a set of very useful
+functions for operating on text or character strings. One such function,
+**`str_starts()`** could be used to find all `Vital_status` values that start
+with "Died".
+
+```{r}
+deceased <- filter(metabric, str_starts(Vital_status, "Died"))
+nrow(deceased)
+```
+
+Note that `str_starts()` returns a logical vector - this is important since the
+filtering condition must evaluate to `TRUE` or `FALSE` values for each row.
+
+Unsurprisingly there is an equivalent function, `str_ends()`, for matching the
+end of text (character) values and `str_detect()` is another useful function
+that determines whether values match a regular expression. Regular expressions
+are a language for search patterns used frequently in computer programming and
+really worth getting to grips with but sadly these are beyond the scope of this
+course.
+
+Filtering based on a logical variable is the most simple type of filtering of
+all. We don't have any logical variables in our METABRIC data set so we'll
+create one from the binary `Survival_status` variable to use as an example.
+
+```{r}
+# create a new logical variable called 'Deceased'
+metabric$Deceased <- metabric$Survival_status == "DECEASED"
+#
+# filtering based on a logical variable - only selects TRUE values
+deceased <- filter(metabric, Deceased)
+#
+# only display those columns we're interested in
+deceased[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
+```
+
+We can use the **`!`** operator to filter those patients who are not
+deceased.
+
+```{r eval = FALSE}
+filter(metabric, !Deceased)
+```
+
+The eagle-eyed will have spotted that filtering on our newly created Deceased
+logical variable gave a slightly different number of observations (patients) who
+are considered to be deceased, compared with the filtering operations shown
+above based on the `Vital_status` variable. We get one extra row. This is
+because we have a missing value for the vital status of one of the patients. We
+can filter for this using the **`is.na()`** function.
+
+```{r}
+missing_vital_status <- filter(metabric, is.na(Vital_status))
+missing_vital_status[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
+```
+
+`filter()` only retains rows where the condition if `TRUE`; both `FALSE` and
+`NA` values are filtered out.
+
+We can apply more than one condition in our filtering operation, for example
+the patients who were still alive at the time of the METABRIC study and had
+survived for more than 10 years (120 months).
+
+```{r}
+filter(metabric, Survival_status == "LIVING", Survival_time > 120)
+```
+
+The equivalent using R's usual subsetting is slightly less readable.
+
+```{r eval = FALSE}
+metabric[metabric$Survival_status == "LIVING" & metabric$Survival_time > 120, ]
+```
+
+We can add as many conditions as we like separating each with a comma. Note that
+filtering using R subsetting gets more unreadable, and more cumbersome to code,
+the more conditions you add.
+
+Adding conditions in this way is equivalent to combining the conditions using
+the **`&`** (Boolean AND) operator.
+
+```{r eval = FALSE}
+filter(metabric, Survival_status == "LIVING", Survival_time > 120)
+```
+
+Naturally we can also check when either of two conditions holds true by using
+the **`|`** (Boolean OR) operator. And we can build up more complicated
+filtering operations using both `&` and `|`. For example, let's see which
+patients have stage 3 or stage 4 tumours that are either estrogen receptor (ER)
+positive or progesterone receptor (PR) positive.
+
+```{r}
+selected_patients <- filter(metabric, Tumour_stage >= 3, ER_status == "Positive" | PR_status == "Positive")
+nrow(selected_patients)
+```
+
+In this case, if you used `&` in place of the comma you'd need to be careful
+about the precedence of the `&` and `|` operators and use parentheses to make
+clear what you intended.
+
+```{r eval = FALSE}
+filter(metabric, Tumour_stage >= 3 & (ER_status == "Positive" | PR_status == "Positive"))
+```
+
+---
+
+# Selecting columns with `select()`
+
+Another way of "slicing and dicing"" our tabular data set is to select just the
+variables or columns we're interested in. This can be important particularly
+when the data set contains a very large number of variables as is the case for
+the METABRIC data. Notice how when we print the METABRIC data frame it is not
+possible to display all the columns; we only get the first few and then a long
+list of the additional ones that weren't displayed.
+
+Using the `$` operator is quite convenient for selecting a single column and
+extracting the values as a vector. Selecting several columns using the `[]`
+subsetting operator is a bit more cumbersome. For example, in our look at
+filtering rows, we considered two different variables in our data set that
+are concerned with the living/deceased status of patients. When printing out
+the results we selected just those columns along with the patient identifier
+and the newly created `Deceased` column.
+
+```{r}
+deceased[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
+```
+
+The **`select()`** function from dplyr is simpler.
+
+```{r}
+select(metabric, Patient_ID, Survival_status, Vital_status, Deceased)
+```
+
+Notice the similarities with the `filter()` function. The first argument is the
+data frame we are operating on and the arguments that follow on are specific to
+the operation in question, in this case, the variables (columns) to select. Note
+that the variables do not need to be put in quotes, and the returned value is
+another data frame, even if only one column was selected.
+
+We can alter the order of the variables (columns).
+
+```{r}
+select(metabric, Patient_ID, Vital_status, Survival_status, Deceased)
+```
+
+We can also select a range of columns using **`:`**, e.g. to select the patient
+identifier and all the columns between `Tumour_size` and `Cancer_type` we could
+run the following `select()` command.
+
+```{r}
+select(metabric, Patient_ID, Chemotherapy:Tumour_stage)
+```
+
+The help page for `select` points to some special functions that can be used
+within `select()`. We can find all the columns, for example, that contain the
+term "status" using `contains()`.
+
+```{r}
+select(metabric, contains("status"))
+```
+
+If we only wanted those ending with "status" we could use `ends_with()`
+instead.
+
+```{r}
+select(metabric, ends_with("status"))
+```
+
+We can also select those columns we're not interested in and that shouldn't be
+included by prefixing the columns with **`-`**.
+
+```{r}
+select(metabric, -Cohort)
+```
+
+You can use a combination of explicit naming, ranges, helper functions and
+negation to select the columns of interest.
+
+```{r}
+selected_columns <- select(metabric, Patient_ID, starts_with("Tumour_"), `3-gene_classifier`:Integrative_cluster, -Cellularity)
+selected_columns
+```
+
+You can also use `select()` to completely reorder the columns so they're in the
+order of your choosing. The `everything()` helper function is useful in this
+context, particularly if what you're really interested in is bringing one or
+more columns to the left hand side and then including everything else
+afterwards in whatever order they were already in.
+
+```{r}
+select(metabric, Patient_ID, Survival_status, Tumour_stage, everything())
+```
+
+Finally, columns can be renamed as part of the selection process.
+
+```{r}
+select(metabric, Patient_ID, Classification = `3-gene_classifier`, NPI = Nottingham_prognostic_index)
+```
+
+Note that dplyr provides the `rename()` function for when we only want to rename
+a column and not select a subset of columns.
+
+---
+
+# Sorting using `arrange()`
+
+It is sometimes quite useful to sort our data frame based on the values in one
+or more of the columns, particularly when displaying the contents or saving them
+to a file. The `arrange()` function in dplyr provides this sorting capability.
+
+For example, we can sort the METABRIC patients into order of increasing
+survival time.
+
+```{r}
+arrange(metabric, Survival_time)
+```
+
+Or we might be more interested in the patients that survived the longest so
+would need the order to be of decreasing survival time. For that we can use
+the helper function `desc()` that works specifically with `arrange()`.
+
+```{r}
+arrange(metabric, desc(Survival_time))
+```
+
+We can sort by more than one variable by adding more variable arguments to
+`arrange()`.
+
+```{r}
+arrange(metabric, Tumour_stage, Nottingham_prognostic_index)
+```
+
+Here we've sorted first by tumour stage from lowest to highest value and then
+by the Nottingham prognostic index for when there are ties, i.e. where the
+tumour stage is the same.
+
+Sorting is most commonly used in workflows as one of the last steps before
+printing out a data frame or writing out the table to a file.
+
+---
+# Summary
+
+In this session we have covered the following concepts:
+
+* Create an R Project
+* How to install and use packages that extend R's basic functionality
+* How to read tabular data into R
+* The tibble, a superior version of the data frame
+* Missing values and how R handles these
+* Filtering rows in a data frame based on their values
+* Selecting and reordering of columns
+* Sorting data
+
+---
+
+## Exercises
+
+
+**1. How many samples in the METABRIC dataset have high cellularity and positive ER and HER2 status?**
+
+After reading the data first subset it to retain only cellularity, er_status and her2_status. Thereafter, get rid of rows with missing values in any of the columns.
+
+```{r}
+#library(tidyverse)
+#metabric <- read_tsv("data/brca_metabric_clinical_data.tsv")
+
+```
+
+**2. Investigate the subset of long-surviving breast cancer patients that didn't receive chemo or radiotherapy**
+
+First obtain the subset of patients that received neither chemotherapy or
+radiotherapy and survived for more than 20 years.
+
+```{r}
+#library(tidyverse)
+#metabric <- read_csv("metabric_clinical_and_expression_data.csv")
+
+```
+
+Now look at the breakdown of these patients in terms of ER status. Count the
+numbers of ER positive and ER negative patients in this subset. Calculate the
+proportion that are ER positive.
+
+```{r}
+
+```
+
+What does this tell us? Calculate the proportion of ER positive patients in the
+whole cohort by way of a comparison.
+
+```{r}
+
+```
+
+
+**3. Read into R one of your own Excel spreadsheets and explore the data using `summary()`, `table()` and/or `plot()`**
+
+We haven't yet showed how to read Excel spreadsheets into R. There are more than
+package providing this capability but for this exercise use the `readxl` package
+from the tidyverse.
+
+`readxl` should have been installed as part of the tidyverse but if you find
+that's not the case, you will have to install it separately.
+
+`readxl` is not loaded as one of the core tidyverse packages when you run
+`library(tidyverse)` so you'll have to load this separately.
+
+If you don't have an Excel spreadsheet to hand, you can use the clinical
+annotation data for the NCI-60 cell line data set (https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/cellline_nci60_clinical_data.xlsx).
