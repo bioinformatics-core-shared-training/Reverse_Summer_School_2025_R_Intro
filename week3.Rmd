@@ -1,5 +1,5 @@
 ---
-title: "Week 3 -- Working with data in R"
+title: "Week 3 - Working with data in R"
 ---
 
 > #### Learning objectives
@@ -54,7 +54,7 @@ We will also start to look at the most important data structure you'll use
 with your data, assuming it is in tabular form, the **data frame**, and its
 superior tidyverse derivative, the **tibble**.
 
----
+
 
 # Packages
 
@@ -130,7 +130,7 @@ source form and that package contains code written in another language such as
 C. This could be a problem if you don't have a C compiler installed on your
 computer.
 
----
+
 
 # Tibbles
 
@@ -193,7 +193,7 @@ str(iris_tibble)
 
 Notice that rather than specifing `tibble` as the data structure of surveys, the first line of `str`'s output now specifies `‘spec_tbl_df’, ‘tbl_df’, ‘tbl’ and 'data.frame'` which can be a bit confusing. These are the classes `tibble` inherts from which in simple terms means that `tibble` is a `data.frame` with a few modifications.  Therefore, most of the functions that were used with `data.frame` can also be used with `tibble`.
 
----
+
 
 
 
@@ -306,7 +306,7 @@ navigate to the directory of your choosing in the Files tab pane and set this to
 be the working directory by clicking on the **More** menu button and selecting
 **Set As Working Directory**.
 
----
+
 
 # Missing values
 
@@ -360,7 +360,7 @@ missing values in a vector.
 sum(is.na(metabric$mutation_count))
 ```
 
----
+
 
 # Data manipulation with dplyr
 
@@ -386,7 +386,7 @@ metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
 metabric
 ```
 
----
+
 
 # Data semantics
 
@@ -414,7 +414,7 @@ An **observation** contains all values measured on the same unit (like a person
 or a day) across attributes.
 ```
 
----
+
 
 # dplyr verbs
 
@@ -443,7 +443,7 @@ uniform manner. They all have the following shared behaviours:
 
 * The result of an operation is a new data frame
 
----
+
 
 # Filtering rows with `filter()`
 
@@ -602,7 +602,7 @@ clear what you intended.
 filter(metabric, Tumour_stage >= 3 & (ER_status == "Positive" | PR_status == "Positive"))
 ```
 
----
+
 
 # Selecting columns with `select()`
 
@@ -700,7 +700,7 @@ select(metabric, Patient_ID, Classification = `3-gene_classifier`, NPI = Notting
 Note that dplyr provides the `rename()` function for when we only want to rename
 a column and not select a subset of columns.
 
----
+
 
 # Sorting using `arrange()`
 
@@ -737,7 +737,7 @@ tumour stage is the same.
 Sorting is most commonly used in workflows as one of the last steps before
 printing out a data frame or writing out the table to a file.
 
----
+
 # Summary
 
 In this session we have covered the following concepts:
@@ -751,7 +751,7 @@ In this session we have covered the following concepts:
 * Selecting and reordering of columns
 * Sorting data
 
----
+
 
 ## Exercises
 
