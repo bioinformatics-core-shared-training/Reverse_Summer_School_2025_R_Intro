@@ -331,6 +331,12 @@ div.tocify {
     <li>
       <a href="week1.html">Week 1 - An introduction to RStudio, R objects, data types, functions and vectors</a>
     </li>
+    <li>
+      <a href="week2.html">Week 2 - An introduction to other data structures</a>
+    </li>
+    <li>
+      <a href="week3.html">Week 3 - Working with data in R</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -707,21 +713,21 @@ is.list(result) # test if object is a list</code></pre>
 ##  Welch Two Sample t-test
 ## 
 ## data:  sample_1 and sample_2
-## t = -12.935, df = 197.82, p-value &lt; 2.2e-16
+## t = -15.787, df = 197.74, p-value &lt; 2.2e-16
 ## alternative hypothesis: true difference in means is not equal to 0
 ## 95 percent confidence interval:
-##  -1.946324 -1.431361
+##  -2.394985 -1.863080
 ## sample estimates:
 ## mean of x mean of y 
-##  5.085865  6.774707</code></pre>
+##  5.005948  7.134981</code></pre>
 <pre class="r"><code>names(result) # list names of the object</code></pre>
 <pre><code>##  [1] &quot;statistic&quot;   &quot;parameter&quot;   &quot;p.value&quot;     &quot;conf.int&quot;    &quot;estimate&quot;   
 ##  [6] &quot;null.value&quot;  &quot;stderr&quot;      &quot;alternative&quot; &quot;method&quot;      &quot;data.name&quot;</code></pre>
 <pre class="r"><code>result$statistic</code></pre>
 <pre><code>##         t 
-## -12.93469</code></pre>
+## -15.78674</code></pre>
 <pre class="r"><code>result$p.value</code></pre>
-<pre><code>## [1] 3.918639e-28</code></pre>
+<pre><code>## [1] 7.260099e-37</code></pre>
 </div>
 <div id="data-frames" class="section level3">
 <h3>Data frames</h3>
@@ -1029,63 +1035,37 @@ cylinders?</li>
 and more than 3 gears?</li>
 </ol></li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-
-```r
-# 1 a
-nrow(mtcars)
-```
-
-```
-## [1] 32
-```
-
-```r
-ncol(mtcars)
-```
-
-```
-## [1] 11
-```
-
-```r
-# 1 b
-sum(mtcars$cyl == 8)
-```
-
-```
-## [1] 14
-```
-
-```r
-# 1 c
-sum(mtcars$cyl== 6 & mtcars$gear > 3)
-```
-
-```
-## [1] 5
-```
-</details> --->
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code># 1 a
+nrow(mtcars)</code></pre>
+<pre><code>## [1] 32</code></pre>
+<pre class="r"><code>ncol(mtcars)</code></pre>
+<pre><code>## [1] 11</code></pre>
+<pre class="r"><code># 1 b
+sum(mtcars$cyl == 8)</code></pre>
+<pre><code>## [1] 14</code></pre>
+<pre class="r"><code># 1 c
+sum(mtcars$cyl== 6 &amp; mtcars$gear &gt; 3)</code></pre>
+<pre><code>## [1] 5</code></pre>
+</details>
 </div>
 <div class="exercise">
 <ol start="2" style="list-style-type: decimal">
 <li>Extract 3rd and 5th rows with 1st and 3rd columns from
 <code>mtcars</code> data set.</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-
-```r
-mtcars[c(3,5), c(1,3)]
-```
-
-```
-##                    mpg disp
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code>mtcars[c(3,5), c(1,3)]</code></pre>
+<pre><code>##                    mpg disp
 ## Datsun 710        22.8  108
-## Hornet Sportabout 18.7  360
-```
-</details> --->
+## Hornet Sportabout 18.7  360</code></pre>
+</details>
 </div>
 <div class="exercise">
 <ol start="3" style="list-style-type: decimal">
@@ -1096,43 +1076,21 @@ mtcars[c(3,5), c(1,3)]
 it?</li>
 </ol></li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-
-```r
-# 3 a
-class(airquality[1,])
-```
-
-```
-## [1] "data.frame"
-```
-
-```r
-# 3 b
-class(airquality[,1])
-```
-
-```
-## [1] "integer"
-```
-
-```r
-is.vector(airquality[,1])
-```
-
-```
-## [1] TRUE
-```
-
-```r
-is.data.frame(airquality[,1])
-```
-
-```
-## [1] FALSE
-```
-</details> --->
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code># 3 a
+class(airquality[1,])</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<pre class="r"><code># 3 b
+class(airquality[,1])</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>is.vector(airquality[,1])</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>is.data.frame(airquality[,1])</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+</details>
 </div>
 <div class="exercise">
 <ol start="4" style="list-style-type: decimal">
@@ -1143,16 +1101,13 @@ is.data.frame(airquality[,1])
 <li>list all the column names available</li>
 </ol></li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-
-```r
-# 4 a
-head(airquality, n=10)
-```
-
-```
-##    Ozone Solar.R Wind Temp Month Day
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code># 4 a
+head(airquality, n=10)</code></pre>
+<pre><code>##    Ozone Solar.R Wind Temp Month Day
 ## 1     41     190  7.4   67     5   1
 ## 2     36     118  8.0   72     5   2
 ## 3     12     149 12.6   74     5   3
@@ -1162,62 +1117,25 @@ head(airquality, n=10)
 ## 7     23     299  8.6   65     5   7
 ## 8     19      99 13.8   59     5   8
 ## 9      8      19 20.1   61     5   9
-## 10    NA     194  8.6   69     5  10
-```
-
-```r
-# 4 b
-tail(airquality, n=2)
-```
-
-```
-##     Ozone Solar.R Wind Temp Month Day
+## 10    NA     194  8.6   69     5  10</code></pre>
+<pre class="r"><code># 4 b
+tail(airquality, n=2)</code></pre>
+<pre><code>##     Ozone Solar.R Wind Temp Month Day
 ## 152    18     131  8.0   76     9  29
-## 153    20     223 11.5   68     9  30
-```
-
-```r
-# 4 c
-names(airquality)
-```
-
-```
-## [1] "Ozone"   "Solar.R" "Wind"    "Temp"    "Month"   "Day"
-```
-
-```r
-colnames(airquality)
-```
-
-```
-## [1] "Ozone"   "Solar.R" "Wind"    "Temp"    "Month"   "Day"
-```
-
-```r
-# 3 b
-class(airquality[,1])
-```
-
-```
-## [1] "integer"
-```
-
-```r
-is.vector(airquality[,1])
-```
-
-```
-## [1] TRUE
-```
-
-```r
-is.data.frame(airquality[,1])
-```
-
-```
-## [1] FALSE
-```
-</details>--->
+## 153    20     223 11.5   68     9  30</code></pre>
+<pre class="r"><code># 4 c
+names(airquality)</code></pre>
+<pre><code>## [1] &quot;Ozone&quot;   &quot;Solar.R&quot; &quot;Wind&quot;    &quot;Temp&quot;    &quot;Month&quot;   &quot;Day&quot;</code></pre>
+<pre class="r"><code>colnames(airquality)</code></pre>
+<pre><code>## [1] &quot;Ozone&quot;   &quot;Solar.R&quot; &quot;Wind&quot;    &quot;Temp&quot;    &quot;Month&quot;   &quot;Day&quot;</code></pre>
+<pre class="r"><code># 3 b
+class(airquality[,1])</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>is.vector(airquality[,1])</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>is.data.frame(airquality[,1])</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+</details>
 </div>
 <div class="exercise">
 <ol start="5" style="list-style-type: decimal">
@@ -1230,40 +1148,24 @@ Hint: Use<code>cor.test</code> function.
 <li>What is the estimated correlation coefficient?</li>
 </ol></li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-
-```r
-# 1 a
-results <- cor.test(airquality$Ozone, airquality$Solar.R)
-results$conf.int
-```
-
-```
-## [1] 0.173194 0.502132
-## attr(,"conf.level")
-## [1] 0.95
-```
-
-```r
-# 1 b
-result$p.value
-```
-
-```
-## [1] 3.918639e-28
-```
-
-```r
-# 1 c
-results$estimate
-```
-
-```
-##       cor 
-## 0.3483417
-```
-</details>--->
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code># 1 a
+results &lt;- cor.test(airquality$Ozone, airquality$Solar.R)
+results$conf.int</code></pre>
+<pre><code>## [1] 0.173194 0.502132
+## attr(,&quot;conf.level&quot;)
+## [1] 0.95</code></pre>
+<pre class="r"><code># 1 b
+result$p.value</code></pre>
+<pre><code>## [1] 7.260099e-37</code></pre>
+<pre class="r"><code># 1 c
+results$estimate</code></pre>
+<pre><code>##       cor 
+## 0.3483417</code></pre>
+</details>
 </div>
 </div>
 
