@@ -4,9 +4,7 @@ title: "Week 5 -- Data manipulation with dplyr"
 
 > #### Learning objectives
 >
-> * Learn the five key **dplyr** functions for manipulating your data
->     * **`select()`** for selecting a subset of variables, i.e. selecting columns in your table
->     * **`filter()`** for selecting observations based on their values, i.e. selecting rows in your table
+> * Learn the three key **dplyr** functions for manipulating your data
 >     * **`arrange()`** for sorting the observations in your table 
 >     * **`mutate()`** for creating a new variable or modifying an existing variable
 >     * **`summarise()`** for collapsing values in one of more columns to a single summary value
@@ -45,40 +43,11 @@ metabric
 
 ---
 
-# Data semantics
-
-We use the terms 'observation' and 'variable' a lot in this course. As a
-reminder from week 2, when we talk about an observation, we're talking about a
-set of values measured for the same unit or thing, e.g. a person or a date, and
-when we talk about a variable we are really talking about the attribute that we
-are measuring or recording, e.g. height, temperature or expression value.
-
-**Observations are represented as rows** in our data frames or tibbles, while
-the **columns correspond to variables**.
-
-```{block type = "rmdblock"}
-From **"Tidy Data"** by **Hadley Wickham**, [*The Journal of Statistical
-Software*, vol. 59, 2014](https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf).
-
-A data set is a collection of **values**, usually either numbers (if
-quantitative) or character strings (if qualitative). Values are organised in
-two ways. Every value belongs to a variable and an observation.
-
-A **variable** contains all values that measure the same underlying attribute
-(like height, temperature, duration) across units.
-
-An **observation** contains all values measured on the same unit (like a person
-or a day) across attributes.
-```
-
----
 
 # dplyr verbs
 
-We will be looking at the 5 key dplyr functions this week:
+We will be looking at the 3 key dplyr functions this week:
 
-* **`filter()`** for filtering rows
-* **`select()`** for selecting columns
 * **`arrange()`** for sorting rows
 * **`mutate()`** for modifying columns or creating new ones
 * **`summarise()`** for computing summary values
@@ -99,265 +68,6 @@ uniform manner. They all have the following shared behaviours:
 * Variable names, i.e. column names, are referred to without using quotes
 
 * The result of an operation is a new data frame
-
----
-
-# Filtering rows with `filter()`
-
-The **`filter`** verb allows you to choose rows from a data frame that match
-some specified criteria. The criteria are based on values of variables and can
-make use of comparison operators such as `==`, `>`, `<` and `!=`.
-
-For example, to filter the METABRIC data set so that it only contains
-observations for those patients who died of breast cancer we can use `filter()`
-as follows.
-
-```{r}
-deceased <- filter(metabric, Vital_status == "Died of Disease")
-deceased
-```
-
-Remember that the **`==`** operator tests for equality, i.e. is the value for
-`Vital_status` for each patient (observation) equal to "Died of Disease".
-
-This filtering operation is equivalent to subsetting the rows based on a logical
-vector resulting from our comparison of vital status values with "Died of
-Disease".
-
-```{r eval = FALSE}
-filter(metabric, Vital_status == "Died of Disease")
-# is equivalent to
-metabric[metabric$Vital_status == "Died of Disease", ]
-```
-
-Both achieve the same result but the dplyr filter method is arguably a little
-easier to read. We haven't had to write `metabric` twice for one thing; we just
-referred to the variable name as it is, unquoted and without any fuss.
-
-Let's have a look at the various categories in the `Vital_status` variable.
-
-```{r}
-table(metabric$Vital_status)
-```
-
-We could use the `!=` comparison operator to select all deceased patients
-regardless of whether they died of the disease or other causes, by filtering for
-those that don't have the value "Living".
-
-```{r}
-deceased <- filter(metabric, Vital_status != "Living")
-nrow(deceased)
-```
-
-Another way of doing this is to specify which classes we are interested in and
-use the **`%in%`** operator to test which observations (rows) contain those
-values.
-
-```{r}
-deceased <- filter(metabric, Vital_status %in% c("Died of Disease", "Died of Other Causes"))
-nrow(deceased)
-```
-
-Another of the tidyverse packages, **`stringr`**, contains a set of very useful
-functions for operating on text or character strings. One such function,
-**`str_starts()`** could be used to find all `Vital_status` values that start
-with "Died".
-
-```{r}
-deceased <- filter(metabric, str_starts(Vital_status, "Died"))
-nrow(deceased)
-```
-
-Note that `str_starts()` returns a logical vector - this is important since the
-filtering condition must evaluate to `TRUE` or `FALSE` values for each row.
-
-Unsurprisingly there is an equivalent function, `str_ends()`, for matching the
-end of text (character) values and `str_detect()` is another useful function
-that determines whether values match a regular expression. Regular expressions
-are a language for search patterns used frequently in computer programming and
-really worth getting to grips with but sadly these are beyond the scope of this
-course.
-
-Filtering based on a logical variable is the most simple type of filtering of
-all. We don't have any logical variables in our METABRIC data set so we'll
-create one from the binary `Survival_status` variable to use as an example.
-
-```{r}
-# create a new logical variable called 'Deceased'
-metabric$Deceased <- metabric$Survival_status == "DECEASED"
-#
-# filtering based on a logical variable - only selects TRUE values
-deceased <- filter(metabric, Deceased)
-#
-# only display those columns we're interested in
-deceased[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
-```
-
-We can use the **`!`** operator to filter those patients who are not
-deceased.
-
-```{r eval = FALSE}
-filter(metabric, !Deceased)
-```
-
-The eagle-eyed will have spotted that filtering on our newly created Deceased
-logical variable gave a slightly different number of observations (patients) who
-are considered to be deceased, compared with the filtering operations shown
-above based on the `Vital_status` variable. We get one extra row. This is
-because we have a missing value for the vital status of one of the patients. We
-can filter for this using the **`is.na()`** function.
-
-```{r}
-missing_vital_status <- filter(metabric, is.na(Vital_status))
-missing_vital_status[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
-```
-
-`filter()` only retains rows where the condition if `TRUE`; both `FALSE` and
-`NA` values are filtered out.
-
-We can apply more than one condition in our filtering operation, for example
-the patients who were still alive at the time of the METABRIC study and had
-survived for more than 10 years (120 months).
-
-```{r}
-filter(metabric, Survival_status == "LIVING", Survival_time > 120)
-```
-
-The equivalent using R's usual subsetting is slightly less readable.
-
-```{r eval = FALSE}
-metabric[metabric$Survival_status == "LIVING" & metabric$Survival_time > 120, ]
-```
-
-We can add as many conditions as we like separating each with a comma. Note that
-filtering using R subsetting gets more unreadable, and more cumbersome to code,
-the more conditions you add.
-
-Adding conditions in this way is equivalent to combining the conditions using
-the **`&`** (Boolean AND) operator.
-
-```{r eval = FALSE}
-filter(metabric, Survival_status == "LIVING", Survival_time > 120)
-# is equivalent to
-filter(metabric, Survival_status == "LIVING" & Survival_time > 120)
-```
-
-Naturally we can also check when either of two conditions holds true by using
-the **`|`** (Boolean OR) operator. And we can build up more complicated
-filtering operations using both `&` and `|`. For example, let's see which
-patients have stage 3 or stage 4 tumours that are either estrogen receptor (ER)
-positive or progesterone receptor (PR) positive.
-
-```{r}
-selected_patients <- filter(metabric, Tumour_stage >= 3, ER_status == "Positive" | PR_status == "Positive")
-nrow(selected_patients)
-```
-
-In this case, if you used `&` in place of the comma you'd need to be careful
-about the precedence of the `&` and `|` operators and use parentheses to make
-clear what you intended.
-
-```{r eval = FALSE}
-filter(metabric, Tumour_stage >= 3 & (ER_status == "Positive" | PR_status == "Positive"))
-```
-
----
-
-# Selecting columns with `select()`
-
-Another way of "slicing and dicing"" our tabular data set is to select just the
-variables or columns we're interested in. This can be important particularly
-when the data set contains a very large number of variables as is the case for
-the METABRIC data. Notice how when we print the METABRIC data frame it is not
-possible to display all the columns; we only get the first few and then a long
-list of the additional ones that weren't displayed.
-
-Using the `$` operator is quite convenient for selecting a single column and
-extracting the values as a vector. Selecting several columns using the `[]`
-subsetting operator is a bit more cumbersome. For example, in our look at
-filtering rows, we considered two different variables in our data set that
-are concerned with the living/deceased status of patients. When printing out
-the results we selected just those columns along with the patient identifier
-and the newly created `Deceased` column.
-
-```{r}
-deceased[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
-```
-
-The **`select()`** function from dplyr is simpler.
-
-```{r}
-select(metabric, Patient_ID, Survival_status, Vital_status, Deceased)
-```
-
-Notice the similarities with the `filter()` function. The first argument is the
-data frame we are operating on and the arguments that follow on are specific to
-the operation in question, in this case, the variables (columns) to select. Note
-that the variables do not need to be put in quotes, and the returned value is
-another data frame, even if only one column was selected.
-
-We can alter the order of the variables (columns).
-
-```{r}
-select(metabric, Patient_ID, Vital_status, Survival_status, Deceased)
-```
-
-We can also select a range of columns using **`:`**, e.g. to select the patient
-identifier and all the columns between `Tumour_size` and `Cancer_type` we could
-run the following `select()` command.
-
-```{r}
-select(metabric, Patient_ID, Chemotherapy:Tumour_stage)
-```
-
-The help page for `select` points to some special functions that can be used
-within `select()`. We can find all the columns, for example, that contain the
-term "status" using `contains()`.
-
-```{r}
-select(metabric, contains("status"))
-```
-
-If we only wanted those ending with "status" we could use `ends_with()`
-instead.
-
-```{r}
-select(metabric, ends_with("status"))
-```
-
-We can also select those columns we're not interested in and that shouldn't be
-included by prefixing the columns with **`-`**.
-
-```{r}
-select(metabric, -Cohort)
-```
-
-You can use a combination of explicit naming, ranges, helper functions and
-negation to select the columns of interest.
-
-```{r}
-selected_columns <- select(metabric, Patient_ID, starts_with("Tumour_"), `3-gene_classifier`:Integrative_cluster, -Cellularity)
-selected_columns
-```
-
-You can also use `select()` to completely reorder the columns so they're in the
-order of your choosing. The `everything()` helper function is useful in this
-context, particularly if what you're really interested in is bringing one or
-more columns to the left hand side and then including everything else
-afterwards in whatever order they were already in.
-
-```{r}
-select(metabric, Patient_ID, Survival_status, Tumour_stage, everything())
-```
-
-Finally, columns can be renamed as part of the selection process.
-
-```{r}
-select(metabric, Patient_ID, Classification = `3-gene_classifier`, NPI = Nottingham_prognostic_index)
-```
-
-Note that dplyr provides the `rename()` function for when we only want to rename
-a column and not select a subset of columns.
 
 ---
 
@@ -878,7 +588,7 @@ is 1).
 
 # Faceting with ggplot2
 
-Finally, let's change tack completely and take a look at a very useful feature
+Finally, let's change track completely and take a look at a very useful feature
 of ggplot2 -- **faceting**.
 
 Faceting allows you to split your plot into subplots, or facets, based on one
@@ -1025,8 +735,6 @@ ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
 
 In this session we have covered the following concepts:
 
-* Filtering rows in a data frame based on their values
-* Selecting and reordering of columns
 * Sorting rows based on values in one or more columns
 * Modifying a data frame by either adding new columns or modifying existing ones
 * Summarizing the values in one or more columns
