@@ -480,6 +480,12 @@ names to use. We've also given it a heads-up about which type of data are in
 each column. Look up the help page for `read_excel()` for more details about the
 arguments we've used below.
 
+We can download COVID-19 data using `download.file()` function.
+
+```{r message = FALSE, warning = FALSE}
+download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/2020-04-26_COVID-19_Press_Conference_Data.xlsx",destfile = "data/2020-04-26_COVID-19_Press_Conference_Data.xlsx")
+```
+
 ```{r message = FALSE, warning = FALSE}
 library(readxl)
 transport_use <- read_excel("data/2020-04-26_COVID-19_Press_Conference_Data.xlsx",
@@ -791,9 +797,77 @@ In this session we have covered the following concepts:
 
 ---
 
-# Assignment
 
-Assignment: [assignment3.Rmd](assignments/assignment3.Rmd)
 
-Solutions: [assignment3_solutions.Rmd](assignments/assignment3_solutions.Rmd)
-and [assignment3_solutions.html](assignments/assignment3_solutions.html)
+# Exercises
+
+
+:::exercise
+
+1. Create a bar plot showing the number of patients with tumours at each of the different neoplasm histologic grades
+
+
+<!---<details><summary>Answer</summary>
+
+```{r ex_1, purl=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
+ggplot(data = metabric) +
+  geom_bar(mapping = aes(x = Neoplasm_histologic_grade))
+```
+</details>--->
+:::
+
+:::exercise
+2. Use `iris` data set to show the following 
+
+    a. Create a box plot showing the distribution of petal lengths based on the `iris` data set.
+    b. Create a box plot showing the distribution of petal lengths based on the `iris` data set, and display the mean and median values as red and orange points within the box plot. Hint: use `stat_summary` function.
+
+<!---<details><summary>Answer</summary>
+```{r message=FALSE, warning=FALSE}
+# 2 a.
+ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) + 
+  geom_boxplot()
+```
+
+```{r message=FALSE, warning=FALSE}
+# 2 b
+ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) + 
+  geom_boxplot() +
+  stat_summary(fun=mean, color="red") +
+  stat_summary(fun=median, color="orange")
+  
+```
+</details>--->
+
+:::
+
+
+:::exercise
+
+3. Create a density plot of the estrogen receptor (ESR1) expression level using `metabric` data set.
+
+<!---<details><summary>Answer</summary>
+
+```{r message=FALSE, warning=FALSE}
+ggplot(data = metabric) +
+  geom_density(mapping = aes(x = ESR1))
+```
+</details>--->
+:::
+
+
+:::exercise
+4. Create a scatter plot of the expression of FOXA1 and this gene with a line of
+best fit using `metabric` data set.
+
+<!---<details><summary>Answer</summary>
+```{r message=FALSE, warning=FALSE}
+ggplot(data = metabric, mapping = aes(x = FOXA1, y = MLPH)) +
+  geom_point() +
+  geom_smooth()
+```
+
+</details>--->
+:::

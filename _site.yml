@@ -11,8 +11,8 @@ navbar:
           href: week2.html
         - text: "Week 3 - Working with data in R"
           href: week3.html
-        #- text: "Week 4 - Data visualization with ggplot2"
-        #  href: week4.html
+        - text: "Week 4 - Data visualization with ggplot2"
+          href: week4.html
         #- text: "Week 5 - Data manipulation using dplyr"
         #  href: week5.html
         #- text: "Week 6 - Grouping and combining data"

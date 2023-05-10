@@ -46,9 +46,9 @@ The course will be run over **7 weeks** with the following structure:
 
 3. [Working with data](week3.html) (4 May) -  Reading data into R tabular data
 
-<!---
-4. [Data visualization with ggplot2](week4.html) (11 May) - A common grammar to create scatter plots, bar charts, boxplots, histograms and line graphs for time series data
 
+4. [Data visualization with ggplot2](week4.html) (11 May) - A common grammar to create scatter plots, bar charts, boxplots, histograms and line graphs for time series data
+<!---
 5. [Data manipulation using dplyr](week5.html) (18 May) - Filtering and modifying tabular data, computing summary values, faceting with ggplot2
 
 6. [Grouping and combining data](week6.html) (24 May) - Advanced grouping and summarization operations, joining data from different tables, customizing ggplot2 plots
