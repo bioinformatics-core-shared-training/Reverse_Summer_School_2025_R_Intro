@@ -742,10 +742,3 @@ In this session we have covered the following concepts:
 * Faceting of ggplot2 visualizations
 
 ---
-
-# Assignment
-
-Assignment: [assignment4.Rmd](assignments/assignment4.Rmd)
-
-Solutions: [assignment4_solutions.Rmd](assignments/assignment4_solutions.Rmd)
-and [assignment4_solutions.html](assignments/assignment4_solutions.html)
