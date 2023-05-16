@@ -13,7 +13,7 @@
 
 <title>Week 4 – Visualizing tabular data with ggplot2</title>
 
-<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -35,8 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -336,9 +336,6 @@ div.tocify {
     </li>
     <li>
       <a href="week3.html">Week 3 - Working with data in R</a>
-    </li>
-    <li>
-      <a href="week4.html">Week 4 - Data visualization with ggplot2</a>
     </li>
   </ul>
 </li>
@@ -1133,18 +1130,16 @@ type</li>
 <li>Create a bar plot showing the number of patients with tumours at
 each of the different neoplasm histologic grades</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-
-```r
-library(tidyverse)
-metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code>library(tidyverse)
+metabric &lt;- read_csv(&quot;data/metabric_clinical_and_expression_data.csv&quot;)
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Neoplasm_histologic_grade))
-```
-
+  geom_bar(mapping = aes(x = Neoplasm_histologic_grade))</code></pre>
 <img src="week4_files/figure-html/ex_1-1.png" width="672" />
-</details>--->
+</details>
 </div>
 <div class="exercise">
 <ol start="2" style="list-style-type: decimal">
@@ -1158,60 +1153,50 @@ as red and orange points within the box plot. Hint: use
 <code>stat_summary</code> function.</li>
 </ol></li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-```r
-# 2 a.
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code># 2 a.
 ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) + 
-  geom_boxplot()
-```
-
-<img src="week4_files/figure-html/unnamed-chunk-26-1.png" width="672" />
-
-
-```r
-# 2 b
+  geom_boxplot()</code></pre>
+<p><img src="week4_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre class="r"><code># 2 b
 ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) + 
   geom_boxplot() +
-  stat_summary(fun=mean, color="red") +
-  stat_summary(fun=median, color="orange")
-```
-
+  stat_summary(fun=mean, color=&quot;red&quot;) +
+  stat_summary(fun=median, color=&quot;orange&quot;)</code></pre>
 <img src="week4_files/figure-html/unnamed-chunk-27-1.png" width="672" />
-</details>--->
+</details>
 </div>
 <div class="exercise">
 <ol start="3" style="list-style-type: decimal">
 <li>Create a density plot of the estrogen receptor (ESR1) expression
 level using <code>metabric</code> data set.</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-
-```r
-ggplot(data = metabric) +
-  geom_density(mapping = aes(x = ESR1))
-```
-
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code>ggplot(data = metabric) +
+  geom_density(mapping = aes(x = ESR1))</code></pre>
 <img src="week4_files/figure-html/unnamed-chunk-28-1.png" width="672" />
-</details>--->
+</details>
 </div>
 <div class="exercise">
 <ol start="4" style="list-style-type: decimal">
 <li>Create a scatter plot of the expression of FOXA1 and this gene with
 a line of best fit using <code>metabric</code> data set.</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-```r
-ggplot(data = metabric, mapping = aes(x = FOXA1, y = MLPH)) +
+<details>
+<summary>
+Answer
+</summary>
+<pre class="r"><code>ggplot(data = metabric, mapping = aes(x = FOXA1, y = MLPH)) +
   geom_point() +
-  geom_smooth()
-```
-
-<img src="week4_files/figure-html/unnamed-chunk-29-1.png" width="672" />
-
-</details>--->
+  geom_smooth()</code></pre>
+<p><img src="week4_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+</details>
 </div>
 </div>
 
