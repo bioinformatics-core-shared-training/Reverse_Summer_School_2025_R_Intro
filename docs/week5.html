@@ -364,6 +364,7 @@ div.tocify {
 <blockquote>
 <h4 id="learning-objectives">Learning objectives</h4>
 <ul>
+<li>Chain operations together into a workflow using pipes</li>
 <li>Learn the three key <strong>dplyr</strong> functions for
 manipulating your data
 <ul>
@@ -374,7 +375,6 @@ or modifying an existing variable</li>
 <li><strong><code>summarise()</code></strong> for collapsing values in
 one of more columns to a single summary value</li>
 </ul></li>
-<li>Chain operations together into a workflow using pipes</li>
 <li>Learn about faceting in ggplot2 to split your data into separate
 categories and create a series of sub-plots arranged in a grid</li>
 </ul>
@@ -1273,15 +1273,75 @@ ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = PAM50)) +
 <h1>Summary</h1>
 <p>In this session we have covered the following concepts:</p>
 <ul>
+<li>Building up workflows by chaining operations together using the pipe
+operator</li>
 <li>Sorting rows based on values in one or more columns</li>
 <li>Modifying a data frame by either adding new columns or modifying
 existing ones</li>
 <li>Summarizing the values in one or more columns</li>
-<li>Building up workflows by chaining operations together using the pipe
-operator</li>
 <li>Faceting of ggplot2 visualizations</li>
 </ul>
 <hr />
+<div id="exercises" class="section level2">
+<h2>Exercises</h2>
+<p>The week’s exercises will test your ability to manipulate the
+METABRIC data set by changing the values of existing columns or adding
+new columns by computing new variables from existing ones.</p>
+<p>We are expecting you to use the 5 main dplyr ‘verb’ functions:
+<code>select()</code>, <code>filter()</code>, <code>arrange()</code>,
+<code>mutate()</code> and <code>summarize()</code>. Please use the pipe
+operator, <code>%&gt;%</code>, in cases where more than one operation is
+required to achieve the outcome requested.</p>
+<pre class="r"><code>library(tidyverse)
+metabric &lt;- read_csv(&quot;data/metabric_clinical_and_expression_data.csv&quot;)</code></pre>
+<hr />
+<p><strong>1. Investigate the subset of long-surviving breast cancer
+patients that didn’t receive chemo or radiotherapy</strong></p>
+<p>First obtain the subset of patients that received neither
+chemotherapy or radiotherapy and survived for more than 20 years.</p>
+<p>Now look at the breakdown of these patients in terms of ER status.
+Count the numbers of ER positive and ER negative patients in this
+subset. Calculate the proportion that are ER positive.</p>
+<p>What does this tell us? Calculate the proportion of ER positive
+patients in the whole cohort by way of a comparison.</p>
+<p><strong>2. Which patients have spent the largest proportion of their
+lives dealing with breast cancer?</strong></p>
+<pre class="r"><code>### Hint 
+### Create Survival_time_years
+### Add it to Age_at_diagnosis
+### Create Proportion: Survival_time_years/Age</code></pre>
+<hr />
+<p><strong>3. Convert the expression values for each of the genes into
+standardized z-scores</strong></p>
+<p>Some genes are generally expressed at higher levels than others. This
+can make comparisons of changes between groups for a set of genes
+somewhat difficult, particularly if the expression for those genes are
+on very different scales. The expression values in our METABRIC are on a
+log<sub>2</sub> scale which helps to reduce the range of values but
+another method for representing expression measurements is to
+standardize these to produce z-scores.</p>
+<p>Standardization of a set of measurements involves subtracting the
+mean from each and dividing by the standard deviation. This will produce
+values with a mean of 0 and a standard deviation of 1.</p>
+<p>Create a modified version of the <code>metabric</code> data frame
+containing a new column with the standardized expression values
+(z-scores) for the ESR1 gene.</p>
+<pre class="r"><code>### Hint 
+### ESR1 - mean(ESR1)) / sd(ESR1)</code></pre>
+<p>Check that you’ve done this correctly by calculating the mean and
+standard deviation of your new z-score variable.</p>
+<p>Add another column to your modified <code>metabric</code> data frame
+containing a z-score for GATA3 and then create a scatter plot of the
+z-scores of GATA3 against ESR1. Modify your plot to facet by the PAM50
+classification.</p>
+<hr />
+<p><strong>4. Which Star Wars characters need to go on a
+diet?</strong></p>
+<p>Compute the body mass index (BMI) of characters in the
+<code>starwars</code> tibble.</p>
+<p>Filter for human characters that are overweight (BMI &gt; 25) and
+display in decreasing order of BMI.</p>
+</div>
 </div>
 
 
