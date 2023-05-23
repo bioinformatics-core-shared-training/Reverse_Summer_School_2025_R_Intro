@@ -807,7 +807,7 @@ In this session we have covered the following concepts:
 1. Create a bar plot showing the number of patients with tumours at each of the different neoplasm histologic grades
 
 
-<!---<details><summary>Answer</summary>
+<details><summary>Answer</summary>
 
 ```{r ex_1, purl=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -815,7 +815,7 @@ metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
 ggplot(data = metabric) +
   geom_bar(mapping = aes(x = Neoplasm_histologic_grade))
 ```
-</details>--->
+</details>
 :::
 
 :::exercise
@@ -824,7 +824,7 @@ ggplot(data = metabric) +
     a. Create a box plot showing the distribution of petal lengths based on the `iris` data set.
     b. Create a box plot showing the distribution of petal lengths based on the `iris` data set, and display the mean and median values as red and orange points within the box plot. Hint: use `stat_summary` function.
 
-<!---<details><summary>Answer</summary>
+<details><summary>Answer</summary>
 ```{r message=FALSE, warning=FALSE}
 # 2 a.
 ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) + 
@@ -839,7 +839,7 @@ ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) +
   stat_summary(fun=median, color="orange")
   
 ```
-</details>--->
+</details>
 
 :::
 
@@ -848,13 +848,13 @@ ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) +
 
 3. Create a density plot of the estrogen receptor (ESR1) expression level using `metabric` data set.
 
-<!---<details><summary>Answer</summary>
+<details><summary>Answer</summary>
 
 ```{r message=FALSE, warning=FALSE}
 ggplot(data = metabric) +
   geom_density(mapping = aes(x = ESR1))
 ```
-</details>--->
+</details>
 :::
 
 
@@ -862,12 +862,12 @@ ggplot(data = metabric) +
 4. Create a scatter plot of the expression of FOXA1 and this gene with a line of
 best fit using `metabric` data set.
 
-<!---<details><summary>Answer</summary>
+<details><summary>Answer</summary>
 ```{r message=FALSE, warning=FALSE}
 ggplot(data = metabric, mapping = aes(x = FOXA1, y = MLPH)) +
   geom_point() +
   geom_smooth()
 ```
 
-</details>--->
+</details>
 :::

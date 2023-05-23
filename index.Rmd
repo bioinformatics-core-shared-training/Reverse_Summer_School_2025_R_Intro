@@ -51,8 +51,8 @@ The course will be run over **7 weeks** with the following structure:
 
 5. [Data manipulation using dplyr](week5.html) (18 May) - Filtering and modifying tabular data, computing summary values, faceting with ggplot2
 
-<!---
-6. [Grouping and combining data](week6.html) (24 May) - Advanced grouping and summarization operations, joining data from different tables, customizing ggplot2 plots
 
+6. [Grouping and combining data](week6.html) (24 May) - Advanced grouping and summarization operations, joining data from different tables, customizing ggplot2 plots
+<!---
 7. [Restructuring data for analysis](week7.html) (1 June) - The concept of 'tidy data', pivoting and separating operations, ggplot2 extras
 --->

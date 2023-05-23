@@ -9,7 +9,7 @@ title: "Week 6 -- Grouping and combining data"
 > * Combine data from two tables based on a common identifier (`join` operations)
 > * Customize plots created using ggplot2 by changing labels, scales and colours
 
----
+
 
 # Grouping and combining data
 
@@ -40,7 +40,6 @@ metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
 metabric
 ```
 
----
 
 # Grouping observations
 
@@ -279,6 +278,11 @@ this data into R now as this provides a good example of having multiple
 observations in different rows for a single observational unit, in this case
 several mutations detected in each tumour sample.
 
+
+```{r message = FALSE}
+# download metabric mutation data
+download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/metabric_mutations.csv",destfile = "data/metabric_mutations.csv")
+```
 ```{r message = FALSE}
 mutations <- read_csv("data/metabric_mutations.csv")
 select(mutations, Patient_ID, Chromosome, Position = Start_Position, Ref = Reference_Allele, Alt = Tumor_Seq_Allele1, Type = Variant_Type, Gene)
@@ -326,7 +330,7 @@ mutations %>%
 The genes that differ in these two tables are those that have more than one
 mutation within a patient tumour sample.
 
----
+
 
 # Joining data
 
@@ -541,6 +545,11 @@ We first read the clinical data into R and then just select a small number of
 columns to make it easier to see what is going on when combining the data.
 
 ```{r message = FALSE}
+# download metabric clinical data
+download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/metabric_clinical_data.csv",destfile = "data/metabric_clinical_data.csv")
+```
+
+```{r message = FALSE}
 clinical_data <- read_csv("data/metabric_clinical_data.csv")
 clinical_data <- select(clinical_data, Patient_ID, ER_status, PAM50)
 clinical_data
@@ -549,6 +558,11 @@ clinical_data
 We then read in the mRNA expression data that was downloaded separately from
 [cBioPortal](https://www.cbioportal.org/study/summary?id=brca_metabric).
 
+
+```{r message = FALSE}
+download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/metabric_mrna_expression.txt",destfile = "data/metabric_mrna_expression.txt")
+
+```
 ```{r message = FALSE}
 mrna_expression_data <- read_tsv("data/metabric_mrna_expression.txt")
 mrna_expression_data
@@ -573,7 +587,7 @@ combined_data %>%
   geom_boxplot(show.legend = FALSE)
 ```
 
----
+
 
 # Customizing plots with ggplot2
 
@@ -855,7 +869,7 @@ metabric %>%
   )
 ```
 
----
+
 
 # Summary
 
@@ -866,11 +880,84 @@ In this session we have covered the following:
 * Combining data from two tables through join operations
 * Customizing plots created with ggplot2 by changing labels, scales and colours
 
----
 
-# Assignment
 
-Assignment: [assignment5.Rmd](assignments/assignment5.Rmd)
+# Exercises 
 
-Solutions: [assignment5_solutions.Rmd](assignments/assignment5_solutions.Rmd)
-and [assignment5_solutions.html](assignments/assignment5_solutions.html)
+:::exercise
+1. Compute the average survival time for the ER-negative and ER-positive groups. Note that such a comparison only makes sense for those patients that are deceased so apply the appropriate filter first. Add a column for the number of patients in each group. You can use "metabric_clinical_data.csv" file.
+
+<!---<details><summary>Answer</summary>
+```{r ex_1, purl=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+metabric <- read_csv("data/metabric_clinical_data.csv")
+metabric %>%
+  filter(Survival_status == "DECEASED") %>%
+  group_by(ER_status) %>%
+  summarize(`Average survival time` = mean(Survival_time), N = n())
+```
+
+</details>--->
+:::
+
+
+:::exercise
+2. Compute the average tumour size, number of positive lymph nodes and Nottingham prognostic index within ER-negative and ER-positive patients.
+
+<!---<details><summary>Answer</summary>
+```{r ex_2, purl=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+metabric <- read_csv("data/metabric_clinical_data.csv")
+metabric %>%
+  group_by(ER_status) %>%
+  summarize_at(vars(Tumour_size, Lymph_nodes_examined_positive, Nottingham_prognostic_index), mean, na.rm = TRUE)
+```
+</details>--->
+:::
+
+
+
+:::exercise
+3. Count the numbers of mutations for each gene and display the top 10 most frequently mutated genes using metabric_mutations.csv data.
+
+<!---<details><summary>Answer</summary>
+```{r ex_3, purl=FALSE, message=FALSE, warning=FALSE}
+mutations <- read_csv("data/metabric_mutations.csv")
+mutations %>%
+  count(Gene) %>%
+  arrange(desc(n)) %>%
+  head(10)
+```
+</details>--->
+:::
+
+
+
+:::exercise
+4. In breast cancers, PIK3CA and TP53 are the most commonly mutated genes with mutations occurring in specific regions of the gene. Find out which codons of PIK3CA are most commonly mutated.
+
+<!---<details><summary>Answer</summary>
+```{r ex_4, purl=FALSE, message=FALSE, warning=FALSE}
+mutations %>%
+  filter(Gene == "PIK3CA") %>%
+  count(Codon) %>%
+  arrange(desc(n))
+```
+</details>--->
+:::
+
+
+:::exercise
+5. Use boxplots to illustrate the distribution of diagnosis age for 3-gene classification groups of patients. Remove any patients who are unclassified. The boxplots should be colored according to the group.
+
+<!---<details><summary>Answer</summary>
+```{r}
+metabric %>% 
+  filter(!is.na(`3-gene_classifier`)) %>% 
+ggplot( mapping=aes(x=`3-gene_classifier`, y=Age_at_diagnosis, colour=`3-gene_classifier`)) +
+  geom_boxplot() +
+  scale_colour_discrete(name="3 gene classifier")
+```
+</details>--->
+:::
+

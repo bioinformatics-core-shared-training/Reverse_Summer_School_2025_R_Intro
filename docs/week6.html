@@ -13,7 +13,7 @@
 
 <title>Week 6 – Grouping and combining data</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -35,8 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -343,12 +343,6 @@ div.tocify {
     <li>
       <a href="week5.html">Week 5 - Data manipulation using dplyr</a>
     </li>
-    <li>
-      <a href="week6.html">Week 6 - Grouping and combining data</a>
-    </li>
-    <li>
-      <a href="week7.html">Week 7 - Restructuring data for analysis</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -386,7 +380,6 @@ categories</li>
 colours</li>
 </ul>
 </blockquote>
-<hr />
 <div id="grouping-and-combining-data" class="section level1">
 <h1>Grouping and combining data</h1>
 <p>In this session, we’ll look at some more useful functions provided by
@@ -404,40 +397,41 @@ can use a colour scheme of our choosing.</p>
 component packages within the tidyverse and both get loaded as part of
 the tidyverse.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.4.1     ✔ purrr   1.0.1
-## ✔ tibble  3.2.0     ✔ dplyr   1.1.0
-## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
-## ✔ readr   2.1.4     ✔ forcats 1.0.0
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.2     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.1     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <p>To demonstrate how these grouping and combining functions work and to
 illustrate customization of plots, we’ll again use the METABRIC data
 set.</p>
 <pre class="r"><code>metabric &lt;- read_csv(&quot;data/metabric_clinical_and_expression_data.csv&quot;)
 metabric</code></pre>
 <pre><code>## # A tibble: 1,904 × 32
-##    Patient_ID Cohort Age_at_di…¹ Survi…² Survi…³ Vital…⁴ Chemo…⁵ Radio…⁶ Tumou…⁷
-##    &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;
-##  1 MB-0000         1        75.6   140.  LIVING  Living  NO      YES          22
-##  2 MB-0002         1        43.2    84.6 LIVING  Living  NO      YES          10
-##  3 MB-0005         1        48.9   164.  DECEAS… Died o… YES     NO           15
-##  4 MB-0006         1        47.7   165.  LIVING  Living  YES     YES          25
-##  5 MB-0008         1        77.0    41.4 DECEAS… Died o… YES     YES          40
-##  6 MB-0010         1        78.8     7.8 DECEAS… Died o… NO      YES          31
-##  7 MB-0014         1        56.4   164.  LIVING  Living  YES     YES          10
-##  8 MB-0022         1        89.1    99.5 DECEAS… Died o… NO      YES          29
-##  9 MB-0028         1        86.4    36.6 DECEAS… Died o… NO      YES          16
-## 10 MB-0035         1        84.2    36.3 DECEAS… Died o… NO      NO           28
-## # … with 1,894 more rows, 23 more variables: Tumour_stage &lt;dbl&gt;,
-## #   Neoplasm_histologic_grade &lt;dbl&gt;, Lymph_nodes_examined_positive &lt;dbl&gt;,
-## #   Lymph_node_status &lt;dbl&gt;, Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;,
-## #   PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;, HER2_status_measured_by_SNP6 &lt;chr&gt;,
-## #   PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;, Nottingham_prognostic_index &lt;dbl&gt;,
-## #   Cellularity &lt;chr&gt;, Integrative_cluster &lt;chr&gt;, Mutation_count &lt;dbl&gt;,
-## #   ESR1 &lt;dbl&gt;, ERBB2 &lt;dbl&gt;, PGR &lt;dbl&gt;, TP53 &lt;dbl&gt;, PIK3CA &lt;dbl&gt;, …</code></pre>
-<hr />
+##    Patient_ID Cohort Age_at_diagnosis Survival_time Survival_status Vital_status
+##    &lt;chr&gt;       &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;       
+##  1 MB-0000         1             75.6         140.  LIVING          Living      
+##  2 MB-0002         1             43.2          84.6 LIVING          Living      
+##  3 MB-0005         1             48.9         164.  DECEASED        Died of Dis…
+##  4 MB-0006         1             47.7         165.  LIVING          Living      
+##  5 MB-0008         1             77.0          41.4 DECEASED        Died of Dis…
+##  6 MB-0010         1             78.8           7.8 DECEASED        Died of Dis…
+##  7 MB-0014         1             56.4         164.  LIVING          Living      
+##  8 MB-0022         1             89.1          99.5 DECEASED        Died of Oth…
+##  9 MB-0028         1             86.4          36.6 DECEASED        Died of Oth…
+## 10 MB-0035         1             84.2          36.3 DECEASED        Died of Dis…
+## # ℹ 1,894 more rows
+## # ℹ 26 more variables: Chemotherapy &lt;chr&gt;, Radiotherapy &lt;chr&gt;,
+## #   Tumour_size &lt;dbl&gt;, Tumour_stage &lt;dbl&gt;, Neoplasm_histologic_grade &lt;dbl&gt;,
+## #   Lymph_nodes_examined_positive &lt;dbl&gt;, Lymph_node_status &lt;dbl&gt;,
+## #   Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;, PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;,
+## #   HER2_status_measured_by_SNP6 &lt;chr&gt;, PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;,
+## #   Nottingham_prognostic_index &lt;dbl&gt;, Cellularity &lt;chr&gt;, …</code></pre>
 </div>
 <div id="grouping-observations" class="section level1">
 <h1>Grouping observations</h1>
@@ -761,6 +755,8 @@ of a panel of 173 genes. We’ll read this data into R now as this
 provides a good example of having multiple observations in different
 rows for a single observational unit, in this case several mutations
 detected in each tumour sample.</p>
+<pre class="r"><code># download metabric mutation data
+download.file(url=&quot;https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/metabric_mutations.csv&quot;,destfile = &quot;data/metabric_mutations.csv&quot;)</code></pre>
 <pre class="r"><code>mutations &lt;- read_csv(&quot;data/metabric_mutations.csv&quot;)
 select(mutations, Patient_ID, Chromosome, Position = Start_Position, Ref = Reference_Allele, Alt = Tumor_Seq_Allele1, Type = Variant_Type, Gene)</code></pre>
 <pre><code>## # A tibble: 17,272 × 7
@@ -776,7 +772,7 @@ select(mutations, Patient_ID, Chromosome, Position = Start_Position, Ref = Refer
 ##  8 MTS-T0059  10           6556986 C     C     SNP   PRKCQ
 ##  9 MTS-T0059  11          62300529 T     T     SNP   AHNAK
 ## 10 MTS-T0059  15          74912475 G     G     SNP   CLK3 
-## # … with 17,262 more rows</code></pre>
+## # ℹ 17,262 more rows</code></pre>
 <p>We can see from just these few rows that each patient sample has
 multiple mutations and sometimes there are more than one mutation in the
 same gene within a sample, as can be seen in the first two rows at the
@@ -805,7 +801,7 @@ patient as follows.</p>
 ##  8 MTS-T0059  AHNAK
 ##  9 MTS-T0059  CLK3 
 ## 10 MTS-T0059  TP53 
-## # … with 15,646 more rows</code></pre>
+## # ℹ 15,646 more rows</code></pre>
 <p>This has reduced the number of rows as only distinct combinations of
 patient and gene are retained. This would be necessary if we wanted to
 count the number of patients that have mutations in each gene rather
@@ -826,7 +822,7 @@ count(mutations, Gene)</code></pre>
 ##  8 AKT1     115
 ##  9 AKT2      23
 ## 10 ALK       98
-## # … with 163 more rows</code></pre>
+## # ℹ 163 more rows</code></pre>
 <pre class="r"><code># number of tumour samples in which each gene is mutated
 mutations %&gt;%
   distinct(Patient_ID, Gene) %&gt;%
@@ -844,10 +840,9 @@ mutations %&gt;%
 ##  8 AKT1     115
 ##  9 AKT2      23
 ## 10 ALK       95
-## # … with 163 more rows</code></pre>
+## # ℹ 163 more rows</code></pre>
 <p>The genes that differ in these two tables are those that have more
 than one mutation within a patient tumour sample.</p>
-<hr />
 </div>
 </div>
 <div id="joining-data" class="section level1">
@@ -1021,10 +1016,6 @@ band_instruments3</code></pre>
 ## 3 Paul  guitar
 ## 4 Keith guitar</code></pre>
 <pre class="r"><code>left_join(band_members, band_instruments3, by = &quot;name&quot;)</code></pre>
-<pre><code>## Warning in left_join(band_members, band_instruments3, by = &quot;name&quot;): Each row in `x` is expected to match at most 1 row in `y`.
-## ℹ Row 3 of `x` matches multiple rows.
-## ℹ If multiple matches are expected, set `multiple = &quot;all&quot;` to silence this
-##   warning.</code></pre>
 <pre><code>## # A tibble: 4 × 3
 ##   name  band    plays 
 ##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
@@ -1050,10 +1041,11 @@ band_members3</code></pre>
 ## 3 Paul  Beatles
 ## 4 Paul  Wings</code></pre>
 <pre class="r"><code>left_join(band_members3, band_instruments3, by = &quot;name&quot;)</code></pre>
-<pre><code>## Warning in left_join(band_members3, band_instruments3, by = &quot;name&quot;): Each row in `x` is expected to match at most 1 row in `y`.
-## ℹ Row 3 of `x` matches multiple rows.
-## ℹ If multiple matches are expected, set `multiple = &quot;all&quot;` to silence this
-##   warning.</code></pre>
+<pre><code>## Warning in left_join(band_members3, band_instruments3, by = &quot;name&quot;): Detected an unexpected many-to-many relationship between `x` and `y`.
+## ℹ Row 3 of `x` matches multiple rows in `y`.
+## ℹ Row 2 of `y` matches multiple rows in `x`.
+## ℹ If a many-to-many relationship is expected, set `relationship =
+##   &quot;many-to-many&quot;` to silence this warning.</code></pre>
 <pre><code>## # A tibble: 6 × 3
 ##   name  band    plays 
 ##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
@@ -1155,6 +1147,8 @@ and expression data set.</p>
 <p>We first read the clinical data into R and then just select a small
 number of columns to make it easier to see what is going on when
 combining the data.</p>
+<pre class="r"><code># download metabric clinical data
+download.file(url=&quot;https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/metabric_clinical_data.csv&quot;,destfile = &quot;data/metabric_clinical_data.csv&quot;)</code></pre>
 <pre class="r"><code>clinical_data &lt;- read_csv(&quot;data/metabric_clinical_data.csv&quot;)
 clinical_data &lt;- select(clinical_data, Patient_ID, ER_status, PAM50)
 clinical_data</code></pre>
@@ -1171,10 +1165,11 @@ clinical_data</code></pre>
 ##  8 MB-0020    Negative  Normal     
 ##  9 MB-0022    Positive  claudin-low
 ## 10 MB-0025    Positive  &lt;NA&gt;       
-## # … with 2,499 more rows</code></pre>
+## # ℹ 2,499 more rows</code></pre>
 <p>We then read in the mRNA expression data that was downloaded
 separately from <a
 href="https://www.cbioportal.org/study/summary?id=brca_metabric">cBioPortal</a>.</p>
+<pre class="r"><code>download.file(url=&quot;https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/metabric_mrna_expression.txt&quot;,destfile = &quot;data/metabric_mrna_expression.txt&quot;)</code></pre>
 <pre class="r"><code>mrna_expression_data &lt;- read_tsv(&quot;data/metabric_mrna_expression.txt&quot;)
 mrna_expression_data</code></pre>
 <pre><code>## # A tibble: 2,509 × 10
@@ -1190,7 +1185,7 @@ mrna_expression_data</code></pre>
 ##  8 brca_metabric MB-0020   NA    NA    NA    NA     NA    NA    NA    NA   
 ##  9 brca_metabric MB-0022   10.4   8.61  5.59  6.17   7.59  7.87 10.7   9.95
 ## 10 brca_metabric MB-0025   NA    NA    NA    NA     NA    NA    NA    NA   
-## # … with 2,499 more rows</code></pre>
+## # ℹ 2,499 more rows</code></pre>
 <p>Now we have both sets of data loaded into R as data frames, we can
 combine them into a single data frame using an
 <code>inner_join()</code>. Our resulting table will only contain entries
@@ -1198,20 +1193,20 @@ for the patients for which expression data are available.</p>
 <pre class="r"><code>combined_data &lt;- inner_join(clinical_data, mrna_expression_data, by = c(&quot;Patient_ID&quot; = &quot;SAMPLE_ID&quot;))
 combined_data</code></pre>
 <pre><code>## # A tibble: 2,509 × 12
-##    Patient_ID ER_status PAM50 STUDY…¹  ESR1 ERBB2   PGR  TP53 PIK3CA GATA3 FOXA1
-##    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1 MB-0000    Positive  clau… brca_m…  8.93  9.33  5.68  6.34   5.70  6.93  7.95
-##  2 MB-0002    Positive  LumA  brca_m… 10.0   9.73  7.51  6.19   5.76 11.3  11.8 
-##  3 MB-0005    Positive  LumB  brca_m… 10.0   9.73  7.38  6.40   6.75  9.29 11.7 
-##  4 MB-0006    Positive  LumB  brca_m… 10.4  10.3   6.82  6.87   7.22  8.67 11.9 
-##  5 MB-0008    Positive  LumB  brca_m… 11.3   9.96  7.33  6.34   5.82  9.72 11.6 
-##  6 MB-0010    Positive  LumB  brca_m… 11.2   9.74  5.95  5.42   6.12  9.79 12.1 
-##  7 MB-0014    Positive  LumB  brca_m… 10.8   9.28  7.72  5.99   7.48  8.37 11.5 
-##  8 MB-0020    Negative  Norm… brca_m… NA    NA    NA    NA     NA    NA    NA   
-##  9 MB-0022    Positive  clau… brca_m… 10.4   8.61  5.59  6.17   7.59  7.87 10.7 
-## 10 MB-0025    Positive  &lt;NA&gt;  brca_m… NA    NA    NA    NA     NA    NA    NA   
-## # … with 2,499 more rows, 1 more variable: MLPH &lt;dbl&gt;, and abbreviated variable
-## #   name ¹​STUDY_ID</code></pre>
+##    Patient_ID ER_status PAM50      STUDY_ID  ESR1 ERBB2   PGR  TP53 PIK3CA GATA3
+##    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+##  1 MB-0000    Positive  claudin-l… brca_me…  8.93  9.33  5.68  6.34   5.70  6.93
+##  2 MB-0002    Positive  LumA       brca_me… 10.0   9.73  7.51  6.19   5.76 11.3 
+##  3 MB-0005    Positive  LumB       brca_me… 10.0   9.73  7.38  6.40   6.75  9.29
+##  4 MB-0006    Positive  LumB       brca_me… 10.4  10.3   6.82  6.87   7.22  8.67
+##  5 MB-0008    Positive  LumB       brca_me… 11.3   9.96  7.33  6.34   5.82  9.72
+##  6 MB-0010    Positive  LumB       brca_me… 11.2   9.74  5.95  5.42   6.12  9.79
+##  7 MB-0014    Positive  LumB       brca_me… 10.8   9.28  7.72  5.99   7.48  8.37
+##  8 MB-0020    Negative  Normal     brca_me… NA    NA    NA    NA     NA    NA   
+##  9 MB-0022    Positive  claudin-l… brca_me… 10.4   8.61  5.59  6.17   7.59  7.87
+## 10 MB-0025    Positive  &lt;NA&gt;       brca_me… NA    NA    NA    NA     NA    NA   
+## # ℹ 2,499 more rows
+## # ℹ 2 more variables: FOXA1 &lt;dbl&gt;, MLPH &lt;dbl&gt;</code></pre>
 <p>Having combined the data, we can carry out exploratory data analysis
 using elements from both data sets.</p>
 <pre class="r"><code>combined_data %&gt;%
@@ -1219,7 +1214,6 @@ using elements from both data sets.</p>
   ggplot(mapping = aes(x = PAM50, y = ESR1, colour = PAM50)) +
   geom_boxplot(show.legend = FALSE)</code></pre>
 <p><img src="week6_files/figure-html/box_plot_1-1.png" width="672" /></p>
-<hr />
 </div>
 </div>
 <div id="customizing-plots-with-ggplot2" class="section level1">
@@ -1365,7 +1359,10 @@ side. We can add or reduce the space as follows.</p>
   scale_x_continuous(expand = expand_scale(mult = 0.01)) +
   scale_y_continuous(expand = expand_scale(mult = 0.25))</code></pre>
 <pre><code>## Warning: `expand_scale()` was deprecated in ggplot2 3.3.0.
-## ℹ Please use `expansion()` instead.</code></pre>
+## ℹ Please use `expansion()` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
 <p><img src="week6_files/figure-html/scatter_plot_8-1.png" width="672" /></p>
 <p>Here we only added 1% (0.01) of the range of GATA3 expression values
@@ -1463,7 +1460,6 @@ colour scale within the scale function.</p>
     limits = c(1.5, 6.5)
   )</code></pre>
 <p><img src="week6_files/figure-html/scatter_plot_16-1.png" width="672" /></p>
-<hr />
 </div>
 </div>
 <div id="summary" class="section level1">
@@ -1476,16 +1472,150 @@ colour scale within the scale function.</p>
 <li>Customizing plots created with ggplot2 by changing labels, scales
 and colours</li>
 </ul>
-<hr />
 </div>
-<div id="assignment" class="section level1">
-<h1>Assignment</h1>
-<p>Assignment: <a
-href="assignments/assignment5.Rmd">assignment5.Rmd</a></p>
-<p>Solutions: <a
-href="assignments/assignment5_solutions.Rmd">assignment5_solutions.Rmd</a>
-and <a
-href="assignments/assignment5_solutions.html">assignment5_solutions.html</a></p>
+<div id="exercises" class="section level1">
+<h1>Exercises</h1>
+<div class="exercise">
+<ol style="list-style-type: decimal">
+<li>Compute the average survival time for the ER-negative and
+ER-positive groups. Note that such a comparison only makes sense for
+those patients that are deceased so apply the appropriate filter first.
+Add a column for the number of patients in each group. You can use
+“metabric_clinical_data.csv” file.</li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+```r
+library(tidyverse)
+metabric <- read_csv("data/metabric_clinical_data.csv")
+metabric %>%
+  filter(Survival_status == "DECEASED") %>%
+  group_by(ER_status) %>%
+  summarize(`Average survival time` = mean(Survival_time), N = n())
+```
+
+```
+## # A tibble: 2 × 3
+##   ER_status `Average survival time`     N
+##   <chr>                       <dbl> <int>
+## 1 Negative                     66.3   262
+## 2 Positive                    111.    882
+```
+
+</details>--->
+</div>
+<div class="exercise">
+<ol start="2" style="list-style-type: decimal">
+<li>Compute the average tumour size, number of positive lymph nodes and
+Nottingham prognostic index within ER-negative and ER-positive
+patients.</li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+```r
+library(tidyverse)
+metabric <- read_csv("data/metabric_clinical_data.csv")
+metabric %>%
+  group_by(ER_status) %>%
+  summarize_at(vars(Tumour_size, Lymph_nodes_examined_positive, Nottingham_prognostic_index), mean, na.rm = TRUE)
+```
+
+```
+## # A tibble: 3 × 4
+##   ER_status Tumour_size Lymph_nodes_examined_positive Nottingham_prognostic_in…¹
+##   <chr>           <dbl>                         <dbl>                      <dbl>
+## 1 Negative         28.3                          2.62                       4.60
+## 2 Positive         25.4                          1.73                       3.86
+## 3 <NA>             35                            1.70                       2.26
+## # ℹ abbreviated name: ¹​Nottingham_prognostic_index
+```
+</details>--->
+</div>
+<div class="exercise">
+<ol start="3" style="list-style-type: decimal">
+<li>Count the numbers of mutations for each gene and display the top 10
+most frequently mutated genes using metabric_mutations.csv data.</li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+```r
+mutations <- read_csv("data/metabric_mutations.csv")
+mutations %>%
+  count(Gene) %>%
+  arrange(desc(n)) %>%
+  head(10)
+```
+
+```
+## # A tibble: 10 × 2
+##    Gene       n
+##    <chr>  <int>
+##  1 PIK3CA  1122
+##  2 TP53     897
+##  3 AHNAK2   859
+##  4 MUC16    666
+##  5 SYNE1    468
+##  6 KMT2C    389
+##  7 MAP3K1   372
+##  8 AHNAK    327
+##  9 GATA3    301
+## 10 DNAH11   300
+```
+</details>--->
+</div>
+<div class="exercise">
+<ol start="4" style="list-style-type: decimal">
+<li>In breast cancers, PIK3CA and TP53 are the most commonly mutated
+genes with mutations occurring in specific regions of the gene. Find out
+which codons of PIK3CA are most commonly mutated.</li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+```r
+mutations %>%
+  filter(Gene == "PIK3CA") %>%
+  count(Codon) %>%
+  arrange(desc(n))
+```
+
+```
+## # A tibble: 88 × 2
+##    Codon     n
+##    <dbl> <int>
+##  1  1047   471
+##  2   545   192
+##  3   542   101
+##  4   345    64
+##  5   726    28
+##  6   546    26
+##  7   420    19
+##  8   111    13
+##  9  1043    12
+## 10   108    10
+## # ℹ 78 more rows
+```
+</details>--->
+</div>
+<div class="exercise">
+<ol start="5" style="list-style-type: decimal">
+<li>Use boxplots to illustrate the distribution of diagnosis age for
+3-gene classification groups of patients. Remove any patients who are
+unclassified. The boxplots should be colored according to the
+group.</li>
+</ol>
+<!---<details><summary>Answer</summary>
+
+```r
+metabric %>% 
+  filter(!is.na(`3-gene_classifier`)) %>% 
+ggplot( mapping=aes(x=`3-gene_classifier`, y=Age_at_diagnosis, colour=`3-gene_classifier`)) +
+  geom_boxplot() +
+  scale_colour_discrete(name="3 gene classifier")
+```
+
+<img src="week6_files/figure-html/unnamed-chunk-49-1.png" width="672" />
+</details>--->
+</div>
 </div>
 
 
