@@ -1299,17 +1299,81 @@ metabric &lt;- read_csv(&quot;data/metabric_clinical_and_expression_data.csv&quo
 patients that didn’t receive chemo or radiotherapy</strong></p>
 <p>First obtain the subset of patients that received neither
 chemotherapy or radiotherapy and survived for more than 20 years.</p>
+<pre class="r"><code>patients_of_interest &lt;- filter(metabric, Chemotherapy == &quot;NO&quot;, Radiotherapy == &quot;NO&quot;, Survival_time / 12 &gt; 20)
+# alternative using separate steps
+patients_of_interest &lt;- metabric %&gt;%
+  filter(Chemotherapy == &quot;NO&quot;) %&gt;%
+  filter(Radiotherapy == &quot;NO&quot;) %&gt;%
+  mutate(Survival_time_years = Survival_time / 12) %&gt;%
+  filter(Survival_time_years &gt; 20)
+#
+patients_of_interest</code></pre>
+<pre><code>## # A tibble: 70 × 33
+##    Patient_ID Cohort Age_at_diagnosis Survival_time Survival_status Vital_status
+##    &lt;chr&gt;       &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;       
+##  1 MB-0270         1             30.0          337. LIVING          Living      
+##  2 MB-2517         2             60.3          268. DECEASED        Died of Oth…
+##  3 MB-2610         2             59.0          281. LIVING          Living      
+##  4 MB-2763         2             70.3          276. LIVING          Living      
+##  5 MB-2770         2             60.3          274. LIVING          Living      
+##  6 MB-2793         2             67.6          267. LIVING          Living      
+##  7 MB-2797         2             50.1          253. LIVING          Living      
+##  8 MB-2819         2             62.0          271. LIVING          Living      
+##  9 MB-2838         2             67.1          270. LIVING          Living      
+## 10 MB-2840         2             60.5          269  LIVING          Living      
+## # ℹ 60 more rows
+## # ℹ 27 more variables: Chemotherapy &lt;chr&gt;, Radiotherapy &lt;chr&gt;,
+## #   Tumour_size &lt;dbl&gt;, Tumour_stage &lt;dbl&gt;, Neoplasm_histologic_grade &lt;dbl&gt;,
+## #   Lymph_nodes_examined_positive &lt;dbl&gt;, Lymph_node_status &lt;dbl&gt;,
+## #   Cancer_type &lt;chr&gt;, ER_status &lt;chr&gt;, PR_status &lt;chr&gt;, HER2_status &lt;chr&gt;,
+## #   HER2_status_measured_by_SNP6 &lt;chr&gt;, PAM50 &lt;chr&gt;, `3-gene_classifier` &lt;chr&gt;,
+## #   Nottingham_prognostic_index &lt;dbl&gt;, Cellularity &lt;chr&gt;, …</code></pre>
 <p>Now look at the breakdown of these patients in terms of ER status.
 Count the numbers of ER positive and ER negative patients in this
 subset. Calculate the proportion that are ER positive.</p>
+<pre class="r"><code>table(patients_of_interest$ER_status)</code></pre>
+<pre><code>## 
+## Negative Positive 
+##        8       62</code></pre>
+<pre class="r"><code>mean(patients_of_interest$ER_status == &quot;Positive&quot;)</code></pre>
+<pre><code>## [1] 0.8857143</code></pre>
 <p>What does this tell us? Calculate the proportion of ER positive
 patients in the whole cohort by way of a comparison.</p>
+<pre class="r"><code>table(metabric$ER_status)</code></pre>
+<pre><code>## 
+## Negative Positive 
+##      445     1459</code></pre>
+<pre class="r"><code>mean(metabric$ER_status == &quot;Positive&quot;)</code></pre>
+<pre><code>## [1] 0.7662815</code></pre>
 <p><strong>2. Which patients have spent the largest proportion of their
 lives dealing with breast cancer?</strong></p>
 <pre class="r"><code>### Hint 
 ### Create Survival_time_years
 ### Add it to Age_at_diagnosis
-### Create Proportion: Survival_time_years/Age</code></pre>
+### Create Proportion: Survival_time_years/Age
+
+metabric %&gt;%
+  mutate(Survival_time_years = Survival_time / 12) %&gt;%
+  mutate(Age = Age_at_diagnosis + Survival_time_years) %&gt;%
+  mutate(Proportion_of_life_since_diagnosis = Survival_time_years / Age) %&gt;%
+  select(Patient_ID, Age, Age_at_diagnosis, Survival_time_years, Proportion_of_life_since_diagnosis) %&gt;%
+  arrange(desc(Proportion_of_life_since_diagnosis)) %&gt;%
+  mutate_if(is.numeric, round, digits = 2)</code></pre>
+<pre><code>## # A tibble: 1,904 × 5
+##    Patient_ID   Age Age_at_diagnosis Survival_time_years Proportion_of_life_si…¹
+##    &lt;chr&gt;      &lt;dbl&gt;            &lt;dbl&gt;               &lt;dbl&gt;                   &lt;dbl&gt;
+##  1 MB-0270     58.1             30.0                28.1                    0.48
+##  2 MB-4332     60.0             34.4                25.7                    0.43
+##  3 MB-6062     55.1             31.6                23.5                    0.43
+##  4 MB-2753     53.8             31.0                22.9                    0.42
+##  5 MB-2957     52.9             31.0                21.8                    0.41
+##  6 MB-2823     58.5             36.0                22.5                    0.38
+##  7 MB-2779     59.7             36.8                22.9                    0.38
+##  8 MB-2853     58.7             36.2                22.5                    0.38
+##  9 MB-4881     59.9             37.0                22.8                    0.38
+## 10 MB-4375     64.3             40.0                24.3                    0.38
+## # ℹ 1,894 more rows
+## # ℹ abbreviated name: ¹​Proportion_of_life_since_diagnosis</code></pre>
 <hr />
 <p><strong>3. Convert the expression values for each of the genes into
 standardized z-scores</strong></p>
@@ -1327,20 +1391,52 @@ values with a mean of 0 and a standard deviation of 1.</p>
 containing a new column with the standardized expression values
 (z-scores) for the ESR1 gene.</p>
 <pre class="r"><code>### Hint 
-### ESR1 - mean(ESR1)) / sd(ESR1)</code></pre>
+### ESR1 - mean(ESR1)) / sd(ESR1)
+metabric_z_scores &lt;- mutate(metabric, ESR1_z_score = (ESR1 - mean(ESR1)) / sd(ESR1))</code></pre>
 <p>Check that you’ve done this correctly by calculating the mean and
 standard deviation of your new z-score variable.</p>
+<pre class="r"><code>summarise(metabric_z_scores, mean = mean(ESR1_z_score), sd = sd(ESR1_z_score))</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##        mean    sd
+##       &lt;dbl&gt; &lt;dbl&gt;
+## 1 -2.31e-16     1</code></pre>
 <p>Add another column to your modified <code>metabric</code> data frame
 containing a z-score for GATA3 and then create a scatter plot of the
 z-scores of GATA3 against ESR1. Modify your plot to facet by the PAM50
 classification.</p>
+<pre class="r"><code>metabric_z_scores &lt;- mutate(metabric_z_scores, GATA3_z_score = (GATA3 - mean(GATA3)) / sd(GATA3))
+ggplot(data = metabric_z_scores) +
+  geom_point(mapping = aes(x = GATA3_z_score, y = ESR1_z_score)) +
+  facet_wrap(vars(PAM50))</code></pre>
+<p><img src="week5_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
 <hr />
 <p><strong>4. Which Star Wars characters need to go on a
 diet?</strong></p>
 <p>Compute the body mass index (BMI) of characters in the
 <code>starwars</code> tibble.</p>
+<pre class="r"><code>starwars &lt;- starwars %&gt;%
+  mutate(height = height / 100) %&gt;%
+  mutate(BMI = mass / height ^ 2)</code></pre>
 <p>Filter for human characters that are overweight (BMI &gt; 25) and
 display in decreasing order of BMI.</p>
+<pre class="r"><code>starwars %&gt;%
+  filter(species == &quot;Human&quot;) %&gt;%
+  filter(BMI &gt; 25) %&gt;%
+  arrange(desc(BMI)) %&gt;%
+  select(name, height, mass, BMI)</code></pre>
+<pre><code>## # A tibble: 10 × 4
+##    name               height  mass   BMI
+##    &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 Owen Lars            1.78   120  37.9
+##  2 Jek Tono Porkins     1.8    110  34.0
+##  3 Darth Vader          2.02   136  33.3
+##  4 Beru Whitesun lars   1.65    75  27.5
+##  5 Wedge Antilles       1.7     77  26.6
+##  6 Luke Skywalker       1.72    77  26.0
+##  7 Palpatine            1.7     75  26.0
+##  8 Lobot                1.75    79  25.8
+##  9 Lando Calrissian     1.77    79  25.2
+## 10 Biggs Darklighter    1.83    84  25.1</code></pre>
 </div>
 </div>
 
