@@ -28,12 +28,10 @@ In this training course, we aim to provide a friendly introduction to R pitched
 at a beginners level but also for those who have been on R training courses
 previously and would like a refresher or to consolidate their skills.
 
-The course will be run over **7 weeks** with the following structure:
-
 * **Lesson each Thursday at 9:30 am** lasting 90 minutes
 * More **in-depth material** covering the concepts introduced on the Thursday lesson to go through in your own time
 * A **weekly assignment** consisting of exercises to practice some of the concepts covered in that and previous week's lessons
-* A member of the bioinformatics team will be assigned to you. Please contact him/her if you have any questions.
+* Please contact bioinformatics team (340A) if you have any questions. You could also email us on analysisteam-bioinformaticscore@cruk.cam.ac.uk.
     
  
 
