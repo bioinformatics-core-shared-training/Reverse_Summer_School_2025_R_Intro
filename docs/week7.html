@@ -413,14 +413,16 @@ cosmetic.</p>
 <strong>tidyr</strong> and <strong>stringr</strong> packages both of
 which get loaded as part of the tidyverse.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.4.1     ✔ purrr   1.0.1
-## ✔ tibble  3.2.0     ✔ dplyr   1.1.0
-## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
-## ✔ readr   2.1.4     ✔ forcats 1.0.0
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.1     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.1     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the ]8;;http://conflicted.r-lib.org/conflicted package]8;; to force all conflicts to become errors</code></pre>
 <hr />
 </div>
 <div id="tidy-data" class="section level1">
@@ -893,7 +895,7 @@ metabric</code></pre>
 ##  8 MB-0022    Positive  10.4   8.61  5.59  6.17   7.59  7.87 10.7   9.95
 ##  9 MB-0028    Positive  12.5  10.7   5.33  6.22   6.25 10.3  12.1  10.9 
 ## 10 MB-0035    Positive   7.54 11.5   5.59  6.41   5.99 10.2  12.8  13.5 
-## # … with 1,894 more rows</code></pre>
+## # ℹ 1,894 more rows</code></pre>
 <p>When we first looked at visualization using ggplot2 we created the
 following box plot.</p>
 <pre class="r"><code>ggplot(metabric) +
@@ -940,7 +942,7 @@ metabric</code></pre>
 ##  8 MB-0000    Positive  MLPH         9.73
 ##  9 MB-0002    Positive  ESR1        10.0 
 ## 10 MB-0002    Positive  ERBB2        9.73
-## # … with 15,222 more rows</code></pre>
+## # ℹ 15,222 more rows</code></pre>
 <p>Note how we specified a range of columns between <code>ESR1</code>
 and <code>MLPH</code>, which is a lot easier than naming each column
 individually.</p>
@@ -992,20 +994,20 @@ data 9</a>.</p>
 protein_levels &lt;- read_excel(&quot;data/41467_2018_4619_MOESM11_ESM.xlsx&quot;, skip = 1)
 select(protein_levels, `Uniprot Accession`, `Gene Name`, ends_with(&quot;rep01&quot;))</code></pre>
 <pre><code>## # A tibble: 7,943 × 6
-##    `Uniprot Accession` `Gene Name` vehicle.rep01 tam.2h.rep01 tam.6h.r…¹ tam.2…²
-##    &lt;chr&gt;               &lt;chr&gt;               &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;
-##  1 Q09666              AHNAK                17.3         17.3       17.3    17.3
-##  2 P05787              KRT8                 16.9         17.1       17.0    17.0
-##  3 Q15149              PLEC                 16.7         16.7       16.7    16.6
-##  4 P21333              FLNA                 16.6         16.5       16.6    16.6
-##  5 P05783              KRT18                16.4         16.6       16.5    16.5
-##  6 P49327              FASN                 16.0         16.0       16.0    16.0
-##  7 P10809              HSPD1                16.1         16.2       16.1    16.1
-##  8 Q14204              DYNC1H1              16.0         15.9       16.0    16.0
-##  9 O75369              FLNB                 16.1         16.1       16.2    16  
-## 10 P35579              MYH9                 15.7         15.6       15.8    15.8
-## # … with 7,933 more rows, and abbreviated variable names ¹​tam.6h.rep01,
-## #   ²​tam.24h.rep01</code></pre>
+##    `Uniprot Accession` `Gene Name` vehicle.rep01 tam.2h.rep01 tam.6h.rep01
+##    &lt;chr&gt;               &lt;chr&gt;               &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Q09666              AHNAK                17.3         17.3         17.3
+##  2 P05787              KRT8                 16.9         17.1         17.0
+##  3 Q15149              PLEC                 16.7         16.7         16.7
+##  4 P21333              FLNA                 16.6         16.5         16.6
+##  5 P05783              KRT18                16.4         16.6         16.5
+##  6 P49327              FASN                 16.0         16.0         16.0
+##  7 P10809              HSPD1                16.1         16.2         16.1
+##  8 Q14204              DYNC1H1              16.0         15.9         16.0
+##  9 O75369              FLNB                 16.1         16.1         16.2
+## 10 P35579              MYH9                 15.7         15.6         15.8
+## # ℹ 7,933 more rows
+## # ℹ 1 more variable: tam.24h.rep01 &lt;dbl&gt;</code></pre>
 <p>This has a very similar structure to a gene expression matrix having
 one row for each protein (or gene) and a column for each sample. We’ve
 only shown columns for the first of four replicates for each group
@@ -1026,24 +1028,23 @@ tamoxifen compared with the vehicle.</p>
   select(accession = `Uniprot Accession`, gene = `Gene Name`, vehicle.rep01:tam.24h.rep04)
 protein_levels</code></pre>
 <pre><code>## # A tibble: 10 × 18
-##    acces…¹ gene  vehic…² tam.2…³ tam.6…⁴ tam.2…⁵ vehic…⁶ tam.2…⁷ tam.6…⁸ tam.2…⁹
-##    &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1 Q4ZG55  GREB1   12.1    12      11.6     9.78   11.3    11.4    11.1     8.98
-##  2 P15514  AREG    11.4    11.3    11.3     9.92   10.7    10.8    10.7     9.33
-##  3 Q13433  SLC3…   10.9    10.8    10.7     9.89   10.5    10.5    10.4     9.81
-##  4 Q9NPD8  UBE2T   10.4    10.3    10.2     9.62   10.6    10.6    10.5     9.81
-##  5 Q6N021  TET2    10.1    10.0     9.59    8.75   10.1    10.0     9.75    8.73
-##  6 P06401  PGR      9.97   10.0     9.75    8.75    9.18    9.47    9.17    8.23
-##  7 P25929  NPY1R    9.08    9.16    8.89    7.94    8.33    8.56    8.4     7.58
-##  8 O95084  PRSS…    8.45    8.53    8.27    7.78    8.57    8.57    8.34    7.94
-##  9 P08493  MGP      6.76    6.76    6.18    5.09    6.05    5.87    5.95    5   
-## 10 Q96BR1  SGK3     6.33    6.42    6.16    5.5     6.04    5.97    5.82    5.24
-## # … with 8 more variables: vehicle.rep03 &lt;dbl&gt;, tam.2h.rep03 &lt;dbl&gt;,
-## #   tam.6h.rep03 &lt;dbl&gt;, tam.24h.rep03 &lt;dbl&gt;, vehicle.rep04 &lt;dbl&gt;,
-## #   tam.2h.rep04 &lt;dbl&gt;, tam.6h.rep04 &lt;dbl&gt;, tam.24h.rep04 &lt;dbl&gt;, and
-## #   abbreviated variable names ¹​accession, ²​vehicle.rep01, ³​tam.2h.rep01,
-## #   ⁴​tam.6h.rep01, ⁵​tam.24h.rep01, ⁶​vehicle.rep02, ⁷​tam.2h.rep02,
-## #   ⁸​tam.6h.rep02, ⁹​tam.24h.rep02</code></pre>
+##    accession gene    vehicle.rep01 tam.2h.rep01 tam.6h.rep01 tam.24h.rep01
+##    &lt;chr&gt;     &lt;chr&gt;           &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;         &lt;dbl&gt;
+##  1 Q4ZG55    GREB1           12.1         12           11.6           9.78
+##  2 P15514    AREG            11.4         11.3         11.3           9.92
+##  3 Q13433    SLC39A6         10.9         10.8         10.7           9.89
+##  4 Q9NPD8    UBE2T           10.4         10.3         10.2           9.62
+##  5 Q6N021    TET2            10.1         10.0          9.59          8.75
+##  6 P06401    PGR              9.97        10.0          9.75          8.75
+##  7 P25929    NPY1R            9.08         9.16         8.89          7.94
+##  8 O95084    PRSS23           8.45         8.53         8.27          7.78
+##  9 P08493    MGP              6.76         6.76         6.18          5.09
+## 10 Q96BR1    SGK3             6.33         6.42         6.16          5.5 
+## # ℹ 12 more variables: vehicle.rep02 &lt;dbl&gt;, tam.2h.rep02 &lt;dbl&gt;,
+## #   tam.6h.rep02 &lt;dbl&gt;, tam.24h.rep02 &lt;dbl&gt;, vehicle.rep03 &lt;dbl&gt;,
+## #   tam.2h.rep03 &lt;dbl&gt;, tam.6h.rep03 &lt;dbl&gt;, tam.24h.rep03 &lt;dbl&gt;,
+## #   vehicle.rep04 &lt;dbl&gt;, tam.2h.rep04 &lt;dbl&gt;, tam.6h.rep04 &lt;dbl&gt;,
+## #   tam.24h.rep04 &lt;dbl&gt;</code></pre>
 <p>This is a fairly typical example of a table with columns for each
 sample where the sample names contain quite a lot of information, in
 this case:</p>
@@ -1074,7 +1075,7 @@ protein_levels</code></pre>
 ##  8 Q4ZG55    GREB1 tam.24h.rep02          8.98
 ##  9 Q4ZG55    GREB1 vehicle.rep03         11.0 
 ## 10 Q4ZG55    GREB1 tam.2h.rep03          11.0 
-## # … with 150 more rows</code></pre>
+## # ℹ 150 more rows</code></pre>
 <p>Now we can use <code>separate()</code> to disentangle the components
 of the sample name.</p>
 <p>It looks like we need to split on the ‘.’ character but that has a
@@ -1203,7 +1204,7 @@ protein_levels</code></pre>
 ##  8 Q4ZG55    GREB1 tam.24h.rep02              8.98
 ##  9 Q4ZG55    GREB1 vehicle.24h.rep03         11.0 
 ## 10 Q4ZG55    GREB1 tam.2h.rep03              11.0 
-## # … with 150 more rows</code></pre>
+## # ℹ 150 more rows</code></pre>
 <p>Now we’re ready to separate the <code>sample</code> column into its
 component parts.</p>
 <pre class="r"><code>protein_levels &lt;- separate(protein_levels, sample, into = c(&quot;treatment&quot;, &quot;time&quot;, &quot;replicate&quot;))
@@ -1221,7 +1222,7 @@ protein_levels</code></pre>
 ##  8 Q4ZG55    GREB1 tam       24h   rep02              8.98
 ##  9 Q4ZG55    GREB1 vehicle   24h   rep03             11.0 
 ## 10 Q4ZG55    GREB1 tam       2h    rep03             11.0 
-## # … with 150 more rows</code></pre>
+## # ℹ 150 more rows</code></pre>
 <p>The groups we want to compare are in fact the combination of the
 treatment and the time point. We’ll create a new column called ‘group’
 in which we concatenate the treatment and time values using another
@@ -1248,7 +1249,7 @@ protein_levels</code></pre>
 ##  8 Q4ZG55    GREB1 tam       24h   rep02              8.98 tam24h
 ##  9 Q4ZG55    GREB1 vehicle   24h   rep03             11.0  veh24h
 ## 10 Q4ZG55    GREB1 tam       2h    rep03             11.0  tam2h 
-## # … with 150 more rows</code></pre>
+## # ℹ 150 more rows</code></pre>
 <p>Computing the mean protein levels within each group is now very
 straightforward.</p>
 <pre class="r"><code>protein_levels %&gt;%
@@ -1270,7 +1271,7 @@ straightforward.</p>
 ##  8 P06401    PGR    tam24h          8.39
 ##  9 P08493    MGP    veh24h          5.59
 ## 10 P08493    MGP    tam2h           5.69
-## # … with 30 more rows</code></pre>
+## # ℹ 30 more rows</code></pre>
 <p>Plotting the protein levels in each group as box plots with each data
 point overlaid is only slightly more involved. We can use faceting to
 create separate plots for each of the proteins (we’ll use gene symbols
@@ -1303,19 +1304,19 @@ metabric &lt;- read_csv(&quot;data/metabric_clinical_and_expression_data.csv&quo
   filter(!is.na(Integrative_cluster), !is.na(ESR1))
 metabric</code></pre>
 <pre><code>## # A tibble: 1,904 × 6
-##    Patient_ID ER_status PR_status `3-gene_classifier`   Integrative_clus…¹  ESR1
-##    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;                 &lt;fct&gt;              &lt;dbl&gt;
-##  1 MB-0000    Positive  Negative  ER-/HER2-             4ER+                8.93
-##  2 MB-0002    Positive  Positive  ER+/HER2- High Prolif 4ER+               10.0 
-##  3 MB-0005    Positive  Positive  Unclassified          3                  10.0 
-##  4 MB-0006    Positive  Positive  Unclassified          9                  10.4 
-##  5 MB-0008    Positive  Positive  ER+/HER2- High Prolif 9                  11.3 
-##  6 MB-0010    Positive  Positive  ER+/HER2- High Prolif 7                  11.2 
-##  7 MB-0014    Positive  Positive  Unclassified          3                  10.8 
-##  8 MB-0022    Positive  Negative  Unclassified          3                  10.4 
-##  9 MB-0028    Positive  Negative  ER+/HER2- High Prolif 9                  12.5 
-## 10 MB-0035    Positive  Negative  ER+/HER2- High Prolif 3                   7.54
-## # … with 1,894 more rows, and abbreviated variable name ¹​Integrative_cluster</code></pre>
+##    Patient_ID ER_status PR_status `3-gene_classifier`  Integrative_cluster  ESR1
+##    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;                &lt;fct&gt;               &lt;dbl&gt;
+##  1 MB-0000    Positive  Negative  ER-/HER2-            4ER+                 8.93
+##  2 MB-0002    Positive  Positive  ER+/HER2- High Prol… 4ER+                10.0 
+##  3 MB-0005    Positive  Positive  Unclassified         3                   10.0 
+##  4 MB-0006    Positive  Positive  Unclassified         9                   10.4 
+##  5 MB-0008    Positive  Positive  ER+/HER2- High Prol… 9                   11.3 
+##  6 MB-0010    Positive  Positive  ER+/HER2- High Prol… 7                   11.2 
+##  7 MB-0014    Positive  Positive  Unclassified         3                   10.8 
+##  8 MB-0022    Positive  Negative  Unclassified         3                   10.4 
+##  9 MB-0028    Positive  Negative  ER+/HER2- High Prol… 9                   12.5 
+## 10 MB-0035    Positive  Negative  ER+/HER2- High Prol… 3                    7.54
+## # ℹ 1,894 more rows</code></pre>
 <pre class="r"><code># plot the ESR1 expression for each integrative cluster
 plot &lt;- ggplot(data = metabric) +
   geom_boxplot(mapping = aes(x = Integrative_cluster, y = ESR1, fill = Integrative_cluster)) +
@@ -1330,7 +1331,7 @@ black and white theme.</p>
 <p><img src="week7_files/figure-html/box_plot_5-1.png" width="672" /></p>
 <p>The help page for the available themes, which can be accessed using
 <code>?theme_bw</code>, lists each and when you might want to use them.
-It states that <code>black_bw</code> may work better for presentations
+It states that <code>theme_bw</code> may work better for presentations
 displayed on a projector.</p>
 <p>Each of these themes is really just a collection of attributes
 relating to how various non-data elements of the plot will be displayed.
@@ -1365,7 +1366,10 @@ scales and colours.</p>
     legend.position = &quot;bottom&quot;
   )</code></pre>
 <pre><code>## Warning: `expand_scale()` was deprecated in ggplot2 3.3.0.
-## ℹ Please use `expansion()` instead.</code></pre>
+## ℹ Please use `expansion()` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <p><img src="week7_files/figure-html/bar_plot_1-1.png" width="480" /></p>
 <p>The ggthemes package contains some extra themes and might be fun to
 check out. Here’s an example of a plot that uses the
@@ -1475,14 +1479,154 @@ position adjustments</li>
 </ul>
 <hr />
 </div>
-<div id="assignment" class="section level1">
-<h1>Assignment</h1>
-<p>Assignment: <a
-href="assignments/assignment6.Rmd">assignment6.Rmd</a></p>
-<p>Solutions: <a
-href="assignments/assignment6_solutions.Rmd">assignment6_solutions.Rmd</a>
-and <a
-href="assignments/assignment6_solutions.html">assignment6_solutions.html</a></p>
+<div id="exercises" class="section level1">
+<h1>Exercises</h1>
+<p>This week’s involves transforming two data sets in order to ask a
+specific question of each. The first is a more complete set of data on
+the number of new tuberculosis cases each year from 1980 to 2013 in 219
+countries, taken from the <a
+href="https://www.who.int/health-topics/tuberculosis">World Health
+Organization Global Tuberculosis Report</a>.</p>
+<p>For the second “real world” example we return to the METABRIC data
+set and introduce the other set of assay data obtained as part of the
+original 2012 study that concerns genomic copy number. We’ll transform
+the copy number data downloaded from <a
+href="https://www.cbioportal.org/study/summary?id=brca_metabric">cBioPortal</a>
+so that we can look at the copy number states for some of our favourite
+genes and then combine that with the expression data to see how copy
+number influences gene expression.</p>
+<p>The clinical data, gene expression values and mutation data were all
+downloaded from <a
+href="https://www.cbioportal.org/study/summary?id=brca_metabric">cBioPortal</a>.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<hr />
+<p><strong>1. Tidy the WHO tuberculosis data set</strong></p>
+<p>In this week’s materials we demonstrated the restructuring of
+different representations of a very small subset of the WHO tuberculosis
+data set (tables 1 to 4a and b). The more complete data set is also
+available in its original format in another data frame available as part
+of the <strong>tidyr</strong> package, named <code>who</code>.</p>
+<pre class="r"><code>who</code></pre>
+<pre><code>## # A tibble: 7,240 × 60
+##    country  iso2  iso3   year new_sp_m014 new_sp_m1524 new_sp_m2534 new_sp_m3544
+##    &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Afghani… AF    AFG    1980          NA           NA           NA           NA
+##  2 Afghani… AF    AFG    1981          NA           NA           NA           NA
+##  3 Afghani… AF    AFG    1982          NA           NA           NA           NA
+##  4 Afghani… AF    AFG    1983          NA           NA           NA           NA
+##  5 Afghani… AF    AFG    1984          NA           NA           NA           NA
+##  6 Afghani… AF    AFG    1985          NA           NA           NA           NA
+##  7 Afghani… AF    AFG    1986          NA           NA           NA           NA
+##  8 Afghani… AF    AFG    1987          NA           NA           NA           NA
+##  9 Afghani… AF    AFG    1988          NA           NA           NA           NA
+## 10 Afghani… AF    AFG    1989          NA           NA           NA           NA
+## # ℹ 7,230 more rows
+## # ℹ 52 more variables: new_sp_m4554 &lt;dbl&gt;, new_sp_m5564 &lt;dbl&gt;,
+## #   new_sp_m65 &lt;dbl&gt;, new_sp_f014 &lt;dbl&gt;, new_sp_f1524 &lt;dbl&gt;,
+## #   new_sp_f2534 &lt;dbl&gt;, new_sp_f3544 &lt;dbl&gt;, new_sp_f4554 &lt;dbl&gt;,
+## #   new_sp_f5564 &lt;dbl&gt;, new_sp_f65 &lt;dbl&gt;, new_sn_m014 &lt;dbl&gt;,
+## #   new_sn_m1524 &lt;dbl&gt;, new_sn_m2534 &lt;dbl&gt;, new_sn_m3544 &lt;dbl&gt;,
+## #   new_sn_m4554 &lt;dbl&gt;, new_sn_m5564 &lt;dbl&gt;, new_sn_m65 &lt;dbl&gt;, …</code></pre>
+<p>What are the variables in this data set?</p>
+<p>Create a bulleted list with your answer here.</p>
+<p><em>Hint: see the help page for <code>who</code> to understand the
+meaning of the column headings.</em></p>
+<p><em>Hint: the Markdown Quick Reference available from the Help menu
+in RStudio is a very useful guide to formatting text in R markdown
+documents.</em></p>
+<p>Why isn’t this data set tidy and what kinds of analysis are not
+straightforward with the data in this format?</p>
+<p>Transform the data into a tidy format.</p>
+<p>Columns <code>new_sp_m014</code> to <code>newrel_f65</code> are
+values for a compound variable, i.e. multiple variables joined together
+- the restructured data frame should have columns for each of the
+separated values in these column headings.</p>
+<p>Also remove all rows with missing values for the number of
+tuberculosis cases.</p>
+<p><em>Hint 1: the column headers from new_sp_m014 onwards contain a
+superfluous prefix “new” or “new_” that you will want to remove; this
+can be done using one of the stringr functions in a single step if you
+know about regular expressions but is also achievable in two steps if
+you don’t use any regular expression magic.</em></p>
+<p><em>Hint 2: separating two of the variables is a bit tricky because
+there is no separator character; try looking at the help for the
+separate function to see how this can be done.</em></p>
+<hr />
+<p><strong>2. Recreate <code>table1</code> from your tidy version of the
+WHO tuberculosis data set</strong></p>
+<p>Recreate the first 3 columns of <code>table1</code>, containing a
+small subset of the WHO tuberculosis data set, from your tidy version of
+<code>who</code>.</p>
+<pre class="r"><code>select(table1, 1:3)</code></pre>
+<pre><code>## # A tibble: 6 × 3
+##   country      year  cases
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Afghanistan  1999    745
+## 2 Afghanistan  2000   2666
+## 3 Brazil       1999  37737
+## 4 Brazil       2000  80488
+## 5 China        1999 212258
+## 6 China        2000 213766</code></pre>
+<p><em>Hint: this will involve some filtering, grouping and
+summarization.</em></p>
+<hr />
+<p><strong>3. Create time series plots for cases of
+tuberculosis</strong></p>
+<p>Create a time series plot showing the number of tuberculosis cases in
+the United Kingdom with separate lines for each age group. The year
+should be on the x axis and the number of cases on the y axis.</p>
+<p><em>Hint: we’re not distinguishing between diagnoses and genders in
+this plot so you’ll need to sum the numbers of cases for each country,
+year and age group.</em></p>
+<p>Use faceting in ggplot2 to create a series of plots showing the same
+information for France, Brazil, Japan and Uganda.</p>
+<p>The numbers of cases in these countries are on quite different
+scales. Look at help page for <code>facet_wrap()</code> and try changing
+the <code>scales</code> argument so we can more easily compare the
+overall patterns between countries.</p>
+<hr />
+<p><strong>4. Extension: Mutual exclusivity of ERBB2 amplifications and
+AKT1 mutations</strong></p>
+<p><em>Seriously, stop here if you haven’t got the time or inclination
+to attempt this final, bonus extension exercise .</em></p>
+<p>In the METABRIC 2016 paper, Pereira <em>et al.</em> (<a
+href="https://www.ncbi.nlm.nih.gov/pubmed/27161491">Nature
+Communications 7:11479, 2016</a>) considered the association between
+somatic mutations, exploring patterns of co-mutation and mutual
+exclusivity. One of their findings was the mutual exclusivity between
+AKT1 mutations and amplification of ERBB2. For the final exercise we
+will reproduce this observation.</p>
+<p>We’ll first need to read the mutation data into R and we’re only
+interested in those cases where the patient tumour sample was sequenced
+so we’ll read those in as well.</p>
+<pre class="r"><code>mutations &lt;- read_csv(&quot;data/metabric_mutations.csv&quot;)
+cases_sequenced &lt;- read_tsv(&quot;data/cases_nat_comm_2016.txt&quot;, col_names = &quot;Patient_ID&quot;)</code></pre>
+<p>Filter the mutations table to only contain the non-silent mutations
+in AKT1.</p>
+<p>Add a logical column to the <code>cases_sequenced</code> data frame
+called <code>AKT1_mutated</code> that indicates whether there was a
+non-silent AKT1 mutation detected in each patient tumour sample.</p>
+<p>Count the number of patients with and without a non-silent AKT1
+mutation.</p>
+<p><em>Hint: use a <code>mutate()</code> with
+<code>%in%</code>.</em></p>
+<p>Filter the copy number states table to only include entries for
+ERBB2.</p>
+<p>Count the number of samples for each ERBB2 copy number state.</p>
+<p>Join the ERBB2 copy number state table to the table we created before
+identifying which patient has an AKT1 mutation. The combined data frame
+should only contain entries for patients that have been sequenced and
+for which copy number data are available.</p>
+<p>Count the numbers of patients with different combinations of ERBB2
+copy number state and mutated AKT1.</p>
+<p>Does this reflect the observation of mutual exclusivity of ERBB2
+amplification and AKT1 mutations?</p>
+<p>Create a logical column called <code>ERBB2_amplified</code> indicated
+which patient samples have amplifications (copy number state 2) in
+ERBB2.</p>
+<p>Create a 2-by-2 contingency table using <code>table()</code> and the
+<code>AKT1_mutated</code> and <code>ERBB2_amplified</code> columns.</p>
+<p>Perform a Fisher exact test on this contingency table.</p>
 </div>
 
 
