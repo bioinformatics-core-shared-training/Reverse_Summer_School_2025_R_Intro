@@ -445,6 +445,7 @@ The table in question is
 
 ```{r message = FALSE}
 library(readxl)
+download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/41467_2018_4619_MOESM11_ESM.xlsx",destfile = "data/41467_2018_4619_MOESM11_ESM.xlsx")
 protein_levels <- read_excel("data/41467_2018_4619_MOESM11_ESM.xlsx", skip = 1)
 select(protein_levels, `Uniprot Accession`, `Gene Name`, ends_with("rep01"))
 ```

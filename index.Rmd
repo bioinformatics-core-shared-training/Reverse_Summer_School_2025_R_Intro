@@ -32,6 +32,12 @@ previously and would like a refresher or to consolidate their skills.
 * More **in-depth material** covering the concepts introduced on the Thursday lesson to go through in your own time
 * A **weekly assignment** consisting of exercises to practice some of the concepts covered in that and previous week's lessons
 * Please contact bioinformatics team (340A) if you have any questions. You could also email us on analysisteam-bioinformaticscore@cruk.cam.ac.uk.
+
+
+* More **in-depth ggplot book** covering the concepts introduced in this course to go through in your own time https://ggplot2-book.org/.
+
+* More **in-depth tidyverse book** covering the concepts introduced in this course to go through in your own time https://r4ds.had.co.nz/.
+
     
  
 

@@ -343,6 +343,12 @@ div.tocify {
     <li>
       <a href="week5.html">Week 5 - Data manipulation using dplyr</a>
     </li>
+    <li>
+      <a href="week6.html">Week 6 - Grouping and combining data</a>
+    </li>
+    <li>
+      <a href="week7.html">Week 7 - Restructuring data for analysis</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -1483,26 +1489,17 @@ those patients that are deceased so apply the appropriate filter first.
 Add a column for the number of patients in each group. You can use
 “metabric_clinical_data.csv” file.</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-```r
-library(tidyverse)
-metabric <- read_csv("data/metabric_clinical_data.csv")
-metabric %>%
-  filter(Survival_status == "DECEASED") %>%
-  group_by(ER_status) %>%
-  summarize(`Average survival time` = mean(Survival_time), N = n())
-```
-
-```
-## # A tibble: 2 × 3
+<pre class="r"><code>library(tidyverse)
+metabric &lt;- read_csv(&quot;data/metabric_clinical_data.csv&quot;)
+metabric %&gt;%
+  filter(Survival_status == &quot;DECEASED&quot;) %&gt;%
+  group_by(ER_status) %&gt;%
+  summarize(`Average survival time` = mean(Survival_time), N = n())</code></pre>
+<pre><code>## # A tibble: 2 × 3
 ##   ER_status `Average survival time`     N
-##   <chr>                       <dbl> <int>
+##   &lt;chr&gt;                       &lt;dbl&gt; &lt;int&gt;
 ## 1 Negative                     66.3   262
-## 2 Positive                    111.    882
-```
-
-</details>--->
+## 2 Positive                    111.    882</code></pre>
 </div>
 <div class="exercise">
 <ol start="2" style="list-style-type: decimal">
@@ -1510,46 +1507,32 @@ metabric %>%
 Nottingham prognostic index within ER-negative and ER-positive
 patients.</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-```r
-library(tidyverse)
-metabric <- read_csv("data/metabric_clinical_data.csv")
-metabric %>%
-  group_by(ER_status) %>%
-  summarize_at(vars(Tumour_size, Lymph_nodes_examined_positive, Nottingham_prognostic_index), mean, na.rm = TRUE)
-```
-
-```
-## # A tibble: 3 × 4
+<pre class="r"><code>library(tidyverse)
+metabric &lt;- read_csv(&quot;data/metabric_clinical_data.csv&quot;)
+metabric %&gt;%
+  group_by(ER_status) %&gt;%
+  summarize_at(vars(Tumour_size, Lymph_nodes_examined_positive, Nottingham_prognostic_index), mean, na.rm = TRUE)</code></pre>
+<pre><code>## # A tibble: 3 × 4
 ##   ER_status Tumour_size Lymph_nodes_examined_positive Nottingham_prognostic_in…¹
-##   <chr>           <dbl>                         <dbl>                      <dbl>
+##   &lt;chr&gt;           &lt;dbl&gt;                         &lt;dbl&gt;                      &lt;dbl&gt;
 ## 1 Negative         28.3                          2.62                       4.60
 ## 2 Positive         25.4                          1.73                       3.86
-## 3 <NA>             35                            1.70                       2.26
-## # ℹ abbreviated name: ¹​Nottingham_prognostic_index
-```
-</details>--->
+## 3 &lt;NA&gt;             35                            1.70                       2.26
+## # ℹ abbreviated name: ¹​Nottingham_prognostic_index</code></pre>
 </div>
 <div class="exercise">
 <ol start="3" style="list-style-type: decimal">
 <li>Count the numbers of mutations for each gene and display the top 10
 most frequently mutated genes using metabric_mutations.csv data.</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-```r
-mutations <- read_csv("data/metabric_mutations.csv")
-mutations %>%
-  count(Gene) %>%
-  arrange(desc(n)) %>%
-  head(10)
-```
-
-```
-## # A tibble: 10 × 2
+<pre class="r"><code>mutations &lt;- read_csv(&quot;data/metabric_mutations.csv&quot;)
+mutations %&gt;%
+  count(Gene) %&gt;%
+  arrange(desc(n)) %&gt;%
+  head(10)</code></pre>
+<pre><code>## # A tibble: 10 × 2
 ##    Gene       n
-##    <chr>  <int>
+##    &lt;chr&gt;  &lt;int&gt;
 ##  1 PIK3CA  1122
 ##  2 TP53     897
 ##  3 AHNAK2   859
@@ -1559,9 +1542,7 @@ mutations %>%
 ##  7 MAP3K1   372
 ##  8 AHNAK    327
 ##  9 GATA3    301
-## 10 DNAH11   300
-```
-</details>--->
+## 10 DNAH11   300</code></pre>
 </div>
 <div class="exercise">
 <ol start="4" style="list-style-type: decimal">
@@ -1569,19 +1550,13 @@ mutations %>%
 genes with mutations occurring in specific regions of the gene. Find out
 which codons of PIK3CA are most commonly mutated.</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-```r
-mutations %>%
-  filter(Gene == "PIK3CA") %>%
-  count(Codon) %>%
-  arrange(desc(n))
-```
-
-```
-## # A tibble: 88 × 2
+<pre class="r"><code>mutations %&gt;%
+  filter(Gene == &quot;PIK3CA&quot;) %&gt;%
+  count(Codon) %&gt;%
+  arrange(desc(n))</code></pre>
+<pre><code>## # A tibble: 88 × 2
 ##    Codon     n
-##    <dbl> <int>
+##    &lt;dbl&gt; &lt;int&gt;
 ##  1  1047   471
 ##  2   545   192
 ##  3   542   101
@@ -1592,9 +1567,7 @@ mutations %>%
 ##  8   111    13
 ##  9  1043    12
 ## 10   108    10
-## # ℹ 78 more rows
-```
-</details>--->
+## # ℹ 78 more rows</code></pre>
 </div>
 <div class="exercise">
 <ol start="5" style="list-style-type: decimal">
@@ -1603,18 +1576,12 @@ mutations %>%
 unclassified. The boxplots should be colored according to the
 group.</li>
 </ol>
-<!---<details><summary>Answer</summary>
-
-```r
-metabric %>% 
-  filter(!is.na(`3-gene_classifier`)) %>% 
+<pre class="r"><code>metabric %&gt;% 
+  filter(!is.na(`3-gene_classifier`)) %&gt;% 
 ggplot( mapping=aes(x=`3-gene_classifier`, y=Age_at_diagnosis, colour=`3-gene_classifier`)) +
   geom_boxplot() +
-  scale_colour_discrete(name="3 gene classifier")
-```
-
-<img src="week6_files/figure-html/unnamed-chunk-49-1.png" width="672" />
-</details>--->
+  scale_colour_discrete(name=&quot;3 gene classifier&quot;)</code></pre>
+<p><img src="week6_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
 </div>
 </div>
 

@@ -13,7 +13,7 @@
 
 <title>Week 7 – Restructuring data for analysis</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -35,8 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -414,15 +414,15 @@ cosmetic.</p>
 which get loaded as part of the tidyverse.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.1     ✔ readr     2.1.4
+## ✔ dplyr     1.1.2     ✔ readr     2.1.4
 ## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.1     ✔ tibble    3.2.1
+## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
 ## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
 ## ✔ purrr     1.0.1     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the ]8;;http://conflicted.r-lib.org/conflicted package]8;; to force all conflicts to become errors</code></pre>
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <hr />
 </div>
 <div id="tidy-data" class="section level1">
@@ -991,6 +991,7 @@ used in the treatment of estrogen receptor-positive breast cancer.</p>
 href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5998130/bin/41467_2018_4619_MOESM11_ESM.xlsx">supplementary
 data 9</a>.</p>
 <pre class="r"><code>library(readxl)
+download.file(url=&quot;https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/41467_2018_4619_MOESM11_ESM.xlsx&quot;,destfile = &quot;data/41467_2018_4619_MOESM11_ESM.xlsx&quot;)
 protein_levels &lt;- read_excel(&quot;data/41467_2018_4619_MOESM11_ESM.xlsx&quot;, skip = 1)
 select(protein_levels, `Uniprot Accession`, `Gene Name`, ends_with(&quot;rep01&quot;))</code></pre>
 <pre><code>## # A tibble: 7,943 × 6

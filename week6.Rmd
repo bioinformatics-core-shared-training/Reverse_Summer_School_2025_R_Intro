@@ -887,7 +887,6 @@ In this session we have covered the following:
 :::exercise
 1. Compute the average survival time for the ER-negative and ER-positive groups. Note that such a comparison only makes sense for those patients that are deceased so apply the appropriate filter first. Add a column for the number of patients in each group. You can use "metabric_clinical_data.csv" file.
 
-<!---<details><summary>Answer</summary>
 ```{r ex_1, purl=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 metabric <- read_csv("data/metabric_clinical_data.csv")
@@ -897,14 +896,12 @@ metabric %>%
   summarize(`Average survival time` = mean(Survival_time), N = n())
 ```
 
-</details>--->
 :::
 
 
 :::exercise
 2. Compute the average tumour size, number of positive lymph nodes and Nottingham prognostic index within ER-negative and ER-positive patients.
 
-<!---<details><summary>Answer</summary>
 ```{r ex_2, purl=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 metabric <- read_csv("data/metabric_clinical_data.csv")
@@ -912,7 +909,6 @@ metabric %>%
   group_by(ER_status) %>%
   summarize_at(vars(Tumour_size, Lymph_nodes_examined_positive, Nottingham_prognostic_index), mean, na.rm = TRUE)
 ```
-</details>--->
 :::
 
 
@@ -920,7 +916,6 @@ metabric %>%
 :::exercise
 3. Count the numbers of mutations for each gene and display the top 10 most frequently mutated genes using metabric_mutations.csv data.
 
-<!---<details><summary>Answer</summary>
 ```{r ex_3, purl=FALSE, message=FALSE, warning=FALSE}
 mutations <- read_csv("data/metabric_mutations.csv")
 mutations %>%
@@ -928,7 +923,6 @@ mutations %>%
   arrange(desc(n)) %>%
   head(10)
 ```
-</details>--->
 :::
 
 
@@ -936,21 +930,18 @@ mutations %>%
 :::exercise
 4. In breast cancers, PIK3CA and TP53 are the most commonly mutated genes with mutations occurring in specific regions of the gene. Find out which codons of PIK3CA are most commonly mutated.
 
-<!---<details><summary>Answer</summary>
 ```{r ex_4, purl=FALSE, message=FALSE, warning=FALSE}
 mutations %>%
   filter(Gene == "PIK3CA") %>%
   count(Codon) %>%
   arrange(desc(n))
 ```
-</details>--->
 :::
 
 
 :::exercise
 5. Use boxplots to illustrate the distribution of diagnosis age for 3-gene classification groups of patients. Remove any patients who are unclassified. The boxplots should be colored according to the group.
 
-<!---<details><summary>Answer</summary>
 ```{r}
 metabric %>% 
   filter(!is.na(`3-gene_classifier`)) %>% 
@@ -958,6 +949,5 @@ ggplot( mapping=aes(x=`3-gene_classifier`, y=Age_at_diagnosis, colour=`3-gene_cl
   geom_boxplot() +
   scale_colour_discrete(name="3 gene classifier")
 ```
-</details>--->
 :::
 
