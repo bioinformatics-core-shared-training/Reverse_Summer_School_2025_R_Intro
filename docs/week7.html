@@ -1530,6 +1530,15 @@ of the <strong>tidyr</strong> package, named <code>who</code>.</p>
 ## #   new_sn_m4554 &lt;dbl&gt;, new_sn_m5564 &lt;dbl&gt;, new_sn_m65 &lt;dbl&gt;, …</code></pre>
 <p>What are the variables in this data set?</p>
 <p>Create a bulleted list with your answer here.</p>
+<ul>
+<li>country</li>
+<li>iso2 and iso3 country codes</li>
+<li>year</li>
+<li>gender</li>
+<li>age group</li>
+<li>diagnosis method</li>
+<li>number of cases of tuberculosis</li>
+</ul>
 <p><em>Hint: see the help page for <code>who</code> to understand the
 meaning of the column headings.</em></p>
 <p><em>Hint: the Markdown Quick Reference available from the Help menu
@@ -1544,6 +1553,62 @@ values for a compound variable, i.e. multiple variables joined together
 separated values in these column headings.</p>
 <p>Also remove all rows with missing values for the number of
 tuberculosis cases.</p>
+<pre class="r"><code># the hints below lead to the following solution
+who_tidy &lt;- who %&gt;%
+  pivot_longer(new_sp_m014:newrel_f65, names_to = &quot;group&quot;, values_to = &quot;cases&quot;) %&gt;%
+  mutate(group = str_remove(group, &quot;new_&quot;)) %&gt;%
+  mutate(group = str_remove(group, &quot;new&quot;)) %&gt;%
+  separate(group, into = c(&quot;diagnosis&quot;, &quot;group&quot;), sep = &quot;_&quot;) %&gt;%
+  separate(group, into = c(&quot;gender&quot;, &quot;age_group&quot;), sep = 1) %&gt;%
+  filter(!is.na(cases))
+
+# this is how it could be done removing missing values as part of the pivot and
+# using a more sophisticated regular expression to remove the new_? prefix in a
+# single step
+who_tidy &lt;- who %&gt;%
+  pivot_longer(starts_with(&quot;new&quot;), names_to = &quot;group&quot;, values_to = &quot;cases&quot;, values_drop_na = TRUE) %&gt;%
+  mutate(group = str_remove(group, &quot;^new_?&quot;)) %&gt;%
+  separate(group, into = c(&quot;diagnosis&quot;, &quot;group&quot;), sep = &quot;_&quot;) %&gt;%
+  separate(group, into = c(&quot;gender&quot;, &quot;age_group&quot;), sep = 1)
+
+# alternative using str_replace_all to get groups into suitable state for single
+# separate operation
+who_tidy &lt;- who %&gt;%
+  pivot_longer(starts_with(&quot;new&quot;), names_to = &quot;group&quot;, values_to = &quot;cases&quot;, values_drop_na = TRUE) %&gt;%
+  mutate(group = str_replace_all(group, c(&quot;newrel&quot; = &quot;rel&quot;, &quot;new_&quot; = &quot;&quot;, &quot;_m&quot; = &quot;_m_&quot;, &quot;_f&quot; = &quot;_f_&quot;))) %&gt;%
+  separate(group, into = c(&quot;diagnosis&quot;, &quot;gender&quot;, &quot;age_group&quot;), sep = &quot;_&quot;)
+
+# alternative using names_pattern in pivot_longer (need to know regular
+# expressions for this) avoiding need for separate operation
+who_tidy &lt;- who %&gt;%
+  pivot_longer(
+    starts_with(&quot;new&quot;),
+    names_pattern = &quot;new_?(.*)_(.)(.*)&quot;,
+    names_to = c(&quot;diagnosis&quot;, &quot;gender&quot;, &quot;age_group&quot;),
+    values_to = &quot;cases&quot;,
+    values_drop_na = TRUE
+  )
+
+# convert the age group into a factor and change the levels to a more
+# human-readable form
+# (could also use factor or recode_factor for this)
+who_tidy &lt;- mutate(who_tidy, age_group = fct_recode(age_group, &quot;0-14&quot; = &quot;014&quot;, &quot;15-24&quot; = &quot;1524&quot;, &quot;25-34&quot; = &quot;2534&quot;, &quot;35-44&quot; = &quot;3544&quot;, &quot;45-54&quot; = &quot;4554&quot;, &quot;55-64&quot; = &quot;5564&quot;, &quot;65+&quot; = &quot;65&quot;))
+
+who_tidy</code></pre>
+<pre><code>## # A tibble: 76,046 × 8
+##    country     iso2  iso3   year diagnosis gender age_group cases
+##    &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;fct&gt;     &lt;dbl&gt;
+##  1 Afghanistan AF    AFG    1997 sp        m      0-14          0
+##  2 Afghanistan AF    AFG    1997 sp        m      15-24        10
+##  3 Afghanistan AF    AFG    1997 sp        m      25-34         6
+##  4 Afghanistan AF    AFG    1997 sp        m      35-44         3
+##  5 Afghanistan AF    AFG    1997 sp        m      45-54         5
+##  6 Afghanistan AF    AFG    1997 sp        m      55-64         2
+##  7 Afghanistan AF    AFG    1997 sp        m      65+           0
+##  8 Afghanistan AF    AFG    1997 sp        f      0-14          5
+##  9 Afghanistan AF    AFG    1997 sp        f      15-24        38
+## 10 Afghanistan AF    AFG    1997 sp        f      25-34        36
+## # ℹ 76,036 more rows</code></pre>
 <p><em>Hint 1: the column headers from new_sp_m014 onwards contain a
 superfluous prefix “new” or “new_” that you will want to remove; this
 can be done using one of the stringr functions in a single step if you
@@ -1568,6 +1633,23 @@ small subset of the WHO tuberculosis data set, from your tidy version of
 ## 4 Brazil       2000  80488
 ## 5 China        1999 212258
 ## 6 China        2000 213766</code></pre>
+<pre class="r"><code>who_tidy %&gt;%
+  filter(country %in% c(&quot;Afghanistan&quot;, &quot;Brazil&quot;, &quot;China&quot;)) %&gt;%
+  filter(year %in% c(1999, 2000)) %&gt;%
+  group_by(country, year) %&gt;%
+  summarise(cases = sum(cases))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;country&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 6 × 3
+## # Groups:   country [3]
+##   country      year  cases
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Afghanistan  1999    745
+## 2 Afghanistan  2000   2666
+## 3 Brazil       1999  37737
+## 4 Brazil       2000  80488
+## 5 China        1999 212258
+## 6 China        2000 213766</code></pre>
 <p><em>Hint: this will involve some filtering, grouping and
 summarization.</em></p>
 <hr />
@@ -1576,6 +1658,16 @@ tuberculosis</strong></p>
 <p>Create a time series plot showing the number of tuberculosis cases in
 the United Kingdom with separate lines for each age group. The year
 should be on the x axis and the number of cases on the y axis.</p>
+<pre class="r"><code>who_tidy &lt;- who_tidy %&gt;%
+  group_by(country, year, age_group) %&gt;%
+  summarise(cases = sum(cases))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;country&#39;, &#39;year&#39;. You can override using
+## the `.groups` argument.</code></pre>
+<pre class="r"><code>who_tidy %&gt;%
+  filter(country == &quot;United Kingdom of Great Britain and Northern Ireland&quot;) %&gt;%
+  ggplot() +
+  geom_line(mapping = aes(x = year, y = cases, colour = age_group))</code></pre>
+<p><img src="week7_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
 <p><em>Hint: we’re not distinguishing between diagnoses and genders in
 this plot so you’ll need to sum the numbers of cases for each country,
 year and age group.</em></p>
@@ -1585,49 +1677,13 @@ information for France, Brazil, Japan and Uganda.</p>
 scales. Look at help page for <code>facet_wrap()</code> and try changing
 the <code>scales</code> argument so we can more easily compare the
 overall patterns between countries.</p>
+<pre class="r"><code>who_tidy %&gt;%
+  filter(country %in% c(&quot;France&quot;, &quot;Brazil&quot;, &quot;Japan&quot;, &quot;Uganda&quot;)) %&gt;%
+  ggplot() +
+  geom_line(mapping = aes(x = year, y = cases, colour = age_group)) +
+  facet_wrap(vars(country), scales = &quot;free_y&quot;)</code></pre>
+<p><img src="week7_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
 <hr />
-<p><strong>4. Extension: Mutual exclusivity of ERBB2 amplifications and
-AKT1 mutations</strong></p>
-<p><em>Seriously, stop here if you haven’t got the time or inclination
-to attempt this final, bonus extension exercise .</em></p>
-<p>In the METABRIC 2016 paper, Pereira <em>et al.</em> (<a
-href="https://www.ncbi.nlm.nih.gov/pubmed/27161491">Nature
-Communications 7:11479, 2016</a>) considered the association between
-somatic mutations, exploring patterns of co-mutation and mutual
-exclusivity. One of their findings was the mutual exclusivity between
-AKT1 mutations and amplification of ERBB2. For the final exercise we
-will reproduce this observation.</p>
-<p>We’ll first need to read the mutation data into R and we’re only
-interested in those cases where the patient tumour sample was sequenced
-so we’ll read those in as well.</p>
-<pre class="r"><code>mutations &lt;- read_csv(&quot;data/metabric_mutations.csv&quot;)
-cases_sequenced &lt;- read_tsv(&quot;data/cases_nat_comm_2016.txt&quot;, col_names = &quot;Patient_ID&quot;)</code></pre>
-<p>Filter the mutations table to only contain the non-silent mutations
-in AKT1.</p>
-<p>Add a logical column to the <code>cases_sequenced</code> data frame
-called <code>AKT1_mutated</code> that indicates whether there was a
-non-silent AKT1 mutation detected in each patient tumour sample.</p>
-<p>Count the number of patients with and without a non-silent AKT1
-mutation.</p>
-<p><em>Hint: use a <code>mutate()</code> with
-<code>%in%</code>.</em></p>
-<p>Filter the copy number states table to only include entries for
-ERBB2.</p>
-<p>Count the number of samples for each ERBB2 copy number state.</p>
-<p>Join the ERBB2 copy number state table to the table we created before
-identifying which patient has an AKT1 mutation. The combined data frame
-should only contain entries for patients that have been sequenced and
-for which copy number data are available.</p>
-<p>Count the numbers of patients with different combinations of ERBB2
-copy number state and mutated AKT1.</p>
-<p>Does this reflect the observation of mutual exclusivity of ERBB2
-amplification and AKT1 mutations?</p>
-<p>Create a logical column called <code>ERBB2_amplified</code> indicated
-which patient samples have amplifications (copy number state 2) in
-ERBB2.</p>
-<p>Create a 2-by-2 contingency table using <code>table()</code> and the
-<code>AKT1_mutated</code> and <code>ERBB2_amplified</code> columns.</p>
-<p>Perform a Fisher exact test on this contingency table.</p>
 </div>
 
 
