@@ -875,6 +875,13 @@ What are the variables in this data set?
 
 Create a bulleted list with your answer here.
 
+* country
+* iso2 and iso3 country codes
+* year
+* gender
+* age group
+* diagnosis method
+* number of cases of tuberculosis
 
 
 _Hint: see the help page for `who` to understand the meaning of the column headings._
@@ -893,6 +900,48 @@ columns for each of the separated values in these column headings.
 Also remove all rows with missing values for the number of tuberculosis cases.
 
 ```{r}
+# the hints below lead to the following solution
+who_tidy <- who %>%
+  pivot_longer(new_sp_m014:newrel_f65, names_to = "group", values_to = "cases") %>%
+  mutate(group = str_remove(group, "new_")) %>%
+  mutate(group = str_remove(group, "new")) %>%
+  separate(group, into = c("diagnosis", "group"), sep = "_") %>%
+  separate(group, into = c("gender", "age_group"), sep = 1) %>%
+  filter(!is.na(cases))
+
+# this is how it could be done removing missing values as part of the pivot and
+# using a more sophisticated regular expression to remove the new_? prefix in a
+# single step
+who_tidy <- who %>%
+  pivot_longer(starts_with("new"), names_to = "group", values_to = "cases", values_drop_na = TRUE) %>%
+  mutate(group = str_remove(group, "^new_?")) %>%
+  separate(group, into = c("diagnosis", "group"), sep = "_") %>%
+  separate(group, into = c("gender", "age_group"), sep = 1)
+
+# alternative using str_replace_all to get groups into suitable state for single
+# separate operation
+who_tidy <- who %>%
+  pivot_longer(starts_with("new"), names_to = "group", values_to = "cases", values_drop_na = TRUE) %>%
+  mutate(group = str_replace_all(group, c("newrel" = "rel", "new_" = "", "_m" = "_m_", "_f" = "_f_"))) %>%
+  separate(group, into = c("diagnosis", "gender", "age_group"), sep = "_")
+
+# alternative using names_pattern in pivot_longer (need to know regular
+# expressions for this) avoiding need for separate operation
+who_tidy <- who %>%
+  pivot_longer(
+    starts_with("new"),
+    names_pattern = "new_?(.*)_(.)(.*)",
+    names_to = c("diagnosis", "gender", "age_group"),
+    values_to = "cases",
+    values_drop_na = TRUE
+  )
+
+# convert the age group into a factor and change the levels to a more
+# human-readable form
+# (could also use factor or recode_factor for this)
+who_tidy <- mutate(who_tidy, age_group = fct_recode(age_group, "0-14" = "014", "15-24" = "1524", "25-34" = "2534", "35-44" = "3544", "45-54" = "4554", "55-64" = "5564", "65+" = "65"))
+
+who_tidy
 
 ```
 
@@ -912,7 +961,11 @@ select(table1, 1:3)
 ```
 
 ```{r}
-
+who_tidy %>%
+  filter(country %in% c("Afghanistan", "Brazil", "China")) %>%
+  filter(year %in% c(1999, 2000)) %>%
+  group_by(country, year) %>%
+  summarise(cases = sum(cases))
 ```
 
 _Hint: this will involve some filtering, grouping and summarization._
@@ -926,7 +979,14 @@ Kingdom with separate lines for each age group. The year should be on the x axis
 and the number of cases on the y axis.
 
 ```{r}
+who_tidy <- who_tidy %>%
+  group_by(country, year, age_group) %>%
+  summarise(cases = sum(cases))
 
+who_tidy %>%
+  filter(country == "United Kingdom of Great Britain and Northern Ireland") %>%
+  ggplot() +
+  geom_line(mapping = aes(x = year, y = cases, colour = age_group))
 ```
 
 _Hint: we're not distinguishing between diagnoses and genders in this plot so you'll need to sum the numbers of cases for each country, year and age group._
@@ -939,7 +999,11 @@ help page for `facet_wrap()` and try changing the `scales` argument so we can
 more easily compare the overall patterns between countries.
 
 ```{r}
-
+who_tidy %>%
+  filter(country %in% c("France", "Brazil", "Japan", "Uganda")) %>%
+  ggplot() +
+  geom_line(mapping = aes(x = year, y = cases, colour = age_group)) +
+  facet_wrap(vars(country), scales = "free_y")
 ```
 
 ---
@@ -967,7 +1031,8 @@ cases_sequenced <- read_tsv("data/cases_nat_comm_2016.txt", col_names = "Patient
 Filter the mutations table to only contain the non-silent mutations in AKT1.
 
 ```{r}
-
+akt1_mutations <- mutations %>%
+  filter(Gene == "AKT1", Variant_Classification != "Silent")
 ```
 
 Add a logical column to the `cases_sequenced` data frame called
@@ -977,7 +1042,9 @@ detected in each patient tumour sample.
 Count the number of patients with and without a non-silent AKT1 mutation.
 
 ```{r}
-
+cases_sequenced <- cases_sequenced %>%
+  mutate(AKT1_mutated = Patient_ID %in% akt1_mutations$Patient_ID)
+count(cases_sequenced, AKT1_mutated)
 ```
 
 _Hint: use a `mutate()` with `%in%`._
@@ -987,7 +1054,10 @@ Filter the copy number states table to only include entries for ERBB2.
 Count the number of samples for each ERBB2 copy number state.
 
 ```{r}
-
+erbb2_copy_number_states <- copy_number_states %>%
+  filter(Hugo_Symbol == "ERBB2") %>%
+  select(Sample, ERBB2_copy_number_state = Copy_number_state)
+count(erbb2_copy_number_states, ERBB2_copy_number_state)
 ```
 
 Join the ERBB2 copy number state table to the table we created before
@@ -996,14 +1066,15 @@ only contain entries for patients that have been sequenced and for which copy
 number data are available.
 
 ```{r}
-
+erbb2_akt1_association <- inner_join(cases_sequenced, erbb2_copy_number_states, by = c("Patient_ID" = "Sample"))
+erbb2_akt1_association
 ```
 
 Count the numbers of patients with different combinations of ERBB2 copy number
 state and mutated AKT1.
 
 ```{r}
-
+count(erbb2_akt1_association, ERBB2_copy_number_state, AKT1_mutated)
 ```
 
 Does this reflect the observation of mutual exclusivity of ERBB2 amplification
@@ -1013,19 +1084,23 @@ Create a logical column called `ERBB2_amplified` indicated which patient samples
 have amplifications (copy number state 2) in ERBB2.
 
 ```{r}
-
+erbb2_akt1_association <- mutate(erbb2_akt1_association, ERBB2_amplified = ERBB2_copy_number_state == "amplification")
+erbb2_akt1_association
 ```
 
 Create a 2-by-2 contingency table using `table()` and the `AKT1_mutated` and
 `ERBB2_amplified` columns.
 
 ```{r}
-
+contingency_table <- erbb2_akt1_association %>%
+  select(ERBB2_amplified, AKT1_mutated) %>%
+  table()
+contingency_table
 ```
 
 Perform a Fisher exact test on this contingency table.
 
 ```{r}
-
+fisher.test(contingency_table)
 ```
 
