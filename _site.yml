@@ -1,24 +1,10 @@
 name: "Bitesize-R"
 navbar:
-  title: "<img style=\"width: 120px; float: left; margin-top: 0px; margin-right: 20px;\" src=\"images/CRUK_CI_logo.png\"/>R for Biologists&nbsp;&nbsp;&nbsp;"
+  title: "<img style=\"width: 120px; float: left; margin-top: 0px; margin-right: 20px;\" src=\"images/Cambridge_Institute-light-background-digital_only.png\" />R for Biologists"
   left:
-    - text: "Contents"
+    - text: "Home"
+      icon: fa-home
       href: index.html
-      menu:
-        - text: "Week 1 - An introduction to RStudio, R objects, data types, functions and vectors"
-          href: week1.html
-        - text: "Week 2 - An introduction to other data structures"
-          href: week2.html
-        - text: "Week 3 - Working with data in R"
-          href: week3.html
-        - text: "Week 4 - Data visualization with ggplot2"
-          href: week4.html
-        - text: "Week 5 - Data manipulation using dplyr"
-          href: week5.html
-        - text: "Week 6 - Grouping and combining data"
-          href: week6.html
-        - text: "Week 7 - Restructuring data for analysis"
-          href: week7.html
   right:
     - icon: fa-github fa-lg
       href: https://github.com/bioinformatics-core-shared-training/Bitesize-R

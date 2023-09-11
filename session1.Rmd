@@ -1,189 +1,62 @@
 ---
-title: "Data types and structures"
+title: "Session 1: Data types and structures"
 ---
 
 > #### Learning objectives
 >
-> * Install R and RStudio
-> * Install the tidyverse collection of R packages
-> * To introduce Rstudio that we will be using, to write R scripts, in this course
-> * To introduce data types and data structures
-
-
-
-# Installing software you will need
-
-Before starting this course you will need to ensure that your computer is set up with the required software.
-
-If you have any difficulty installing any of this software then please contact one of the trainers for help.
-
-
-
-# R and RStudio
-
-**R** and **RStudio** are separate downloads and installations.
-
-**R** is the underlying statistical computing environment. The base R system and a very large collection of packages that give you access to a huge range of statistical and analytical functionality are available from
-[CRAN](https://cran.r-project.org), the Comprehensive R Archive Network.
-
-However, using R alone is no fun. **RStudio** is a graphical integrated
-development environment (IDE) that makes using R much easier and more
-interactive. You need to install R before you install RStudio.
-
-On this course we will be making use of a brilliant collection of packages designed for data science called the **`tidyverse`** that make it much easierand more fun to work with your data. After installing R and RStudio, follow the instructions at the bottom of this page to install the `tidyverse`.
-
-
-
-## Windows
-
-#### If you already have R and RStudio installed
-
-* Open RStudio, and click on "Help" > "Check for updates". If a new version is
-  available, quit RStudio, and download the latest version for RStudio.
-
-To check which version of R you are using, start RStudio and the first thing
-that appears in the console indicates the version of R you are running.
-Alternatively, you can type `sessionInfo()`, which will also display which
-version of R you are running. Go on the
-[CRAN website](https://cran.r-project.org/bin/windows/base/) and check whether
-a more recent version is available. If so, please download and install it. You
-can [check here](https://cran.r-project.org/bin/windows/base/rw-FAQ.html#How-do-I-UNinstall-R_003f) for more information on how to remove old versions from your system if you wish to do so.
-
-#### If you don't have R and RStudio installed
-
-* Download R from the [CRAN website](https://cran.r-project.org/bin/windows/base/release.htm).
-* Run the `.exe` file that was just downloaded
-* Go to the [RStudio download page](https://posit.co/download/rstudio-desktop/#download)
-* Under *Installers* select **RStudio-2023.xx.y-zzz.EXE - Windows 10/11** (where x, y, and z represent version numbers)
-* Double click the file to install it
-* Once it's installed, open RStudio to make sure it works and you don't get any error messages.
-
-
-
-## macOS
-
-#### If you already have R and RStudio installed
-
-* Open RStudio, and click on "Help" > "Check for updates". If a new version is available, quit RStudio, and download the latest version for RStudio.
-
-To check the version of R you are using, start RStudio and the first thing that
-appears on the terminal indicates the version of R you are running.
-Alternatively, you can type `sessionInfo()`, which will also display which
-version of R you are running. Go on the
-[CRAN website](https://cran.r-project.org/bin/macosx/) and check whether a more
-recent version is available. If so, please download and install it.
-
-#### If you don't have R and RStudio installed
-
-* The first thing you should do is check what chip your Mac has
-* How to check chip type on Mac? Click on apple logo on top left, then chick on About This Mac.
-  
-![Intel chip](./images/mac_intel.jpg)
-
-![M chip](./images/Mac_Mchip.png)
-
-
-
-* Download R from
-  the [CRAN website](https://cran.r-project.org/bin/macosx/).
-  
-![](./images/R_mac_types.jpg)
-
-* Select appropriate R `.pkg` file for the latest R version
-  * For M type chip: download R-x.y.z-arm64.pkg (where x, y, and z represent version numbers)
-  * For inter chip: download R-x.y.z.pkg (where x, y, and z represent version numbers) 
-* Double click on the downloaded file to install R
-* It is also a good idea to install [XQuartz](https://www.xquartz.org/) (needed
-  by some packages)
-* Go to the [RStudio download page](https://posit.co/download/rstudio-desktop/#download)
-* Under *Installers* select **RStudio-2023.xx.y-zzz.DMG - Mac OS 11+ (64-bit)** (where x, y, and z represent version numbers)
-* Double click the file to install RStudio
-* Once it's installed, open RStudio to make sure it works and you don't get any error messages.
-
-
-
-## Linux
-
-* Follow the instructions for your distribution
-  from [CRAN](https://cloud.r-project.org/bin/linux), they provide information
-  to get the most recent version of R for common distributions. For most
-  distributions, you could use your package manager (e.g., for Debian/Ubuntu run
-  `sudo apt-get install r-base`, and for Fedora `sudo yum install R`), but we
-  don't recommend this approach as the versions provided by this are
-  usually out of date. In any case, make sure you have at least R 3.3.1.
-* Go to the
-  [RStudio download page](https://posit.co/download/rstudio-desktop/#download)
-* Under *Installers* select the version that matches your distribution, and
-  install it with your preferred method (e.g., with Debian/Ubuntu `sudo dpkg -i RSTUDIO-2023.xx.y-zzz-AMD64.DEB` at the terminal).
-* Once it's installed, open RStudio to make sure it works and you don't get any error messages.
-
-
-# Tidyverse
-
-After installing R and RStudio, please install the `tidyverse` packages.
-
-* After starting RStudio, at the console type:
-  `install.packages("tidyverse")`
-  (look for the 'Console' tab and type at the `>` prompt)
-
-* You can also do this by going to Tools -> Install Packages and typing the names of the packages separated by a comma.
+> * Become familiar with using RStudio for writing and running R scripts 
+> * Understand the basics of the different data types and data structures used in R
+> * Learn how to use simple functions
+> * Understand the concept of missing data and how it is handled in R
 
 # Introduction to R and RStudio
 
 # Why learn R?
 
-* R involves creating & using scripts which makes the steps you used in your analysis clear and can be inspected by someone else for feedback and error-checking.
-
-* R code is great for reproducibility. An increasing number of journals and funding agencies expect analyses to be reproducible, so knowing R will give you an edge with these requirements.
-
-* R integrates with other tools to generate manuscripts from your code.
-This document (RMarkdown a .Rmd file) is a case in point.
-
-* R is interdisciplinary and extensible and has thousands of installable packages to extend its capabilities. R has packages for image analysis, GIS, time series, population genetics, and a lot more.
-
-* R scales well to work on data of all shapes and sizes.
-
-* R can connect to spreadsheets, databases, and many other data formats, on your computer or on the web.
-
-* R produces high-quality graphics suitable for publication in journals or the web.
-
-* R has a large and welcoming community - Thousands use R daily and many of them are willing to help you through websites such as Stack Overflow or the RStudio community.
-
+* R involves creating & using scripts which makes the steps you used in your
+  analysis clear and can be inspected by someone else for feedback and
+  error-checking.  
+* R code is great for reproducibility. An increasing number of journals and
+  funding agencies expect analyses to be reproducible, so knowing R will give
+  you an edge with these requirements.  
+* R integrates with other tools to generate manuscripts from your code.  This
+  document (RMarkdown a .Rmd file) is a case in point.  
+* R is interdisciplinary and extensible and has thousands of installable
+  packages to extend its capabilities. R has packages for image analysis, GIS,
+  time series, population genetics, and a lot more.  
+* R scales well to work on data of all shapes and sizes.  
+* R can connect to spreadsheets, databases, and many other data formats, on
+  your computer or on the web.  
+* R produces high-quality graphics suitable for publication in journals or the
+  web.  
+* R has a large and welcoming community - Thousands use R daily and many of
+  them are willing to help you through websites such as Stack Overflow or the
+  RStudio community.  
 * Not only is R free, but it is also open-source and cross-platform.
 
 ---
 
-# Rstudio  a brief tour
+# RStudio  a brief tour
 
-Rstudio provides us with a friendly interface to the R statistical progrmming language.
+RStudio provides us with a friendly interface to the R statistical programming language.
 It consists of four main "Panes". These can be re-sized and moved around to suit how
 you like to work.
 
-<img src="images/Rstudioataglance.png" alt="Rstudio screenshot" width="90%">
-
-## Editing pane
-
-By default the top left-hand pane is one for creating, editing & running R scripts.
-
-<img src="images/Rstudio_scripting.png" alt="Rstudio edit pane screenshot" width="90%">
-
-A script is an R program that you have written. A good practice is for that script to
-perform only one role in your analysis workflow and so you may have several R scripts which you call, in a particular sequence, to analyse your data.
-
-As you will see, a script is basically a text file that contains R commands and
-(ideally) comments to explain what the codes function is (as a documentation process).
-
-As well as R scripts, there are many types of Rstudio document including Markdown files which we will use in the teaching of this course. These can provide interactive workbooks or pdf and web documents to name but a few possible outcomes.
+<img src="images/RStudioataglance.png" alt="RStudio screenshot" width="90%">
 
 ## Console
 
-Coming down the screen to the bottom left-hand pane we find the console window. This is where we can find output produced by running our R scripts.
+By default, in the bottom left-hand pane we find the console window. This is the actual
+interface for the R programme. 
 
-<img src="images/Rstudio_console.png" alt="Rstudio screenshot" width="90%">
+We can type commands directly into the console and run them by pressing
+`Enter`.
 
-We can also try out snippets of R code here. Those of you who have only used graphical interfaces like Windows or MacOS where you click on commands using a mouse may find this aspect of R somewhat different. We type in commands to R using the command line.
+<img src="images/RStudio_console.png" alt="RStudio screenshot" width="50%">
 
-This area can also be used like a calculator. Let's just type in something like `23 + 45` followed by the return key and see what happens. You should get the following:
+So, this area could be used like a calculator. Let's just type in something like
+`23 + 45` followed by the `Enter` key and see what happens. You should get the
+following:
 
 ```
 > 23 + 45
@@ -192,8 +65,9 @@ This area can also be used like a calculator. Let's just type in something like 
 
 Now 68 is clearly the answer but what is that 1 in brackets?
 
-Here is another example to explain. If we type `1:36` and press enter, what happens?
-R generates output counting from 1 to 36 but cannot fit all the output on one line and so starts another like this:
+Here is another example to explain. If we type `1:36` and press enter, what
+happens?  R generates output counting from 1 to 36 but cannot fit all the
+output on one line and so starts another like this:
 
 ```
 > 1:36
@@ -207,7 +81,10 @@ depends on the width of your console pane and the font size. Try creating a
 larger sequence of numbers, e.g. `1:100`, if all 36 numbers fit on a single line
 in your case.
 
-This is just R helping us to keep tabs on which number we are looking at. `[1]` denotes that the line starts with the first result and the `[26]` denotes that this line starts with the 26th number. Let's try another one and generate a sequence incrementing in steps of 2:
+This is just R helping us to keep tabs on which number we are looking at. `[1]`
+denotes that the line starts with the first result and the `[26]` denotes that
+this line starts with the 26th number. Let's try another one and generate a
+sequence incrementing in steps of 2:
 
 ```
 > 1:36 * 2
@@ -217,67 +94,117 @@ This is just R helping us to keep tabs on which number we are looking at. `[1]` 
 
 There are other tabs on this pane but we shall not be covering these on this course.
 
+
+## Editing pane
+
+Above the Console, in the top left-hand pane is a text editor for creating,
+editing & running R scripts. Rather than simply typing our commands directly into
+the console, we can type them here as an R script.  As you will see, a script
+is basically a text file that contains R commands and comments to explain what
+the code does.
+
+We send the commands typed here to the console, either using the `Run` button
+in the toolbar or by pressing `Ctrl + Enter` (`Cmd + Enter` on a Mac).  
+
+The advantage of this is that our commands are not lost, we can save the text
+file for future use and it is easier to make changes to our code.
+
+<img src="images/RStudio_scripting.png" alt="RStudio edit pane screenshot" width="50%">
+
+A script is an R program that you have written. Good practice is for each 
+script to perform only one role in your analysis workflow and so you may have
+several R scripts which you call, in a particular sequence, to analyse your
+data.
+
+As well as R scripts, there are many types of RStudio document including
+Markdown files which we will use in the teaching of this course. These can
+provide interactive workbooks or pdf and web documents to name but a few
+possible outcomes.
+
 ## Environment
 
-Next we move to the top right-hand corner pane. Here we have even more tabs (of which we will only consider two Environment and History).
+Next we move to the top right-hand corner pane. Here we have even more tabs (of
+which we will only consider two Environment and History).
 
-<img src="images/Rstudio_env.png" alt="Rstudio screenshot" width="80%">
+<img src="images/RStudio_env.png" alt="RStudio screenshot" width="50%">
 
-Environment keeps track on R variables which we create (more on those later) and their contents. History is like a tally role of all the R commands we have entered in our session.
+The Environment pane keeps track on R variables which we create (more on those
+later) and their contents. History is like a tally role of all the R commands
+we have entered in our session.
 
 ## Files, Plots & Help
 
-Our final bottom right-hand pane also has several tabs. The Files tab is a file explorer that enable us to move around our directories and select which files we wish to work on. We can also change the default working directory that Rstudio will use.
+Our final bottom right-hand pane also has several tabs. The Files tab is a file
+explorer that enable us to move around our directories and select which files
+we wish to work on. We can also change the default working directory that
+RStudio will use.
 
-<img src="images/Rstudio_filexpl.png" alt="Rstudio screenshot" width="80%">
+<img src="images/RStudio_filexpl.png" alt="RStudio screenshot" width="50%">
 
-The Plots tab is where any graphs that we create in R will appear. We can move through them using the arrow buttons and the export button will convert them to different graphics formats e.g. for publication in a paper or for the web.
+The Plots tab is where any graphs that we create in R will appear. We can move
+through them using the arrow buttons and the export button will convert them to
+different graphics formats e.g. for publication in a paper or for the web.
 
-The Packages tab shows which R packages are installed (These expand R's functionallity and again will be covered later) and can also install new packages.
+The Packages tab shows which R packages are installed (These expand R's
+functionallity and again will be covered later) and can also install new
+packages.
 
-The Help tab is a _massively useful_ tab which enables you to search R help index to get help pages on R functions and provide example code to help you use them in your R scripts.
+The Help tab is a _extremely useful_ tab which enables you to search R help
+index to get help pages on R functions and provide example code to help you use
+them in your R scripts.
 
 ---
 
 
 # Our first look at the R language
 
-Our overall goal for this course is to give you the ability to import your data into R, select a subset
-of the data most of interest for a given analysis, carry out an analysis to summarize these data and
-create visualizations of the data.
-First though, let us consider __“What is Data?”__
+Our overall goal for this course is to give you the ability to import your data
+into R, select a subset of the data most of interest for a given analysis,
+carry out an analysis to summarize these data and create visualizations of the
+data.  First though, let us consider __“What is Data?”__
 
-Data comes in many forms: Numbers (Integers and decimal values) or alphabetical  (characters or lines of text). Clearly a computer (or R) needs a way of representing this wide range of data with it’s diverse properties.
+Data comes in many forms: Numbers (Integers and decimal values) or alphabetical
+(characters or lines of text). Clearly a computer (or R) needs a way of
+representing this wide range of data with it’s diverse properties.
 
 ## Data types in R
 ![Image source:https://www.javatpoint.com/r-data-types](./images/r-programming-data-types.png)
 
 
-* R has 6 basic data types
-  * __character__
-    * character is nothing but a string
-    * anything between two quotes (Single or double quotes): "a", 'cat'
-    * Quoted numbers are character type: '3.14'
-    
-  * __numeric__ or __double__: Set of all real numbers. 
-    * A number. Could be a integer or a real number: 3.14, 1.45765, 5, 1000000
-  * __integer__: Whole numbers. 5L (the L tells R to store this as an integer)
-  * __logical__: TRUE, FALSE
-  * __complex__: 1+4i (complex numbers with real and imaginary parts)
-  * __raw__: 
-* The last two data types are rarely used in practice
+R has 6 basic data types:
 
-* Different types of data are needed in (any) programming for a variety of reasons:
-  * Processing instructions are different for different data types. For instance mathematical operations (+, -, x and /) are only meaningful for numbers.
+* __character__  
+    * a "character" is nothing but a series of letters, numbers and punctuation
+      marks. You will often see this referred to as a *string*. 
+    * anything between two quotes (Single or double quotes): "a", 'cat'  
+    * Quoted numbers are character type: '3.14'  
+* __double__:     
+    * Set of all real numbers  
+    * Could be a integer or include a decimal: 10, 3.14, 1.45765, 5, 1000000  
+* __integer__: Whole numbers. 5L (the "L" tells R to store this as an integer)  
+* __logical__: TRUE, FALSE  
+* __complex__: 1+4i (complex numbers with real and imaginary parts)  
+* __raw__: Holds raw bytes  
+
+The last two data types are rarely used in practice.
+
+__double__ and __integer__ both have the additional type __numeric__.
+
+There are some additional specialist data types, such as dates, but we wont be
+dealing with them in this course.
+
+Different types of data are needed in programming for a variety of reasons:
+
+* Some commands can only be used on particular data types. For instance
+mathematical operations (+, -, x and /) are only meaningful for numbers.
   
 ```{r, eval=FALSE}
 11 + 3 # Operation of addition performed correctly
 "11" + 3 # gives error
 ```
-  * Efficient storage: Integer type uses less memory when compared to decimal (numeric) data type.
+* Efficient storage, e.g. the __integer__ type uses less memory than the
+  __double__ (decimal) data type.
   
-
-
 ### R Arithmetic Operators
 
 Mathematical operations such as addition and multiplication are performed using various operators. Here is a list of R's arithmetic operators.
@@ -289,14 +216,15 @@ Mathematical operations such as addition and multiplication are performed using 
   * Exponent: ^
   * Modulus (Remainder from division): %%
 
+e.g.: 
+
 ```{r}
 5*5 # 5 times 5
 
 7/3 # 7 divided by 3
 
-7%%3 # reminder of 7 divided by 3
+7%%3 # remainder of 7 divided by 3
 ```
-
 
 ## Data structures in R
 
@@ -319,28 +247,37 @@ Mathematical operations such as addition and multiplication are performed using 
 
 ![Image source:https://www.geeksforgeeks.org/r-vector/](./images/Vectors-in-R.jpg)
 
+We can assign a value to an object with a name:
+
 ```{r}
 x <- 100 # create first vector
 ```
-* "x" is an `object or a variable`, both of which are used interchangeably in this course.
-* `<-` An assignment operator one can also use `=` instead of `<-`
-* Meaning of above expression is x gets 100
+Here we are creating an object called `x`. 
+
+**Note**: The terms `object` and `variable` are often used interchangeably,
+even though they do have sublty different meanings.
+
+The assignment operator `<-` causes the value 100 to be assigned to the
+variable named `x`.  
+
+**Note**: you can also use `=` instead of `<-`, however, best
+practice is to use `<-`.
 
 ```{r}
 x <- 100 
 x = 100 
 ```
 
-* After a variable/object is created, it can be used as many times as needed.
+After a variable/object is created, it can be used as many times as needed.
 
 ```{r}
 y <- 10
-y*y
+y * y
 y + y
 100 + y
 ```
 
-* Variable values can be replaced
+The values assigned to a variable can be replaced:
 
 ```{r}
 x <- "Tom"
@@ -349,48 +286,71 @@ x <- "Jerry"
 x
 ```
 
-* variable names can not start with a number or a special characters like (_, -, etc)
+Variable names can not start with a number or a special characters like (\_,
+  -, \*, etc)
 
-```{r, eval=FALSE}
-2x <- 100 # gives error
-_x <- 100 # gives error
+```{r, error = TRUE}
+2x <- 100
 ```
-* only allowed special characters in variable names are "_" and "." any other special character throws an error]
 
-```{r, eval=FALSE}
-my-name <- "Chandra" # throws error
-my_name <- "Chandra" # no error
-my.name <- "Chandra" # no error
+```{r, error = TRUE}
+_x <- 100
+```
+
+The only special characters allowed in variable names are "\_" and "." any
+other special character throws an error]
+
+```{r, error = TRUE}
+my-name <- "Ashley"
+```
+
+To R the "-" symbol means minus, so it is interpreting the first part of the
+line as an instruction to subtract the value of variable called "name" from
+the value of a variable called "my", however, neigther of these exists, so it
+throws an error.
+
+```{r}
+my_name <- "Ashley"
+my.name <- "Ashley"
 ```
 
 * R is case sensitive 
 * COUNTRY and country are two different variables
 ```{r}
 COUNTRY <- "United Kingdom" 
-country <- "India"
+country <- "Uganda"
+
+COUNTRY
+country
 ```
 
-* `c()` function should be used to create a vector that holds more than one value
+#### Atomic vectors with more than one value
+
+* The `c()` function should be used to create a vector that holds more than one value
 * c stands for combine
 * values are separated by ","
-* When creating single or multiple values as a beginner, it would be advisable to use the function `c()`
 
-```{r, eval=FALSE}
-x <- 100
-x <- c(100) # same like above
-x <- 100, 200 # gives error
-x <- c(100, 200) # no error
+```{r, error = TRUE}
+x <- 100, 200
 ```
-
-* ":" operator that generates a range of values
 
 ```{r}
-x <- c(1:100) # create values from 1 to 100
+x <- c(100, 200)
 ```
 
+* the ":" operator that generates a range of values
 
-* The values in a vector can be of one and only one type, such as numerics, integers, characters, logic, complexes, or raw data.
-* When we attempt to mix different data types in a single vector, R automatically converts the data types, this phenomenon is called [Coercion](https://www.zigya.com/blog/what-is-coercion-in-r/)
+```{r}
+x <- 1:40
+x
+```
+
+The values in a vector must all be of the same data type, such as numerics,
+integers, characters, logic, complexes, or raw data.
+
+When we attempt to mix different data types in a single vector, R automatically
+converts the data types, this phenomenon is called
+[Coercion](https://www.zigya.com/blog/what-is-coercion-in-r/)
 
 ```{r}
 x <- c(1,2,3,4)
@@ -398,19 +358,22 @@ typeof(x)
 x <- c(1,"2",3,4)
 typeof(x)
 
-y <- c(TRUE, FALSE, TRUE, 1L)
-y
-typeof(y)
-
 z <- c(TRUE, FALSE, FALSE)
 typeof(z)
 
 z <- c(TRUE, FALSE, "FALSE")
 z
 typeof(z)
+
+y <- c(TRUE, FALSE, TRUE, 1L)
+y
+typeof(y)
 ```
 
-* Logical values TRUE and FALSE are internally represented as 1 and 0. Therefore mathematical operations can be performed on these vectors.
+#### A note on logical vectors
+
+The logical values "TRUE" and "FALSE" are internally represented as 1 and 0.
+Therefore mathematical operations can be performed on these vectors.
 
 ```{r}
 y <- c(TRUE, FALSE, TRUE)
@@ -420,16 +383,21 @@ mean(y)
 ```
 
 
-* Vectorization in R
-  * It is important to note that most of R's functions are **vectorized**, which means that they operate on all elements of a vector without looping through each element one by one. Coding becomes more concise, easier to read, and less prone to errors as a result.
+### Vectorization in R
+
+It is important to note that most of R's functions are **vectorized**, which
+means that they operate on all elements of a vector without looping through
+each element one by one. Coding becomes more concise, easier to read, and less
+prone to errors as a result.
 
 ```{r}
 x <- c(1,2,3,4,5) 
-x * 5 # same as x * c(5)
-x + 1 # same as x + c(1)
+x * 5 
+x + 1 
 ```
 
-* Vectorization is powerful, quick and concise, but leads to confusion when vector lengths are different.
+Vectorization is powerful, quick and concise, but leads to confusion when
+vector lengths are different.
 
 ```{r}
 x <- c(1,2,3,4,5,6)
@@ -446,95 +414,45 @@ x + y
 
 ![](./images/vec_recycling.png)
   
-  
-* How to access values from a vector?
-  * Use `[]` subscript operator
-  * within `[]` one can give any of the following 
-    * Vector of index numbers
-    * Vector of logical values
-  
+### Accessing specific elements of an atomic vector  
 
 
+If a vector contains more than one value, we may times only wish to access
+specific values within the vector. To this we use the `[]` subscript operator.
 
+Within `[]` one can give any of the following:    
 
+* Vector of index numbers   
+* Vector of logical values
+
+#### Using integer vector containing index numbers
 
 ```{r}
 vec <- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
 vec
 ```
 
+To extract 4th value from the vector:
+
 ```{r}
-# extract 4th value from the vector var
 vec[4] 
-vec[c(4)] # good idea to use c() function even for single value
 ```
 
+To extract 4th and 7th values from the vector:
 
 ```{r}
-# extract 4th and 7th values from the vector var
 vec[c(4,7)]
 ```
 
-* One can inverse using "-" symbol
+We can also invert the selection using "-" symbol, e.g. to extract all the
+values except 4th and 7th values:
 
 ```{r}
-# extract all the values except 4th and 7th value
 vec[c(-4,-7)]
 ```
 
-* Extracting values using logical vectors
-
-```{r}
-y <- c( 5, 8, 10) 
-y[c(FALSE, TRUE, FALSE)] # extract second element
-```
-
-* Logic vectors are not created manually in reality 
-* Logic vectors are the outputs of comparison operators 
-* comparison operators
-  * Equal to ==
-  * Not equal to !=
-  * Greater than >
-  * Less than <
-  * Greater than or equal to >=
-  * Less than or equal to <=
-  
-  
-```{r}
-x <- c(10, 20, 30, 40)
-x == 20
-x > 20
-
-keep <- x > 20
-keep
-x[keep] 
-x[ x > 20 ] # The equivalent of x[keep]
-```
-
-
-* By using logical operators one can create complex expression for more complex subsetting
-  * There are 3 logical operators in R
-    * & : logical and
-    * | : logical or
-    * ! : logical not
-
-![](./images/truth_table.jpg)
-
-* For instance if you want to extract all the values in a vector that are greater than 10 but less than 40
-
-```{r}
-x <- c(10, 20, 30, 40)
-x[x > 10] # get all the values > 10
-x[x < 40] # get all the values < 40
-x[ x > 10 & x < 40] # get all the values > 10 and < 40
-```
-
-```{r}
-x[ x == 20] # get values that are equal to 20
-x[ !x == 20] # equivalent to x[ x != 20]
-```
-
-* It is possible to selectively replace vector values.
+It is also possible to selectively replace specific vector values using the
+same notation.
 
 ```{r}
 x <- c(10, 20, 30)
@@ -543,43 +461,131 @@ x[2] <- 1000
 x
 ```
 
-### Functions and their arguments
+#### Using a logical vector to select values from a vector
 
-Functions are a fundamental building block of R. Functions are "canned scripts" that automate more complicated sets of commands including operations assignments, etc. Many functions are predefined, or can be made available by importing R packages (more on that later). A function usually takes one or more inputs called arguments. Functions often (but not always) return a value. A typical example would be the function `round()`. The input (the argument) must be a number, and the return value (in fact, the output) is the rounded number. Executing a function (‘running it’) is called calling the function. An example of a function call is:
+We can also extract values using a vector of logical values. Normally the
+logical vector should be the same lenght as the vector from which we are
+extracting values, however, if it is shorter then it will be recycled as
+necessary - this can be confusing.
 
 ```{r}
-pi <- 3.141593
+y <- c( 5, 8, 10) 
+myLogicalVec <- c(FALSE, TRUE, FALSE)
+y[myLogicalVec]
+vec[myLogicalVec]
+```
+
+In practice we do not create logical vectors manually, they are most usually
+generated as the outputs of boolean comparison. This allows us to select values
+from a vector based on their characteristics.  
+
+The basic comparison operators are:  
+
+```{r echo = FALSE}
+tab <- data.frame(Operator = c("==",   "!=", ">", "<", ">=", "<="),
+                  Meaning = c("Equal to", "Not equal to", "Greater than", 
+                              "Less than", "Greater than or equal to", 
+                              "Less than or equal to"),
+                  Example = c("100 == 90",   "100 != 90", "100 > 90", "100 < 90", "100 >= 90", "90 <= 90"),
+                  Result = c("FALSE", "TRUE", "TRUE", "FALSE", "TRUE", "TRUE"))
+knitr::kable(tab)
+```
+
+We will encounter other functions that can also generate logical vectors using
+more complex tests later in the course.
+
+Using these comparison operators we can test each of value in a vector and
+generate a logical vector that tells us which values match our criteria.
+  
+For example, to only keep values that are greater than 20:
+
+```{r}
+x <- c(10, 20, 30, 40)
+x == 20
+x > 20
+
+keep <- x > 20
+keep
+x[keep] 
+x[ x > 20 ] 
+```
+
+By using logical operators one can create complex expression for more complex
+subsetting. The logical operators are: 
+
+```{r echo = FALSE}
+tab <- data.frame(Operator = c("&", "|", "!"),
+           Meaning = c("AND", "OR", "NOT"), 
+           Effect  = c("Connects two expressions into one. Both expressions must be true for the overall expression to be true",
+                       "Connects two expressions into one. One or both of the expressions must be true for the overall expression to be true. It is only necessary for one to be true, it doesn't matter which",
+                       "Inverts the \"truth\" of the expression - FALSE becomes TRUE and TRUE becomes FALSE"))
+knitr::kable(tab)
+```
+
+For instance if you want to extract all the values in a vector that are greater
+than 10 but less than 40
+
+```{r}
+x <- c(10, 20, 30, 40)
+x[x > 10]
+x[x < 40]
+x[ x > 10 & x < 40]
+```
+
+We could use "!=" to select all values not equal to 20, but to demostrate the
+"!" (NOT) operator, we could also do:
+
+```{r}
+x[ !x == 20 ]
+```
+
+## Functions and their arguments
+
+Functions are a fundamental building block of R code. Functions are "canned
+scripts" that automate more complicated sets of commands including operations,
+assignments, etc. Functions are contained in packages. There are a number of
+packages that are automatically loaded when you start that provide basic
+functions e.g. `mean` or `c`. We can also extend the number of functions
+avaiable by importing additional R packages (more on that later). 
+
+A function usually takes one or more inputs called arguments. Functions often
+(but not always) return a value. A typical example would be the function
+`round()`. The input (the argument) must be a number, and the return value (in
+fact, the output) is the rounded number.  Executing a function (‘running it’)
+is referred to as "calling" the function. An example of a function call is:
+
+```{r}
 round(pi)
 ```
 
-* `round` is a function that takes at lest one number and returns a number that rounded to the nearest integer.
-* In R, all functions have the same syntax, which is function name followed by `()`
-* Depends on a function within "()" you supply zero to many arguments
-* The names and numbers of arguments vary from function to function
-* How to know what augments function has?
-  * Get help of that function
-  * use `args()` function
+`round` is a function that takes at least one number and returns a number that
+rounded to the nearest integer.
 
-* How to get help in R?
-  * How to get help in R details: https://www.r-project.org/help.html
-  * By typing `?` or `help()` followed by the name of the function in the console, for example to get help with the round function, type "?round" in the console
-  * In Rstudio under the help tab one can search for a given function
-  * On general Google search, for instance "round + r function + documentation"
+In R function calls always have the same syntax, which is the function name
+followed by `()`.
 
-```{r}
+The arguments that you need to specify between the `()` will depend on the
+function - the names and numbers of arguments vary from function to function.
+The best way to learn how to use a particular function is to access the
+documentation page for that function. You can do this in number of ways:
+
+* How to get help in R details: https://www.r-project.org/help.html
+* By typing `?` followed by the name of the function in the console, e.g.
+  `?round`
+* By using the `help()` function, e.g. help("round") - note the quotes around
+  the work "round"
+* In RStudio under the help tab one can search for a given function
+* Use your favourite browser to search the web, e.g. "R round documentation"
+
+```{r eval = FALSE}
 ?round 
-help(round) # equivalent to ?round
 ```
 
-* Use `args()` to view the arguments of a function
+From the documentation page, you can see that `round()` takes exactly two
+arguments:  
 
-```{r}
-args(round)
-```
-
-* Using the help or the args function, you can see that `round()` takes exactly two arguments
-  * x: a numeric vector
-  * digits: integer indicating the number of decimal places to round
+* x: a numeric vector
+* digits: integer indicating the number of decimal places to round
   
 ```{r}
 round(x=pi, digits = 0)
@@ -587,38 +593,71 @@ round(x=pi, digits = 2)
 round(x=pi, digits = 4)
 ```
 
-* As long as you use argument names order of the arguments does not matter.
+As long as you use argument names, the order of the arguments does not matter.
 
 ```{r}
-round( digits = 4, x=pi)
+round(digits = 4, x=pi)
 ```
 
+As long as you provide the arguments in the correct order, then you don't need to use the names.
 
-* Some useful math/stat functions in R
-  * max(): maximum value in a numeric vector
-  * min(): minimum value in a numeric vector
-  * range(): vector of min and max
-  * sum(): sum of a vector
-  * mean(): mean of a vector
-  * median(): median of a vector
-  * var(): variance of a vector
-  * sd(): standard deviation of a vector
-  * sort(): sorted version of a vector
-  * length(): length of an object
-  * cor(): correlation of x and y
+```{r}
+round(pi, 4)
+```
+
+**However**, it is best practice to use the names for at least everything but
+the first argument, rather than relying on being able to remember what the
+arguments are when you come back to your code at a later date.
+
+```{r}
+round(pi, digits = 4)
+```
+
+It also avoids inadvertent mistakes:
+
+```{r}
+round(4, pi)
+```
+
+This worked, but it's not what I meant. In a more complex function, with many
+arguments, this would be hard to spot.
+
+
+Some useful math/stat functions in R:  
+
+* `max()`: maximum value in a numeric vector
+* `min()`: minimum value in a numeric vector
+* `range()`: vector of min and max
+* `sum()`: sum of a vector
+* `mean()`: mean of a vector
+* `median()`: median of a vector
+* `var()`: variance of a vector
+* `sd()`: standard deviation of a vector
+* `sort()`: sorted version of a vector
+* `length()`: length of an object
+* `cor()`: correlation of x and y
   
-* data type conversion functions: as."datatype" family of functions are useful for converting one data type to other
-  * as.numeric()
-  * as.character()
-  * as.integer()
+Data type conversion functions - the `as."datatype"` family of functions are
+useful for converting one data type to other:  
+
+* `as.numeric()`  
+* `as.character()`  
+* `as.integer()`  
+
   
-  
 
-### Missing data
+## Missing data
 
-As R was designed to analyze datasets, it includes the concept of missing data (which is uncommon in other programming languages). Missing data are represented in vectors as NA.
+As R was designed to analyze datasets, it includes the concept of missing data
+(which is uncommon in other programming languages). Missing data are
+represented in vectors as NA.
 
-When doing operations on numbers, most functions will return NA if the data you are working with include missing values. This feature makes it harder to overlook the cases where you are dealing with missing data. You can add the argument na.rm = TRUE to calculate the result while ignoring the missing values.
+When doing operations on numbers, most functions will return NA if the data you
+are working with include missing values. This feature makes it harder to
+overlook the cases where you are dealing with missing data. For some functions
+you can add the argument na.rm = TRUE to calculate the result while ignoring
+the missing
+values.
 
 
 ```{r}
@@ -629,100 +668,129 @@ mean(heights, na.rm = TRUE)
 max(heights, na.rm = TRUE)
 ```
 
-
-If your data include missing values, you may want to become familiar with the function is.na() See below for examples.
+The function `is.na()` is useful to identify missing data in your data set. It
+generates a logical vector that tells whether or not each value is missing. We
+could then use this to omit missing values for function that do not include the
+`na.rm` argument, or just to remove them from the dataset entirely.
 
 ```{r}
-## Extract those elements which are not missing values.
-heights[!is.na(heights)]
-
+missingValues <- is.na(heights)
+missingValues
+cleanedHeights <- heights[!missingValues]
+cleanedHeights
 ```
 
 # Challenges
 
 :::exercise
-1. You have given a list of tumour volumes from 5 patients, 2.1, 1.9, 2.6, 1.8, and 3 $cm^3$. Convent this data into a R vector and get the following characteristics of data by applying some of the functions listed above.
+1. You have been given a list of tumour volumes from 5 patients, 2.1, 1.9, 2.6,
+   1.8, and 3 $cm^3$. Create a vector in R containing this data. Then get the
+   following characteristics of data by applying some of the functions listed
+   above.  
     a. How many observations we have?
     b. What is the mean tumour volume?
     c. How many patients has tumour volume less than 2 $cm^3$?
 
 <details><summary>Answer</summary>
-```{r ex_1, purl=FALSE}
-# Challenge 1 a: How many observations we have?
-tumour_vol <- c(2.1, 1.9, 2.6, 1.8,3)
-length(tumour_vol)
 
-# Challenge 1 b:  What is the mean tumour volume?
-mean(tumour_vol)
+First create the vector using the `c()` function and assign it to a variable.
 
-# Challenge 1 c: How many patients has tumour volume less than 2
-sum(c(2.1, 1.9, 2.6, 1.8,3) < 2)
+```{r}
+tumourVol <- c(2.1, 1.9, 2.6, 1.8,3)
+```
+
+We can use the `length()` function to find the number of values in a vector.
+
+```{r}
+length(tumourVol)
+```
+
+The `mean()` function will give us the mean volume.
+
+```{r}
+mean(tumourVol)
+```
+
+First test the vector using the "<" operator to generate a logical vector and
+then use `sum()` to determine how many of these are "TRUE".
+
+```{r}
+isSmall <- tumourVol < 2
+sum(isSmall)
 ```
 </details> 
 :::
 
 
 :::exercise
-2. You have given two vectors of observations data1 <- c(10, 9, 7, 6, 7, 3, 7, 5, 6, 6) and data2 <- c(5, 2, 10, 7, 2, 5, 1, 5, 3, 4).
+2. You have given two vectors of observations:
+         data1 <- c(10, 9, 7, 6, 7, 3, 7, 5, 6, 6)
+         data2 <- c(5, 2, 10, 7, 2, 5, 1, 5, 3, 4)
     a. use the function `cor()` to get the correlation coefficient
-    b.  Can you identify the default correlation method the `cor()` function uses? For help use `help()` or `?`
+    b. Can you identify the default correlation method the `cor()` function uses? For help use `help()` or `?`
     c. Can you get Spearman correlation coefficient for these two vectors? 
 
 <details><summary>Answer</summary>
 
-```{r ex_2, purl=FALSE}
-# Challenge 2 a: use the function `cor()` to get the correlation coefficient
+Challenge 2a: use the function `cor()` to get the correlation coefficient:
+
+```{r}
 data1 <- c(10, 9, 7, 6, 7, 3, 7, 5, 6, 6)
 data2 <- c(5, 2, 10, 7, 2, 5, 1, 5, 3, 4)
 cor(x=data1, y=data2)
+```
 
+Challenge 2b: Can you identify the default correlation method the `cor()` function uses?
 
-# Challenge 2 b: Can you identify the default correlation method the `cor()` function uses?
+```{r eval = FALSE}
 ?cor
-# According to the help in the 'cor' file, if no method is specified by default the function will use the 'pearson' method.
+```
 
-# Challenge 2 c: Can you get Spearman correlation coefficient for these two vectors?
+According to the help in the 'cor' file, if no method is specified by default
+the function will use the 'pearson' method.
+
+Challenge 2c: Can you get Spearman correlation coefficient for these two vectors?
+
+```{r}
 cor(x=data1, y=data2, method = "spearman")
 ```
+
 </details>
 :::
 
-
-:::exercise 
-3. You have given a logical vector, logi_vec <- c(TRUE, FALSE, TRUE, TRUE). Can you apply math functions like `sum()`, `mean()` on this logical vector, if so what is the output of sum() and mean()?
-
-<details><summary>Answer</summary>
-
-```{r ex_3, purl=FALSE}
-# Challenge 3: 
-logi_vec <- c(TRUE, FALSE, TRUE, TRUE)
-# Mathematical functions can be applied to logical vectors. Internally, the logical values TURE and FALSE are represented as 1 and 0, respectively.
-sum(logi_vec)
-mean(logi_vec)
-```
-</details>
-:::
 
 :::exercise 
 
 4. What is the output of following operations and explain your logic behind it.
-    a. c(5, 2, 9, 1, 13) * c(2)
-    b. c(5, 2, 9, 1, 13) * c(1,2)
-    c. c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
+    a. c(5, 2, 9, 1, 13) * 2
+    b. c(5, 2, 9, 1, 13) * c(1, 2)
+    c. c(5, 2, 9, 1, 13) + c(1, 2, 3, 4, 5)
 
 <details><summary>Answer</summary>
+
+Challenge 4a: c(5, 2, 9, 1, 13) * 2
 ```{r ex_4, purl=FALSE}
-# Challenge 4 a: c(5, 2, 9, 1, 13) * c(2)
 c(5, 2, 9, 1, 13) * c(2)
-# Since the shorter vector has only one value, every value of the longer vector is multiplied by the value of the shorter vector.
+```
 
-# Challenge 4 b: c(5, 2, 9, 1, 13) * c(1,2)
+Since the shorter vector has only one value, every value of the longer vector
+is multiplied by the value of the shorter vector.
+
+Challenge 4b: c(5, 2, 9, 1, 13) * c(1,2)
+```{r}
 c(5, 2, 9, 1, 13) * c(1,2) 
-# Since the shorter vector has only two values, these two values are sequentially recycled to multiply the longer vector's values.
+```
 
-# Challenge 4 c: c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
+Since the shorter vector has only two values, these two values are sequentially
+recycled to multiply the longer vector's values.
+
+Challenge 4c: c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
+```{r}
 c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
-# Due to the fact that both vectors have the same length, values are sequentially added together
+```
+
+Due to the fact that both vectors have the same length, values are sequentially
+added together
 
 ```
 </details>
@@ -733,7 +801,7 @@ c(5, 2, 9, 1, 13) + c(1,2,3,4,5)
 
 <details><summary>Answer</summary>
 
-```{r ex_5, purl=FALSE}
+```{r}
 vec <- c(23, 12, 41, 65, 23, 6)
 vec[ vec == 23 | vec < 15]
 ```
@@ -743,22 +811,29 @@ vec[ vec == 23 | vec < 15]
 
 :::exercise
 6. "month.name" is a in-built R vector
-    a. What is the index number of "April" in month.name vector? hist: "which" function may help you.
+    a. What is the index number of "April" in month.name vector? **hint:** the `which` function may help you.
     b. Extract all the months from April to December
 
 <details><summary>Answer</summary>
 
-```{r ex_6, purl=FALSE}
-# Challenge 6 a: What is the index number of "April" in month.name vector? hist: "which" function may help you.
-which(month.name == "April")
+Challenge 6a: What is the index number of "April" in month.name vector?
 
-# Challenge 6 b:Extract all the months from April to December
-month.name[which(month.name == "April"):length(month.name)]
+```{r}
+april <- which(month.name == "April")
+april
+```
+
+Challenge 6b:Extract all the months from April to December
+```{r}
+month.name[april:length(month.name)]
+```
+
 
 ```
 </details>
 :::
+
 #### Credit
 
 These instructions were adapted from [Data Carpentry](https://datacarpentry.org)
-course materials.
+course materials by various members of the Bioinformatics Core at CRUK CI.
