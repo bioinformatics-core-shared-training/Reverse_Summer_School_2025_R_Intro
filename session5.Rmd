@@ -5,11 +5,9 @@ title: "Week 5 -- Data manipulation with dplyr"
 > #### Learning objectives
 >
 > * Chain operations together into a workflow using pipes
-> * Learn the three key **dplyr** functions for manipulating your data
->     * **`arrange()`** for sorting the observations in your table 
->     * **`mutate()`** for creating a new variable or modifying an existing variable
->     * **`summarise()`** for collapsing values in one of more columns to a single summary value
-> * Learn about faceting in ggplot2 to split your data into separate categories and create a series of sub-plots arranged in a grid
+> * Learn the key **dplyr** functions for manipulating your data
+> * Learn about faceting in ggplot2 to split your data into separate categories
+>   and create a series of sub-plots arranged in a grid
 
 ---
 
@@ -46,17 +44,6 @@ metabric
 
 # dplyr verbs
 
-We will be looking at the 3 key dplyr functions this week:
-
-* **`arrange()`** for sorting rows
-* **`mutate()`** for modifying columns or creating new ones
-* **`summarise()`** for computing summary values
-
-In looking at each of these in turn, we'll be applying these to the entire data
-set. It is possible to combine these with the `group_by()` function to instead
-operate on separate groups within our data set but this is something we'll cover
-in detail next week.
-
 The dplyr operations are commonly referred to as "verbs" in a data manipulation
 grammar. These verbs have a common syntax and work together in a consistent and
 uniform manner. They all have the following shared behaviours:
@@ -81,8 +68,13 @@ then use `select()` to only display the variables (columns) we're most
 interested in.
 
 ```{r}
-patients_of_interest <- filter(metabric, Survival_status == "LIVING", Survival_time > 120)
-patient_details_of_interest <- select(patients_of_interest, Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
+patients_of_interest <- filter(metabric, 
+                               Survival_status == "LIVING" & Survival_time > 120)
+patient_details_of_interest <- select(patients_of_interest, 
+                                      Patient_ID, 
+                                      Survival_time, 
+                                      Tumour_stage, 
+                                      Nottingham_prognostic_index)
 patient_details_of_interest
 ```
 
@@ -92,13 +84,33 @@ name to avoid cluttering our environment and overwritten the results from the
 `filter()` operation with those of the `select()` operation.
 
 ```{r eval = FALSE}
-patients_of_interest <- select(patients_of_interest, Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
+patients_of_interest <- select(patients_of_interest, 
+                               Patient_ID, 
+                               Survival_time, 
+                               Tumour_stage, 
+                               Nottingham_prognostic_index)
 ```
 
-Another less readable way of writing this code is to nest the `filter()`
-function call inside the `select()`. Although this looks very unwieldy and is
-not easy to follow, nested function calls are very common in a lot of R code
-you may come across.
+In order to avoid creating intermediate objects, another less readable way of
+writing this code is to nest the `filter()` function call inside the
+`select()`. Nested function calls are very common in a lot of R code you may
+come across. For example, imagine we have a vector of numbers and we want to
+find the square root of the mean. We could do it two steps:
+
+```{r}
+x <- c(24, 53, 352, 643, 46)
+myMean <- mean(x)
+sqrt(myMean)
+```
+
+Or we can nest the commands inside each other:
+
+```{r}
+sqrt(mean(x))
+```
+
+This is convenient for simple commands, but is unwieldy and not easy to read
+with more complex commands:
 
 ```{r}
 patients_of_interest <- select(filter(metabric, Survival_status == "LIVING", Survival_time > 120), Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
@@ -132,8 +144,8 @@ This allows for chaining of operations into workflows, e.g.
 &nbsp;&nbsp;&nbsp;&nbsp;`filter(species == "Droid") %>%`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`select(name, height, mass)`
 
-The `%>%` operator comes from the `magrittr` package (do you get the reference?)
-and is available when we load the tidyverse using `library(tidyverse)`.
+The `%>%` operator comes from the `magrittr` package and is available when we
+load the tidyverse using `library(tidyverse)`.
 
 Piping in R was motivated by the Unix pipe, `|`, in which the output from one
 process is redirected to be the input for the next. This is so named because the
@@ -217,57 +229,6 @@ much as we do.
 
 ---
 
-# Sorting using `arrange()`
-
-It is sometimes quite useful to sort our data frame based on the values in one
-or more of the columns, particularly when displaying the contents or saving them
-to a file. The `arrange()` function in dplyr provides this sorting capability.
-
-For example, we can sort the METABRIC patients into order of increasing
-survival time.
-
-```{r}
-arrange(metabric, Survival_time)
-```
-
-Or we might be more interested in the patients that survived the longest so
-would need the order to be of decreasing survival time. For that we can use
-the helper function `desc()` that works specifically with `arrange()`.
-
-```{r}
-arrange(metabric, desc(Survival_time))
-```
-
-As with the other tidyverse functions and, in particular, the other 4 key dplyr
-'verbs', `arrange()` works rather well in workflows in which successive
-operations are chained using `%>%`.
-
-```{r}
-patients_of_interest <- metabric %>%
-  filter(Survival_status == "LIVING") %>%
-  filter(Survival_time > 120) %>%
-  select(Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index) %>%
-  arrange(desc(Survival_time))
-# print out the result
-patients_of_interest
-```
-
-We can sort by more than one variable by adding more variable arguments to
-`arrange()`.
-
-```{r}
-arrange(patients_of_interest, Tumour_stage, Nottingham_prognostic_index)
-```
-
-Here we've sorted first by tumour stage from lowest to highest value and then
-by the Nottingham prognostic index for when there are ties, i.e. where the
-tumour stage is the same.
-
-Sorting is most commonly used in workflows as one of the last steps before
-printing out a data frame or writing out the table to a file.
-
----
-
 # Modifying data using `mutate()`
 
 In one of the examples of filtering observations using `filter()` above, we
@@ -278,7 +239,7 @@ metabric$Deceased <- metabric$Survival_status == "DECEASED"
 ```
 
 This is an example of a rather common type of data manipulation in which we
-crate a new column based on the values contained in one or more other columns.
+create a new column based on the values contained in one or more other columns.
 The `dplyr` package provides the `mutate()` function for this purpose.
 
 ```{r}
@@ -323,25 +284,28 @@ We'll recalculate the Nottingham prognostic index using the values
 our METABRIC data frame.
 
 ```{r}
-metabric <- mutate(metabric, NPI = 0.2 * Tumour_size + Lymph_node_status + Neoplasm_histologic_grade)
-select(metabric, Tumour_size, Lymph_node_status, Neoplasm_histologic_grade, NPI, Nottingham_prognostic_index)
+metabric <- metabric %>%
+    mutate(NPI = (0.2 * Tumour_size) 
+                    + Lymph_node_status + Neoplasm_histologic_grade)
+
+select(metabric, 
+       Tumour_size, 
+       Lymph_node_status, 
+       Neoplasm_histologic_grade, 
+       NPI, 
+       Nottingham_prognostic_index)
 ```
 
 There is a discrepency. Can you see what the problem is?
 
 It appears that the tumour size wasn't correctly converted into centimetres in
 the original NPI calculation or that the wrong scaling factor for tumour size
-was used. This could explain why the plots we created in weeks 1 and 2 featuring
-the Nottingham prognostic index looked so odd. We'll see if they look any better
-with our recalculated values.
+was used. 
 
 ```{r scatter_plot_1}
 ggplot(data = metabric) +
   geom_point(mapping = aes(x = Age_at_diagnosis, y = NPI), na.rm = TRUE)
 ```
-
-There is still some banding but nothing like the NPI values downloaded from
-cBioPortal which line up very closely to whole numbers.
 
 The **`round()`** function is really useful for rounding numerical values to a
 specified number of decimal places. We'll read in the METABRIC data again and
@@ -352,7 +316,8 @@ and displays the results in decreasing order of NPI.
 ```{r message = FALSE}
 read_csv("data/metabric_clinical_and_expression_data.csv") %>%
   mutate(Tumour_size = Tumour_size / 10) %>%
-  mutate(NPI = 0.2 * Tumour_size + Lymph_node_status + Neoplasm_histologic_grade) %>%
+  mutate(NPI = (0.2 * Tumour_size) 
+                    + Lymph_node_status + Neoplasm_histologic_grade) %>%
   mutate(Tumour_size = round(Tumour_size, digits = 1)) %>%
   mutate(NPI = round(NPI, digits = 1)) %>%
   arrange(desc(NPI)) %>%
@@ -363,74 +328,90 @@ read_csv("data/metabric_clinical_and_expression_data.csv") %>%
 
 In that last workflow we included the same rounding operation applied to two
 different variables. It would be nice to be able to carry out just the one
-`mutate()` but apply it to both `Tumour_size` and `NPI` columns and we can using
-**`mutate_at()`**.
+`mutate()` but apply it to both `Tumour_size` and `NPI` columns and we can
+using **`across()`**. 
+
+`across` is used inside `mutate` and takes two arguments, first a selection of
+columns to operate across and second a function to apply to those columns.
+
+So if we just wanted to round to the the nearest integer:
 
 ```{r}
 metabric %>%
-  mutate_at(vars(Tumour_size, NPI), round, digits = 1) %>%
+  mutate(across(c(Tumour_size, NPI), round)) %>%
   select(Patient_ID, Tumour_size, NPI)
 ```
 
-This is slightly more complicated. We had to group the variables for which we
-want the function to apply using `vars()`. We then gave the function name as the
-next argument and finally any additional arguments that the function needs, in
-this case the number of digits.
+This applies the function `round` across all columns specified in the first
+argument for `across`. 
+
+This is nice and simple but things can get a little more complex if we want more
+than just a straightforward function.
+
+We may come across situations where we'd like to apply the same operation to
+multiple columns but where there is no available function in R to do what we
+want or situations we need to pass extra arguments to our function. 
+
+In these cases the syntax get a little trickier. We need to write what is known
+as an "anonymous function".
+
+Let's say we want to convert the petal and sepal measurements in the `iris`
+data set from centimetres to millimetres. We'd either need to create a new
+function to do this conversion or we could use what is known as an anonymous
+function.
+
+There is no 'multiply by 10' function and it seems a bit pointless to create
+one just for this conversion so we'll use an anonymous function instead --
+anonymous because it has no name, it's an _in situ_ function only used in our
+`mutate()` function call.
+
+```{r}
+iris %>%
+  as_tibble() %>%
+  mutate(across(Sepal.Length:Petal.Width, ~ .x * 10))
+```
+
+The **`~`** denotes that we're using an anonymous function (it is the symbol for
+formulae in R) and the `.x` is a placeholder for the column being operated on. In
+this case, we're multiplying each of the columns between `Sepal.Length` and
+`Petal.Width` inclusive by 10.
+
+If we wish to use an existing function but provide additional arguments, then
+the syntax is:
+
+`~func(.x, ...)` 
+
+Where `.x` is going to be replaced with the column names and `...` is the extra
+arguments we need to add. 
+
+So if we want to round to 1 decimal place:
+
+```{r}
+metabric %>%
+  mutate(across(c(Tumour_size, NPI), ~round(.x, digits = 1))) %>%
+  select(Patient_ID, Tumour_size, NPI)
+```
 
 We can use the range operator and the same helper functions as we did for
-selecting columns using `select()` inside `vars()`.
+selecting columns using `select()` inside `across()`.
 
 For example, we might decide that our expression values are given to a much
 higher degree of precision than is strictly necessary.
 
 ```{r}
 metabric %>%
-  mutate_at(vars(ESR1:MLPH), round, digits = 2) %>%
+  mutate(across(ESR1:MLPH, ~round(.x, digits = 2))) %>%
   select(Patient_ID, ESR1:MLPH)
 ```
 
-Or we could decide that all the columns whose names end with "_status" are in
+Or we could decide that all the columns whose names end with "\_status" are in
 fact categorical variables and should be converted to factors.
 
 ```{r}
 metabric %>%
-  mutate_at(vars(ends_with("_status")), as.factor) %>%
+  mutate(across(ends_with("_status"), as.factor)) %>%
   select(Patient_ID, ends_with("_status"))
 ```
-
-## Anonymous functions
-
-The `mutate_at()` function, and the related `mutate_if()` and `mutate_all()` 
-functions, are really very powerful but with that comes additional complexity.
-
-For example, we may come across situations where we'd like to apply the same
-operation to multiple columns but where there is no available function in R
-to do what we want.
-
-Let's say we want to convert the petal and sepal measurements in the `iris`
-data set from centimetres to millimetres. We'd either need to create a new
-function to do this conversion or we could use what is known as an anonymous
-function, also known as a lambda expression.
-
-There is no 'multiply by 10' function and it seems a bit pointless to create
-one just for this conversion so we'll use an anonymous function instead --
-anonymous because it has no name, it's an _in situ_ function only used in our
-`mutate_at()` function call.
-
-```{r}
-iris %>%
-  as_tibble() %>%
-  mutate_at(vars(Sepal.Length:Petal.Width), ~ . * 10)
-```
-
-The **`~`** denotes that we're using an anonymous function (it is the symbol for
-formulae in R) and the `.` is a placeholder for the column being operated on. In
-this case, we're multiplying each of the columns between `Sepal.Length` and
-`Petal.Width` inclusive by 10.
-
-If you think this is getting fairly complicated you'd be right. We'll leave it
-there for now but point you to the help page for `mutate_at` if you're
-interested in finding out more.
 
 ---
 
@@ -509,74 +490,68 @@ summarise(metabric, correlation = cor(FOXA1, MLPH))
 
 ## Summarizing multiple columns
 
-Much like `mutate()` with its `mutate_at()`, `mutate_if()` and `mutate_all()`
-variants, there is a family of `summarise()` functions similarly named for
-applying the same summarization function to multiple columns in a single
-operation. These work in much the same way as their `mutate` cousins.
-
-**`summarise_at()`** allows us to select the columns on which to operate using
-an additional `vars()` argument.
+As with `mutate()` we can use **across()** to summarise across multiple columns
+using the same function.
 
 ```{r}
-summarise_at(metabric, vars(FOXA1, MLPH), mean)
+summarise(metabric, across(c(FOXA1, MLPH), mean))
 ```
 
-Selecting the columns is done in the same way as for `mutate_at()` and
-`select()`.
-
-**`summarise_all()`** summarises values in all columns.
+We can use the `everything()` selector to summarise across all the columns in
+the table.
 
 ```{r}
 metabric %>%
   select(ESR1:MLPH) %>%
-  summarise_all(mean)
+  summarise(across(everything(), mean))
 ```
 
-You have to be careful with `summarise_all()` that all columns can be summarised
-with the given summary function. For example, what happens if we try to compute
-an average of a set of character values?
+But, you have to be careful that all columns can be summarised with the given
+summary function. For example, what happens if we try to compute an average of
+a set of character values?
 
 ```{r}
-summarise_all(metabric, mean, na.rm = TRUE)
+metabric %>%
+    summarise(across(everything(), ~mean(.x, na.rm = TRUE)))
 ```
 
 We get a lot of warning messages and `NA` values for those columns for which
 computing an average does not make sense.
 
-**`summarise_if()`** can be used to select those values for which a
-summarization function is appropriate.
+We can combine `across()` with `where()` and a logical test (e.g. `is.numeric`)
+to select those columns for which a summarization function is appropriate.
 
 ```{r}
-summarise_if(metabric, is.numeric, mean, na.rm = TRUE)
+metabric %>%
+    summarise(across(where(is.numeric), ~mean(.x, na.rm = TRUE)))
 ```
 
 It is possible to summarise using more than one function in which case a list of
 functions needs to be provided.
 
 ```{r}
-summarise_at(metabric, vars(ESR1, ERBB2, PGR), list(mean, sd))
+metabric %>% 
+    summarise(across(c(ESR1, ERBB2, PGR), list(mean, sd)))
 ```
 
 Pretty neat but I'm not sure about those column headings in the output --
 fortunately we have some control over these.
 
 ```{r}
-summarise_at(metabric, vars(ESR1, ERBB2, PGR), list(average = mean, stdev = sd))
+metabric %>% 
+    summarise(across(c(ESR1, ERBB2, PGR), list(Average = mean, stdev = sd)))
 ```
 
-## Anonymous functions
+Anonymous functions can also be used with summarise.
 
-The `mutate_` functions and `summarise_` functions work in a very similar
-manner, very much in line with the coherent and consistent framework provided
-by `dplyr` and the entire tidyverse. For example, we could use an anonymous
-function in a `summarise_at()` operation applied to multiple variables. In the
-assignment from last week, we asked you to compute the correlation of the
+For example, suppose we want to compute the correlation of the
 expression for FOXA1 against all other genes to see which was most strongly
-correlated. Here is how we could do this in a single `summarise_at()` statement
+correlated. Here is how we could do this in a single `summarise()` statement
 using an anonymous function.
 
 ```{r}
-summarise_at(metabric, vars(ESR1:MLPH, -FOXA1), ~ cor(., FOXA1))
+metabric %>%
+    summarise(across(c(ESR1:MLPH, -FOXA1), ~cor(.x, FOXA1)))
 ```
 
 Notice how we selected all genes between ESR1, the first gene column in our
@@ -743,9 +718,9 @@ In this session we have covered the following concepts:
 
 ---
 
-## Exercises
+# Exercises
 
-The week's exercises will test your ability to manipulate the METABRIC data set
+These exercises will test your ability to manipulate the METABRIC data set
 by changing the values of existing columns or adding new columns by computing
 new variables from existing ones.
 
@@ -766,116 +741,64 @@ metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
 First obtain the subset of patients that received neither chemotherapy or
 radiotherapy and survived for more than 20 years.
 
+<details><summary>Answer</summary>
 ```{r}
-patients_of_interest <- filter(metabric, Chemotherapy == "NO", Radiotherapy == "NO", Survival_time / 12 > 20)
-# alternative using separate steps
 patients_of_interest <- metabric %>%
-  filter(Chemotherapy == "NO") %>%
-  filter(Radiotherapy == "NO") %>%
   mutate(Survival_time_years = Survival_time / 12) %>%
-  filter(Survival_time_years > 20)
-#
+  filter(Chemotherapy == "NO" & Radiotherapy == "NO" & Survival_time_years > 20)
+
 patients_of_interest
 ```
+</details>
 
 Now look at the breakdown of these patients in terms of ER status. Count the
 numbers of ER positive and ER negative patients in this subset. Calculate the
 proportion that are ER positive.
 
+<details><summary>Answer</summary>
 ```{r}
 table(patients_of_interest$ER_status)
 mean(patients_of_interest$ER_status == "Positive")
 ```
+</details>
 
 What does this tell us? Calculate the proportion of ER positive patients in the
 whole cohort by way of a comparison.
 
+<details><summary>Answer</summary>
 ```{r}
 table(metabric$ER_status)
 mean(metabric$ER_status == "Positive")
 ```
+</details>
 
 
-**2. Which patients have spent the largest proportion of their lives dealing with breast cancer?**
+**2. Which patients have spent the largest proportion of their lives dealing
+with breast cancer? Note that the current Survival_time column is months.
+Present the final results as a table showing Patient_ID, Age, Age_at_diagnosis,
+Survival_time_in_years and Proportion_of_life_since_diagnosis. Round all
+numbers in the final table to 2 decimal places and sort it so that the patient
+with the highest proportion is at the top.**
 
+<details><summary>Hint</summary>
+1. Create a column of Survival_time_years
+2. Add Survival_time_years it to Age_at_diagnosis to get final Age
+3. Calculate the proportion: Survival_time_years/Age
+</details>
+
+<details><summary>Answer</summary>
 ```{r}
-### Hint 
-### Create Survival_time_years
-### Add it to Age_at_diagnosis
-### Create Proportion: Survival_time_years/Age
-
 metabric %>%
   mutate(Survival_time_years = Survival_time / 12) %>%
   mutate(Age = Age_at_diagnosis + Survival_time_years) %>%
   mutate(Proportion_of_life_since_diagnosis = Survival_time_years / Age) %>%
-  select(Patient_ID, Age, Age_at_diagnosis, Survival_time_years, Proportion_of_life_since_diagnosis) %>%
+  select(Patient_ID, 
+         Age, 
+         Age_at_diagnosis, 
+         Survival_time_years, 
+         Proportion_of_life_since_diagnosis) %>%
   arrange(desc(Proportion_of_life_since_diagnosis)) %>%
-  mutate_if(is.numeric, round, digits = 2)
-
+  mutate(across(where(is.numeric), ~round(.x, digits = 2)))
 ```
-
----
-
-**3. Convert the expression values for each of the genes into standardized z-scores**
-
-Some genes are generally expressed at higher levels than others. This can make
-comparisons of changes between groups for a set of genes somewhat difficult,
-particularly if the expression for those genes are on very different scales. The
-expression values in our METABRIC are on a log~2~ scale which helps to reduce
-the range of values but another method for representing expression measurements
-is to standardize these to produce z-scores.
-
-Standardization of a set of measurements involves subtracting the mean from each
-and dividing by the standard deviation. This will produce values with a mean of
-0 and a standard deviation of 1.
-
-Create a modified version of the `metabric` data frame containing a new column
-with the standardized expression values (z-scores) for the ESR1 gene.
-
-```{r}
-### Hint 
-### ESR1 - mean(ESR1)) / sd(ESR1)
-metabric_z_scores <- mutate(metabric, ESR1_z_score = (ESR1 - mean(ESR1)) / sd(ESR1))
-```
-
-Check that you've done this correctly by calculating the mean and standard
-deviation of your new z-score variable.
-
-```{r}
-summarise(metabric_z_scores, mean = mean(ESR1_z_score), sd = sd(ESR1_z_score))
-```
-
-Add another column to your modified `metabric` data frame containing a z-score
-for GATA3 and then create a scatter plot of the z-scores of GATA3 against ESR1.
-Modify your plot to facet by the PAM50 classification.
-
-```{r}
-metabric_z_scores <- mutate(metabric_z_scores, GATA3_z_score = (GATA3 - mean(GATA3)) / sd(GATA3))
-ggplot(data = metabric_z_scores) +
-  geom_point(mapping = aes(x = GATA3_z_score, y = ESR1_z_score)) +
-  facet_wrap(vars(PAM50))
-```
-
----
-
-**4. Which Star Wars characters need to go on a diet?**
-
-Compute the body mass index (BMI) of characters in the `starwars` tibble.
-
-```{r}
-starwars <- starwars %>%
-  mutate(height = height / 100) %>%
-  mutate(BMI = mass / height ^ 2)
-```
-
-Filter for human characters that are overweight (BMI > 25) and display in
-decreasing order of BMI.
-
-```{r}
-starwars %>%
-  filter(species == "Human") %>%
-  filter(BMI > 25) %>%
-  arrange(desc(BMI)) %>%
-  select(name, height, mass, BMI)
-```
+</details>
 
