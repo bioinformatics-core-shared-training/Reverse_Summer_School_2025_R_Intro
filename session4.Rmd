@@ -284,37 +284,6 @@ Setting this inside the `aes()` mapping told ggplot2 to map the colour aesthetic
 to some variable in the data frame, one that doesn't really exist but which is
 created on-the-fly with a value of "blue" for every observation.
 
-## Statistical transformations (ADVANCED)
-
-You may have noticed that ggplot2 didn't just plot values from our data set but
-had to do some calculation first for the bar chart, i.e. it had to sum the
-number of observations in each category.
-
-Each geom has a **statistical transformation**. In the case of the scatter plot,
-`geom_point` uses the "identity" transformation which means just use the values
-as they are, i.e. not really a transformation at all. The statistical
-transformation for `geom_bar` is "count", which means it will count the number
-of observations for each category in the variable mapped to the x aesthetic.
-
-You can see which statistical transformation is being used by a geom by looking
-at the `stat` argument in the help page for that geom.
-
-There are some circumstances where you'd want to change the `stat`, for example
-if we already had count values in our table.
-
-```{r}
-counts <- tibble(
-  `3-gene_classifier` = c("ER-/HER2-", "ER+/HER2- High Prolif", "ER+/HER2- Low Prolif", "HER2+"),
-  count = c(290, 603, 619, 188)
-)
-counts
-```
-
-```{r bar_plot_8}
-ggplot(data = counts) +
-  geom_bar(mapping = aes(x = `3-gene_classifier`, y = count), stat = "identity")
-```
-
 # Multiple layers
 
 Consider again the ggplot2 grammar:
@@ -479,12 +448,6 @@ code below we've skipped that row as well and told `read_excel()` what column
 names to use. We've also given it a heads-up about which type of data are in
 each column. Look up the help page for `read_excel()` for more details about the
 arguments we've used below.
-
-We can download COVID-19 data using `download.file()` function.
-
-```{r message = FALSE, warning = FALSE}
-download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/2020-04-26_COVID-19_Press_Conference_Data.xlsx",destfile = "data/2020-04-26_COVID-19_Press_Conference_Data.xlsx")
-```
 
 ```{r message = FALSE, warning = FALSE}
 library(readxl)
@@ -679,7 +642,22 @@ A look at the help page for `as.factor` shows that we can create a factor using
 the `factor()` function and specify the levels using the `levels` argument.
 
 ```{r}
-metabric$Integrative_cluster <- factor(metabric$Integrative_cluster, levels = c("1", "2", "3", "4ER-", "4ER+", "5", "6", "7", "8", "9", "10"))
+metabric$Integrative_cluster <- factor(metabric$Integrative_cluster, 
+                                       levels = c("1", "2", "3", "4ER-", 
+                                                  "4ER+", "5", "6", "7", 
+                                                  "8", "9", "10"))
+levels(metabric$Integrative_cluster)
+```
+
+The `forcats` package in the `tidyverse` provides a number of functions
+for manipulating factors and their levels. In this case the `fct_relevel` 
+function provides a methods with slightly less typing.
+We just want to move "10" to the end of levels.
+
+```{r}
+metabric$Integrative_cluster <- fct_relevel(metabric$Integrative_cluster, 
+                                            "10",
+                                            after = Inf)
 levels(metabric$Integrative_cluster)
 ```
 
@@ -687,98 +665,6 @@ levels(metabric$Integrative_cluster)
 ggplot(data = metabric) +
   geom_bar(mapping = aes(x = Integrative_cluster, fill = Integrative_cluster))
 ```
-
-# The ggplot object -- a peek under the hood (ADVANCED)
-
-Let's build a ggplot2 plot up in stages to understand what's really going on.
-
-```{r}
-plot <- ggplot(data = metabric)
-```
-
-What is the plot object we've just created?
-
-```{r}
-typeof(plot)
-```
-
-```{r}
-length(plot)
-```
-
-The plot object is a list containing 9 elements. It's actually a special type of
-list.
-
-```{r}
-class(plot)
-```
-
-What are the 9 things in the list?
-
-```{r}
-names(plot)
-```
-
-So far we've constructed ggplots from data, layers (geoms) and aesthetic
-mappings but do you notice the labels, scales, facet and theme elements? We'll
-be looking at how to customize plots later, including changing the labels,
-altering the scales of axes, and applying a different visual theme.
-
-The `data` element is just the metabric tibble that we provided to the
-`ggplot()` function.
-
-```{r}
-plot$data
-```
-
-This `plot` list object is really only a specification for how ggplot2 should
-create the plot. ggplot2 only renders the plot when we ask it to by printing it
-out to the screen by typing `print(plot)` or simply just `plot`.
-
-We haven't added any layers yet so what does our plot look like at this point?
-
-```{r building_up_plot_1}
-plot
-```
-
-ggplot2 doesn't know what to plot yet as we haven't added a layer (geom).
-
-```{r}
-plot$mapping
-plot$layers
-```
-
-Lets add an aesthetic mapping.
-
-```{r building_up_plot_2}
-plot <- ggplot(data = metabric, mapping = aes(x = Nottingham_prognostic_index, y = ESR1, colour = ER_status))
-plot
-```
-
-ggplot2 has automatically added scales for x and y based on the ranges of values
-for the Nottingham prognostic index and ESR1 expression. Still nothing has been
-plotted as we haven't yet specified the type of plot (geom) to add as a layer.
-
-```{r}
-plot$mapping
-plot$layers
-```
-
-Finally, let's add a `geom_point` layer to create a scatter plot.
-
-```{r building_up_plot_3}
-plot <- plot + geom_point()
-plot
-```
-
-```{r}
-plot$layers
-```
-
-We touched on statistical transformations earlier. The `stat` associated with a
-`geom_point` is `stat_identity` which leaves values unchanged. In the case of a
-scatter plot, we already have the x and y values -- they don't need to be
-transformed, just plotted on the x and y axes.
 
 ---
 
@@ -796,8 +682,6 @@ In this session we have covered the following concepts:
 * Categorical variables and how R handles these with its factor type
 
 ---
-
-
 
 # Exercises
 
@@ -819,25 +703,13 @@ ggplot(data = metabric) +
 :::
 
 :::exercise
-2. Use `iris` data set to show the following 
-
-    a. Create a box plot showing the distribution of petal lengths based on the `iris` data set.
-    b. Create a box plot showing the distribution of petal lengths based on the `iris` data set, and display the mean and median values as red and orange points within the box plot. Hint: use `stat_summary` function.
+2. Use `iris` data set to create a box plot showing the distribution of petal lengths based on the `iris` data set.
 
 <details><summary>Answer</summary>
 ```{r message=FALSE, warning=FALSE}
 # 2 a.
 ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) + 
   geom_boxplot()
-```
-
-```{r message=FALSE, warning=FALSE}
-# 2 b
-ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) + 
-  geom_boxplot() +
-  stat_summary(fun=mean, color="red") +
-  stat_summary(fun=median, color="orange")
-  
 ```
 </details>
 
