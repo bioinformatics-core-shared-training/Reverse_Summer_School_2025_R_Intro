@@ -2,9 +2,6 @@
 title: "Introduction to R for Biologists"
 ---
 
-
-# Introduction
-
 This site contains the materials for an introductory R course run at Cambridge
 Makerere Summer School 2023.
 
