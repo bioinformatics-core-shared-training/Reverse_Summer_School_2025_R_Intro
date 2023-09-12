@@ -188,6 +188,9 @@ R has 6 basic data types:
 
 The last two data types are rarely used in practice.
 
+We will learn about an additional specialist data class __factor__ in the next
+session.
+
 __double__ and __integer__ both have the additional type __numeric__.
 
 There are some additional specialist data types, such as dates, but we wont be
@@ -204,55 +207,34 @@ mathematical operations (+, -, x and /) are only meaningful for numbers.
 ```
 * Efficient storage, e.g. the __integer__ type uses less memory than the
   __double__ (decimal) data type.
-  
-### R Arithmetic Operators
-
-Mathematical operations such as addition and multiplication are performed using various operators. Here is a list of R's arithmetic operators.
-  
-  * Addition: +
-  * Subtraction: -
-  * Multiplication: *
-  * Division: /
-  * Exponent: ^
-  * Modulus (Remainder from division): %%
-
-e.g.: 
-
-```{r}
-5*5 # 5 times 5
-
-7/3 # 7 divided by 3
-
-7%%3 # remainder of 7 divided by 3
-```
 
 ## Data structures in R
 
 ![Image source:http://venus.ifca.unican.es/Rintro/dataStruct.html](./images/dataStructures.png)
 
-* R has many data structures. These include
-  * Atomic vector
-  * data frame
-  * matrix
-  * list
-  * factors
+R has many data structures. These include:
+
+* Atomic vector  
+* data frame  
+* matrix  
+* list  
+* factors  
 
 
 ### Atomic vector
 
 
-* This is the fundamental data structure in R
-* All the other data structures built on vectors 
-* `Understanding this structure is absolutely essential`
+The atomic vector is the fundamental data structure in R and all the other data
+structures built on vectors.
 
 ![Image source:https://www.geeksforgeeks.org/r-vector/](./images/Vectors-in-R.jpg)
 
 We can assign a value to an object with a name:
 
 ```{r}
-x <- 100 # create first vector
+x <- 100 
 ```
-Here we are creating an object called `x`. 
+Here we are creating an object called `x` containing the value '100'.
 
 **Note**: The terms `object` and `variable` are often used interchangeably,
 even though they do have sublty different meanings.
@@ -391,7 +373,7 @@ each element one by one. Coding becomes more concise, easier to read, and less
 prone to errors as a result.
 
 ```{r}
-x <- c(1,2,3,4,5) 
+x <- c(1, 2, 3, 4, 5) 
 x * 5 
 x + 1 
 ```
@@ -400,22 +382,21 @@ Vectorization is powerful, quick and concise, but leads to confusion when
 vector lengths are different.
 
 ```{r}
-x <- c(1,2,3,4,5,6)
-y <- c(1,2,3,4,5,6)
+x <- c(1, 2, 3, 4, 5, 6)
+y <- c(1, 2, 3, 4, 5, 6)
 x + y
 ```
 
 
 ```{r}
-x <- c(1,2,3,4,5)
-y <- c(1,2)
+x <- c(1, 2, 3, 4, 5)
+y <- c(1, 2)
 x + y
 ```
 
 ![](./images/vec_recycling.png)
   
 ### Accessing specific elements of an atomic vector  
-
 
 If a vector contains more than one value, we may times only wish to access
 specific values within the vector. To this we use the `[]` subscript operator.
@@ -441,14 +422,14 @@ vec[4]
 To extract 4th and 7th values from the vector:
 
 ```{r}
-vec[c(4,7)]
+vec[c(4, 7)]
 ```
 
 We can also invert the selection using "-" symbol, e.g. to extract all the
 values except 4th and 7th values:
 
 ```{r}
-vec[c(-4,-7)]
+vec[c(-4, -7)]
 ```
 
 It is also possible to selectively replace specific vector values using the
@@ -469,7 +450,7 @@ extracting values, however, if it is shorter then it will be recycled as
 necessary - this can be confusing.
 
 ```{r}
-y <- c( 5, 8, 10) 
+y <- c(5, 8, 10) 
 myLogicalVec <- c(FALSE, TRUE, FALSE)
 y[myLogicalVec]
 vec[myLogicalVec]
@@ -537,6 +518,111 @@ We could use "!=" to select all values not equal to 20, but to demostrate the
 
 ```{r}
 x[ !x == 20 ]
+```
+
+### Converting the class of vector from one data type to another
+
+We can convert the data type of a vector to different classes  using the "as"
+family of functions:
+
+* `as.character()`: convert to character type data
+* `as.numeric()`: convert to numerics vector
+* `as.integer()`: convert to integer vector
+* `as.logical()`: convert to logical vector
+
+This will have different effects depending on the original class of the vector.
+
+For example it is perfectly sensible that we could convert an integer vector to
+a character vector:
+
+```{r}
+x <- 1:5
+x
+as.character(x)
+```
+
+On the other hand there is usually no logical way we could convert a character
+vector qo an integer vector:
+
+```{r}
+x <- c("apple", "banana", "orange")
+x
+as.integer(x)
+```
+
+Except where the value is a number:
+
+```{r}
+x <- c("Blue", "23", "45", "9.89", "Red")
+x
+as.integer(x)
+```
+
+Note that as we specified `as.integer`, rather than `as.numeric` "9.89" was converted to 9.
+
+```{r}
+as.numeric(x)
+```
+
+A logical vector can be converted to either character or integer:
+
+```{r}
+x <- c(TRUE, FALSE, TRUE, FALSE)
+x
+as.character(x)
+as.integer(x)
+```
+
+### Testing the class of an object
+
+We can perform a logical test on an object to determine it's data class using the "is.XXX" family of functions:
+
+* is.character(): to test if the object holds character type data  
+* is.double(): to test if the object holds decimal type data  
+* is.numeric(): to test if the object holds numeric type data  
+* is.integer(): to test if the object holds integer type data  
+* is.logical(): to test if the object holds logical type data  
+  
+The output of this family of functions is a logical value TRUE or FALSE
+
+We can also test for the type of data structure
+
+* is.vector(): To determine if the object is a vector  
+* is.matrix(): To determine if the object is a matrix  
+* is.data.frame(): To determine if the object is a data frame  
+
+```{r}
+x <- 1:100
+typeof(x)
+is.integer(x)
+is.vector(x)
+is.matrix(x)
+```
+
+## R Arithmetic Operators
+
+Mathematical operations such as addition and multiplication are performed using various operators. Here is a list of R's arithmetic operators.
+  
+  * Addition: +
+  * Subtraction: -
+  * Multiplication: *
+  * Division: /
+  * Integer division: %/%
+  * Modulus (Remainder from division): %%
+  * Exponent: ^
+
+For example 
+
+```{r}
+5 * 5 
+
+3 ^ 3
+
+7 / 3
+
+7 %/% 3
+
+7 %% 3
 ```
 
 ## Functions and their arguments
