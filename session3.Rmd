@@ -18,23 +18,33 @@ title: "Week 3 - Working with data in R"
 
 ## Create an R Project
 
-Before starting to write code in RStudio, we need to create an R Project.  The idea behind an R project is  to have a workspace where you can keep all the files and settings associated with the project together.  In that way, next time you open the R Project it would be easier to resume work.  
+Before starting to write code in RStudio, we need to create an R Project.  The
+idea behind an R project is  to have a workspace where you can keep all the
+files and settings associated with the project together.  In that way, next
+time you open the R Project it would be easier to resume work.  
+
+We are going to create a new project in the directory of data files that you 
+should already have downloaded. If you haven't got it yet, you can download it
+from here:
+
+https://bioinformatics-core-shared-training.github.io/Reverse_Summer_School_2023_PreCourse/Bioinformatics_workshop_data.zip
+
+Then unzip the folder somewhere on your laptop.
 
 To create an "R Project":
 
 1. Start RStudio.
-2. Under the `File` menu, click on `New Project`. Choose `New Directory`, then
-  `New Project`.
-3. Enter a name for this new folder (or "directory"), and choose a convenient
-  location for it. This will be your **working directory** for the rest of the
-  day (*e.g.,* `~/my_first_project`).
+2. Under the `File` menu, click on `New Project`. Choose `Existing Directory`
+3. Click the `Browse...` button and locate the **Bioinformatics_workshop_data/R_Intro**
+   folder on your computer.
 4. Click on `Create Project`.
-5. (Optional) Set Preferences to 'Never' save workspace in RStudio.
+5. (Optional) Set Preferences to 'Never' save workspace in RStudio:
 
-RStudio's default preferences generally work well, but saving a workspace to
-`.RData` can be cumbersome, especially if you are working with larger datasets as this would save all the data that is loaded into R into the `.RData` file.  
-To turn that off, go to `Tools` --> `Global Options` and select the 'Never' option
-for `Save workspace to .RData' on exit.`
+    RStudio's default preferences generally work well, but saving a workspace to
+    `.RData` can be cumbersome, especially if you are working with larger datasets
+    as this would save all the data that is loaded into R into the `.RData` file.
+    To turn that off, go to `Tools` --> `Global Options` and select the 'Never'
+    option for `Save workspace to .RData' on exit.`
 
 # Getting started with data in R
 
@@ -128,9 +138,7 @@ For some packages you may be asked to choose between a binary and a source
 package, particularly if the latest version of the package is only available in
 source form and that package contains code written in another language such as
 C. This could be a problem if you don't have a C compiler installed on your
-computer.
-
-
+computer - generally just choose to install the binary version.
 
 # Tibbles
 
@@ -158,7 +166,7 @@ beatles
 A data frame can be converted into a tibble using the `as_tibble()` function.
 
 ```{r}
-iris_tibble <- as_tibble(iris)
+irisTibble <- as_tibble(iris)
 ```
 
 Our iris tibble is still a data frame but it also has acquired some additional
@@ -166,9 +174,8 @@ types or classes (`tbl_df` and `tbl`).
 
 ```{r}
 class(iris)
-class(iris_tibble)
+class(irisTibble)
 ```
-
 
 ## Tibbles vs data frames
 
@@ -187,15 +194,15 @@ the data types of each column and the size of the dataset, the `str` function is
 not as much useful as it was when using `data.frame`.  
 
 ```{r, results=TRUE}
-## inspect the data
 str(iris_tibble)
 ```
 
-Notice that rather than specifing `tibble` as the data structure of surveys, the first line of `str`'s output now specifies `‘spec_tbl_df’, ‘tbl_df’, ‘tbl’ and 'data.frame'` which can be a bit confusing. These are the classes `tibble` inherts from which in simple terms means that `tibble` is a `data.frame` with a few modifications.  Therefore, most of the functions that were used with `data.frame` can also be used with `tibble`.
-
-
-
-
+Notice that rather than specifing `tibble` as the data structure of surveys,
+the first line of `str`'s output now specifies ‘tbl_df’, ‘tbl’
+and 'data.frame'` which can be a bit confusing. These are the classes `tibble`
+inherts from which in simple terms means that `tibble` is a `data.frame` with a
+few modifications.  Therefore, most of the functions that were used with
+`data.frame` can also be used with `tibble`.
 
 # Reading data into R
 
@@ -211,16 +218,11 @@ Targeted sequencing was performed for 2509 primary breast tumours, along with
 cancer genes as part of the METABRIC study
 ([Pereira *et al.*, Nature Communications 7:11479, 2016](https://www.ncbi.nlm.nih.gov/pubmed/27161491)).
 
-Let us first download the file and have a look at the data.  
-
-We are going to use the R function `download.file()` to download the TSV/CSV files that contains the data.  
-```{r, eval=FALSE, purl=TRUE}
-download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/brca_metabric_clinical_data.tsv",destfile = "data/brca_metabric_clinical_data.tsv")
-download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/metabric_clinical_and_expression_data.csv",destfile = "data/metabric_clinical_and_expression_data.csv")
-```
-
-This file contains information in tabular form in which values are separated by
-tab characters so we'll use the **`read_tsv()`** to read these data.
+There should be two metabric files in the **data** directory inside the
+**R_Intro** directory. We are first going to load
+*brca_metabric_clinical_data.tsv*.  The "tsv" suffix tells us that this file
+contains information in tabular form in which values are separated by tab
+characters so we'll use the **`read_tsv()`** to read these data.
 
 ```{r}
 metabric <- read_tsv("data/brca_metabric_clinical_data.tsv")
@@ -250,7 +252,13 @@ are.
 
 ```
 
-To create clean column names we can use `clean_names()` from `janitor` package.
+You can see that the column names are surrounded by back ticks. This is
+because they contain characters, such as spaces and dashes, and in one case
+starts with a number. R does not natively allow column names to contain special
+characters other than "_" and "." or to start with numbers. There are ways
+around this - using the back ticks - but this becomes cumbersome when writing
+our code. To create clean column names we can use `clean_names()` from
+`janitor` package.
 
 ```{r}
 #install.packages("janitor")
@@ -271,7 +279,6 @@ We can summarize the numbers of mutations found per patient.
 ```{r}
 summary(metabric$mutation_count)
 ```
-
 
 ## Working directory
 
@@ -306,8 +313,6 @@ navigate to the directory of your choosing in the Files tab pane and set this to
 be the working directory by clicking on the **More** menu button and selecting
 **Set As Working Directory**.
 
-
-
 # Missing values
 
 The METABRIC clinical dataset has some missing values. If you look back to the
@@ -324,69 +329,25 @@ metabric$mutation_count[1:10]
 Missing values in R are represented as **`NA`**, which stands for 'not available'.
 ```
 
-The `summary()` function reported that there are 152 missing mutation counts.
-`summary()` reports the mean and median values for the remaining observations,
-i.e. those for which a mutation count *is* available. Not all functions do this
-though.
-
-```{r}
-mean(metabric$mutation_count)
-```
-
-The `mean()` function, for example, takes a different approach in how it treats
-missing values. It returns `NA`, i.e. a missing value, because it takes the view
-that it cannot compute a mean for a set of values where some are not available.
-You can specify the argument `na.rm = TRUE` when calling `mean()` to instruct it
-to ignore the missing values and calculate the mean of the remaining values.
-
-```{r}
-mean(metabric$mutation_count, na.rm = TRUE)
-```
-
-There are many such functions in R that would be similarly affected by missing
-values and which offer the `na.rm` argument.
-
-You can test for missing values using the `is.na()` function.
-
-```{r}
-first_ten_mutation_counts <- metabric$mutation_count[1:10]
-is.na(first_ten_mutation_counts)
-```
-
-One final handy tip: summing the result of `is.na()` will count the number of
-missing values in a vector.
-
-```{r}
-sum(is.na(metabric$mutation_count))
-```
-
-
-
 # Data manipulation with dplyr
 
 **dplyr** is one of the packages that gets loaded as part of the tidyverse.
 
-```{r}
-library(tidyverse)
-```
-
-dplyr is the Swiss army knife in the tidyverse, providing many useful functions
-for manipulating tabular data in data frames or tibbles. We're going to look at
-the key functions for filtering our data, modifying the contents and computing
-summary statistics.
+**dplyr** provides many useful functions for manipulating tabular data in data
+frames or tibbles. We're going to look at the key functions for filtering our
+data, modifying the contents and computing summary statistics.
 
 We'll also introduce the pipe operator, **`%>%`**, for chaining operations
 together into mini workflows in a way that makes for more readable and
 maintainable code.
 
-We'll again use the METABRIC data set to illustrate how these operations work.
+This time we'll use a METABRIC data set containing clinical data and gene
+expression data to illustrate how these operations work.
 
 ```{r message = FALSE}
 metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
 metabric
 ```
-
-
 
 # Data semantics
 
@@ -443,8 +404,6 @@ uniform manner. They all have the following shared behaviours:
 
 * The result of an operation is a new data frame
 
-
-
 # Filtering rows with `filter()`
 
 The **`filter`** verb allows you to choose rows from a data frame that match
@@ -497,7 +456,8 @@ use the **`%in%`** operator to test which observations (rows) contain those
 values.
 
 ```{r}
-deceased <- filter(metabric, Vital_status %in% c("Died of Disease", "Died of Other Causes"))
+deceased <- filter(metabric, 
+                   Vital_status %in% c("Died of Disease", "Died of Other Causes"))
 nrow(deceased)
 ```
 
@@ -552,7 +512,10 @@ can filter for this using the **`is.na()`** function.
 
 ```{r}
 missing_vital_status <- filter(metabric, is.na(Vital_status))
-missing_vital_status[, c("Patient_ID", "Survival_status", "Vital_status", "Deceased")]
+missing_vital_status[, c("Patient_ID", 
+                         "Survival_status", 
+                         "Vital_status", 
+                         "Deceased")]
 ```
 
 `filter()` only retains rows where the condition if `TRUE`; both `FALSE` and
@@ -590,7 +553,9 @@ patients have stage 3 or stage 4 tumours that are either estrogen receptor (ER)
 positive or progesterone receptor (PR) positive.
 
 ```{r}
-selected_patients <- filter(metabric, Tumour_stage >= 3, ER_status == "Positive" | PR_status == "Positive")
+selected_patients <- filter(metabric, 
+                            Tumour_stage >= 3, 
+                            ER_status == "Positive" | PR_status == "Positive")
 nrow(selected_patients)
 ```
 
@@ -599,7 +564,8 @@ about the precedence of the `&` and `|` operators and use parentheses to make
 clear what you intended.
 
 ```{r eval = FALSE}
-filter(metabric, Tumour_stage >= 3 & (ER_status == "Positive" | PR_status == "Positive"))
+filter(metabric, Tumour_stage >= 3 & 
+       (ER_status == "Positive" | PR_status == "Positive"))
 ```
 
 
@@ -677,7 +643,11 @@ You can use a combination of explicit naming, ranges, helper functions and
 negation to select the columns of interest.
 
 ```{r}
-selected_columns <- select(metabric, Patient_ID, starts_with("Tumour_"), `3-gene_classifier`:Integrative_cluster, -Cellularity)
+selected_columns <- select(metabric, 
+                           Patient_ID, 
+                           starts_with("Tumour_"), 
+                           `3-gene_classifier`:Integrative_cluster, 
+                           -Cellularity)
 selected_columns
 ```
 
@@ -691,16 +661,26 @@ afterwards in whatever order they were already in.
 select(metabric, Patient_ID, Survival_status, Tumour_stage, everything())
 ```
 
+Note dplyr also provides the `relocate()` function to achieve the same goal:
+
+```{r}
+relocate(metabric, Patient_ID, Survival_status, Tumour_stage)
+```
+
 Finally, columns can be renamed as part of the selection process.
 
 ```{r}
-select(metabric, Patient_ID, Classification = `3-gene_classifier`, NPI = Nottingham_prognostic_index)
+select(metabric, 
+       Patient_ID, Classification = `3-gene_classifier`, 
+       NPI = Nottingham_prognostic_index)
 ```
 
 Note that dplyr provides the `rename()` function for when we only want to rename
 a column and not select a subset of columns.
 
-
+```{r}
+rename(metabric, PatientID = Patient_ID)
+```
 
 # Sorting using `arrange()`
 
@@ -738,66 +718,11 @@ Sorting is most commonly used in workflows as one of the last steps before
 printing out a data frame or writing out the table to a file.
 
 
-# Summary
+# Reading data from Excel files into R 
 
-In this session we have covered the following concepts:
-
-* Create an R Project
-* How to install and use packages that extend R's basic functionality
-* How to read tabular data into R
-* The tibble, a superior version of the data frame
-* Missing values and how R handles these
-* Filtering rows in a data frame based on their values
-* Selecting and reordering of columns
-* Sorting data
-
-
-
-## Exercises
-
-
-**1. How many samples in the METABRIC dataset have high cellularity and positive ER and HER2 status?**
-
-After reading the data first subset it to retain only cellularity, er_status and her2_status. Thereafter, get rid of rows with missing values in any of the columns.
-
-```{r}
-#library(tidyverse)
-#metabric <- read_tsv("data/brca_metabric_clinical_data.tsv")
-
-```
-
-**2. Investigate the subset of long-surviving breast cancer patients that didn't receive chemo or radiotherapy**
-
-First obtain the subset of patients that received neither chemotherapy or
-radiotherapy and survived for more than 20 years.
-
-```{r}
-#library(tidyverse)
-#metabric <- read_csv("metabric_clinical_and_expression_data.csv")
-
-```
-
-Now look at the breakdown of these patients in terms of ER status. Count the
-numbers of ER positive and ER negative patients in this subset. Calculate the
-proportion that are ER positive.
-
-```{r}
-
-```
-
-What does this tell us? Calculate the proportion of ER positive patients in the
-whole cohort by way of a comparison.
-
-```{r}
-
-```
-
-
-**3. Read into R one of your own Excel spreadsheets and explore the data using `summary()`, `table()` and/or `plot()`**
-
-We haven't yet showed how to read Excel spreadsheets into R. There are more than
-package providing this capability but for this exercise use the `readxl` package
-from the tidyverse.
+We haven't yet showed how to read Excel spreadsheets into R. There are several 
+packages providing this capability, but for general use the `readxl` package
+from the tidyverse ideal.
 
 `readxl` should have been installed as part of the tidyverse but if you find
 that's not the case, you will have to install it separately.
@@ -805,5 +730,56 @@ that's not the case, you will have to install it separately.
 `readxl` is not loaded as one of the core tidyverse packages when you run
 `library(tidyverse)` so you'll have to load this separately.
 
-If you don't have an Excel spreadsheet to hand, you can use the clinical
-annotation data for the NCI-60 cell line data set (https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/cellline_nci60_clinical_data.xlsx).
+The the main functions are `read_excel`, `read_xls` and `read_xslx`. Use 
+`?read_xls` to find out how specify cell ranges and worksheets to be read.
+
+
+# Exercises
+
+
+:::exercise
+
+1. How many samples in the METABRIC dataset have high cellularity and positive ER and HER2 status?
+
+   After reading the data first subset it to retain only Cellularity,
+   ER_status and HER2_status. Then filter the data to answer the question.
+
+<details><summary>Answer</summary>
+
+```{r}
+selectedPatients <- metabric %>%
+    select(Cellularity, ER_status, HER2_status) %>%
+    filter(Cellularity=="High" & ER_status=="Positive" & HER2_status=="Positive")
+nrow(selectedPatients)
+```
+
+</details>
+:::
+
+:::exercise
+
+2. Investigate the subset of long-surviving breast cancer patients that didn't
+   receive chemo or radiotherapy. 
+
+   First obtain the subset of patients that received neither chemotherapy or
+   radiotherapy and survived for more than 20 years.
+
+   What percentage of these patients had negative ER status? 
+
+   How does this compare to the percentage of patients with ER_negative status
+   in the whole data set?
+
+<details><summary>Answer</summary>
+
+```{r}
+selectedPatients <- metabric %>%
+    filter(Chemotherapy=="NO" & Radiotherapy=="NO" & Survival_time > 240) 
+
+mean(selectedPatients$ER_status=="Negative")
+mean(metabric$ER_status=="Negative")
+
+```
+</details>
+:::
+
+
