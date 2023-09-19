@@ -4,10 +4,13 @@ title: "Session 6 -- Grouping and combining data"
 
 > #### Learning objectives
 >
-> * Use `group_by()` with `summarise()` to compute summary values for groups of observations
+> * Use `group_by()` with `summarise()` to compute summary values for groups of
+>   observations
 > * Use `count()` to count the numbers of observations within categories
-> * Combine data from two tables based on a common identifier (`join` operations)
-> * Customize plots created using ggplot2 by changing labels, scales and colours
+> * Combine data from two tables based on a common identifier (`join`
+>   operations)
+> * Customize plots created using ggplot2 by changing labels, scales and
+>   colours
 
 
 
@@ -357,7 +360,9 @@ a sample, as can be seen in the first two rows at the top of the table above.
 
 If we want to count the number of patients in which mutations were detected we
 could select the distinct set of patient identifiers using the **`distinct()`**
-function.
+function and then count the number of rows left. Distinct reduces the table to
+ony contain one row for each value of the column (or combination of columns)
+provided:
 
 ```{r}
 mutations %>%
@@ -365,26 +370,26 @@ mutations %>%
   nrow()
 ```
 
-Similarly, we could select the distinct set of mutated genes for each patient
-as follows.
+However, if we want to count the number of mutations per a patient we can
+use the dplyr function **`count()`**:
 
 ```{r}
-mutations %>%
-  distinct(Patient_ID, Gene)
+count(mutations, Patient_ID)
 ```
 
-This has reduced the number of rows as only distinct combinations of patient
-and gene are retained. This would be necessary if we wanted to count the number
-of patients that have mutations in each gene rather than the number of mutations
-for that gene regardless of the patient.
+Similarly if wanted to count the number of mutations detected in each gene:
 
 ```{r}
-# number of mutations for each gene
 count(mutations, Gene)
 ```
 
+What if we want to count the number of patients in which a mutation is seen for
+each gene. First, we need to use **`distinct()`** to reduce the table to just
+one entry per gene for each patient (one patient may have multiple mutations in
+a single gene) and the use **`count()`** to count the number of times we see
+each each.
+
 ```{r}
-# number of tumour samples in which each gene is mutated
 mutations %>%
   distinct(Patient_ID, Gene) %>%
   count(Gene)
@@ -393,7 +398,14 @@ mutations %>%
 The genes that differ in these two tables are those that have more than one
 mutation within a patient tumour sample.
 
+We can also use count on combinations of columns, for example we may want to
+know how many mutations each patient has on each chromosome. To this we simply
+provide **`count()`** with both columns:
 
+```{r}
+mutations %>%
+    count(Patient_ID, Chromosome)
+```
 
 # Joining data
 
@@ -597,7 +609,7 @@ We then read in the mRNA expression data that was downloaded separately from
 [cBioPortal](https://www.cbioportal.org/study/summary?id=brca_metabric).
 
 
-```{r message = FALSE}
+```{r loadmRNA, message = FALSE}
 mrna_expression_data <- read_tsv("data/metabric_mrna_expression.txt")
 mrna_expression_data
 ```
@@ -713,54 +725,24 @@ Here, just for demonstration purposes, we set the upper limit to be less than
 the largest values of ESR1 expression and ggplot2 warned us that some rows have
 been removed from the plot.
 
-Alternatively, we could remove all breaks entirely.
+Another way to alter the way the plot looks is to define a **`theme()`**.kThe
+theme controls the way in which non-data components are displayed. You can
+specifiy your own themes, e.g. to remove the grid lines you would do:
 
-```{r scatter_plot_6}
+```{r scatter_plot_7a}
 ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
   geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = "lm") +
-  scale_y_continuous(breaks = NULL)
+  theme(panel.grid = element_blank())
 ```
 
-A more typical scenario would be to keep the breaks, because we want to display
-the ticks and their lables, but remove the grid lines. Somewhat confusingly the
-position of grid lines are controlled by a scale but preventing these from being
-displayed requires changing the theme. The theme controls the way in which
-non-data components are displayed -- we'll look at how these can be customized
-in the next session. For now, though, here's an example of turning off the
-display of all grid lines for major and minor breaks for both axes.
+We wont cover themes in any more detail in this course, but you can use them to control pretty much any aspect of the plot. On the other hand, there are also
+a number of predefined themes (and more available in packages such as
+*ggtheme*). For example the "minimal" theme:
 
 ```{r scatter_plot_7}
 ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
   geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = "lm") +
-  scale_y_continuous(breaks = seq(4, 14, by = 2), limits = c(4, 14)) +
-  theme(panel.grid = element_blank())
-```
-
-By default, the scales are expanded by 5% of the range on either side. We can
-add or reduce the space as follows.
-
-```{r scatter_plot_8}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = "lm") +
-  scale_x_continuous(expand = expand_scale(mult = 0.01)) +
-  scale_y_continuous(expand = expand_scale(mult = 0.25))
-```
-
-Here we only added 1% (0.01) of the range of GATA3 expression values on either
-side along the x axis but we added 25% (0.25) of the range of ESR1 expression on
-either side along the y axis.
-
-We can move the axis to the other side of the plot –- not sure why you’d want to
-do this but with ggplot2 just about anything is possible.
-
-```{r scatter_plot_9}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.6, alpha = 0.5) +
-  geom_smooth(method = "lm") +
-  scale_x_continuous(position = "top")
+  theme_minimal()
 ```
 
 ## Colours
@@ -773,8 +755,18 @@ colours we wish to use using `scale_colour_manual` instead.
 ```{r scatter_plot_10}
 ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
   geom_point(size = 0.6, alpha = 0.5) +
-q geom_smooth(method = "lm") +
+  geom_smooth(method = "lm") +
   scale_colour_manual(values = c("dodgerblue2", "firebrick2"))
+```
+
+If we wanted to specifiy that "dodgerblue2" should be the colour for "Positive" and "firebrick2" for negative, we need to add names to the values vector:
+
+```{r scatter_plot_10a}
+ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
+  geom_point(size = 0.6, alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  scale_colour_manual(values = c(Positive = "dodgerblue2", 
+                                 Negative = "firebrick2"))
 ```
 
 Setting colours manually is ok when we only have two or three categories but
@@ -793,45 +785,44 @@ Look at the help page for `scale_colour_brewer` to see what other colour
 palettes are available and visit the [ColorBrewer](http://colorbrewer2.org)
 website to see what these look like.
 
-Interestingly, you can set other attributes other than just the colours at the
-same time.
+We can also set other attributes of the scale at the same time. For example, 
+we could change the names (labels) of the categories.
 
 ```{r scatter_plot_12}
 ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
   geom_point(size = 0.6, alpha = 0.5) +
   geom_smooth(method = "lm") +
-  scale_colour_manual(values = c("dodgerblue2", "firebrick2"), labels = c("ER-negative", "ER-positive")) +
-  labs(colour = NULL)  # remove legend title for colour now that the labels are self-explanatory
+  scale_colour_manual(values = c(Positive = "dodgerblue2", 
+                                 Negative = "firebrick2"), 
+                      labels = c("ER-negative", "ER-positive"))
 ```
 
 We have applied our own set of mappings from levels in the data to aesthetic
 values.
 
 For continuous variables we may wish to be able to change the colours used in the
-colour gradient. To demonstrate this we'll correct the Nottingham prognostic index
-(NPI) values and use this to colour points in the scatter plot of ESR1 vs GATA3
+colour gradient. To demonstrate we'll use the Nottingham prognostic index
+(NPI) values to colour points in the scatter plot of ESR1 vs GATA3
 expression on a continuous scale.
 
-```{r scatter_plot_13}
-# Nottingham_prognostic_index is incorrectly calculated in the data downloaded from cBioPortal
-metabric <- mutate(metabric, Nottingham_prognostic_index = 0.02 * Tumour_size + Lymph_node_status + Neoplasm_histologic_grade)
-#
+```{r scatter_plot_123}
 metabric %>%
-  filter(!is.na(Nottingham_prognostic_index)) %>%
-  ggplot(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index)) +
-  geom_point(size = 0.5)
+  ggplot(mapping = aes(x = GATA3, 
+                       y = ESR1, 
+                       colour = Nottingham_prognostic_index)) +
+  geom_point(size = 0.6, alpha = 0.5)
 ```
 
-Higher NPI scores correspond to worse prognosis and lower chance of 5 year
-survival. We'll emphasize those points on the scatter plot by adjusting our
-colour scale.
+ggplot2 by default uses this black to blue continuours scale.  Higher NPI
+scores correspond to worse prognosis and lower chance of 5 year survival. We'll
+emphasize those points on the scatter plot by adjusting our colour scale to run 
+from white to red.
 
 ```{r scatter_plot_14}
 metabric %>%
-  filter(!is.na(Nottingham_prognostic_index)) %>%
   ggplot(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index)) +
   geom_point(size = 0.75) +
-  scale_colour_gradient(low = "white", high = "firebrick2")
+  scale_colour_gradient(low = "white", high = "red")
 ```
 
 In some cases it might make sense to specify two colour gradients either side
@@ -839,29 +830,13 @@ of a mid-point.
 
 ```{r scatter_plot_15}
 metabric %>%
-  filter(!is.na(Nottingham_prognostic_index)) %>%
   ggplot(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index)) +
   geom_point(size = 0.75) +
-  scale_colour_gradient2(low = "dodgerblue1", mid = "grey90", high = "firebrick1", midpoint = 4.5)
+  scale_colour_gradient2(low = "dodgerblue1", 
+                         mid = "grey90", 
+                         high = "firebrick1", 
+                         midpoint = 4.5)
 ```
-
-As before we can override the default labels and other aspects of the colour
-scale within the scale function.
-
-```{r scatter_plot_16}
-metabric %>%
-  filter(!is.na(Nottingham_prognostic_index)) %>%
-  ggplot(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index)) +
-  geom_point(size = 0.5) +
-  scale_colour_gradient(
-    low = "lightblue", high = "darkblue",
-    name = "NPI",
-    breaks = 2:6,
-    limits = c(1.5, 6.5)
-  )
-```
-
-
 
 # Summary
 
