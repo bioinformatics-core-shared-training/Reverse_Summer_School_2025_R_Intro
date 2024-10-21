@@ -3,9 +3,9 @@ title: "Introduction to R for Biologists"
 ---
 
 This site contains the materials for an introductory R course run at Cambridge
-Makerere Summer School 2023.
+Makerere Reverse Summer School 2024.
 
-18th - 20th Septmber 2023
+4th - 6th October 2024
 
 # Description
 

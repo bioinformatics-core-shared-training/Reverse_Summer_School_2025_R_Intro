@@ -227,8 +227,6 @@ R has many data structures. These include:
 The atomic vector is the fundamental data structure in R and all the other data
 structures built on vectors.
 
-![Image source:https://www.geeksforgeeks.org/r-vector/](./images/Vectors-in-R.jpg)
-
 We can assign a value to an object with a name:
 
 ```{r}
@@ -394,7 +392,7 @@ y <- c(1, 2)
 x + y
 ```
 
-![](./images/vec_recycling.png)
+![](./images/vector_recycling.png)
   
 ### Accessing specific elements of an atomic vector  
 
@@ -405,6 +403,8 @@ Within `[]` one can give any of the following:
 
 * Vector of index numbers   
 * Vector of logical values
+
+![](./images/atomic_vector.png)
 
 #### Using integer vector containing index numbers
 
@@ -810,8 +810,10 @@ sum(isSmall)
 
 :::exercise
 2. You have given two vectors of observations:
+
          data1 <- c(10, 9, 7, 6, 7, 3, 7, 5, 6, 6)
          data2 <- c(5, 2, 10, 7, 2, 5, 1, 5, 3, 4)
+
     a. use the function `cor()` to get the correlation coefficient
     b. Can you identify the default correlation method the `cor()` function uses? For help use `help()` or `?`
     c. Can you get Spearman correlation coefficient for these two vectors? 
