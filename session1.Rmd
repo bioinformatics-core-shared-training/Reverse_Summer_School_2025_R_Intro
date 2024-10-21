@@ -230,7 +230,7 @@ structures built on vectors.
 We can assign a value to an object with a name:
 
 ```{r}
-x <- 100 
+x <- 100
 ```
 Here we are creating an object called `x` containing the value '100'.
 
@@ -244,8 +244,8 @@ variable named `x`.
 practice is to use `<-`.
 
 ```{r}
-x <- 100 
-x = 100 
+x <- 100
+x = 100
 ```
 
 After a variable/object is created, it can be used as many times as needed.
@@ -297,7 +297,7 @@ my.name <- "Ashley"
 * R is case sensitive 
 * COUNTRY and country are two different variables
 ```{r}
-COUNTRY <- "United Kingdom" 
+COUNTRY <- "United Kingdom"
 country <- "Uganda"
 
 COUNTRY
@@ -333,9 +333,9 @@ converts the data types, this phenomenon is called
 [Coercion](https://www.zigya.com/blog/what-is-coercion-in-r/)
 
 ```{r}
-x <- c(1,2,3,4)
+x <- c(1, 2, 3, 4)
 typeof(x)
-x <- c(1,"2",3,4)
+x <- c(1, "2", 3, 4)
 typeof(x)
 
 z <- c(TRUE, FALSE, FALSE)
@@ -371,9 +371,9 @@ each element one by one. Coding becomes more concise, easier to read, and less
 prone to errors as a result.
 
 ```{r}
-x <- c(1, 2, 3, 4, 5) 
-x * 5 
-x + 1 
+x <- c(1, 2, 3, 4, 5)
+x * 5
+x + 1
 ```
 
 Vectorization is powerful, quick and concise, but leads to confusion when
@@ -416,7 +416,7 @@ vec
 To extract 4th value from the vector:
 
 ```{r}
-vec[4] 
+vec[4]
 ```
 
 To extract 4th and 7th values from the vector:
@@ -450,7 +450,7 @@ extracting values, however, if it is shorter then it will be recycled as
 necessary - this can be confusing.
 
 ```{r}
-y <- c(5, 8, 10) 
+y <- c(5, 8, 10)
 myLogicalVec <- c(FALSE, TRUE, FALSE)
 y[myLogicalVec]
 vec[myLogicalVec]
@@ -464,10 +464,10 @@ The basic comparison operators are:
 
 ```{r echo = FALSE}
 tab <- data.frame(Operator = c("==",   "!=", ">", "<", ">=", "<="),
-                  Meaning = c("Equal to", "Not equal to", "Greater than", 
-                              "Less than", "Greater than or equal to", 
+                  Meaning = c("Equal to", "Not equal to", "Greater than",
+                              "Less than", "Greater than or equal to",
                               "Less than or equal to"),
-                  Example = c("100 == 90",   "100 != 90", "100 > 90", "100 < 90", "100 >= 90", "90 <= 90"),
+                  Example = c("100 == 90", "100 != 90", "100 > 90", "100 < 90", "100 >= 90", "90 <= 90"),
                   Result = c("FALSE", "TRUE", "TRUE", "FALSE", "TRUE", "TRUE"))
 knitr::kable(tab)
 ```
@@ -487,8 +487,8 @@ x > 20
 
 keep <- x > 20
 keep
-x[keep] 
-x[ x > 20 ] 
+x[keep]
+x[ x > 20 ]
 ```
 
 By using logical operators one can create complex expression for more complex
@@ -614,7 +614,7 @@ Mathematical operations such as addition and multiplication are performed using 
 For example 
 
 ```{r}
-5 * 5 
+5 * 5
 
 3 ^ 3
 
@@ -664,7 +664,7 @@ documentation page for that function. You can do this in number of ways:
 * Use your favourite browser to search the web, e.g. "R round documentation"
 
 ```{r eval = FALSE}
-?round 
+?round
 ```
 
 From the documentation page, you can see that `round()` takes exactly two
@@ -674,15 +674,15 @@ arguments:
 * digits: integer indicating the number of decimal places to round
   
 ```{r}
-round(x=pi, digits = 0)
-round(x=pi, digits = 2)
-round(x=pi, digits = 4)
+round(x = pi, digits = 0)
+round(x = pi, digits = 2)
+round(x = pi, digits = 4)
 ```
 
 As long as you use argument names, the order of the arguments does not matter.
 
 ```{r}
-round(digits = 4, x=pi)
+round(digits = 4, x = pi)
 ```
 
 As long as you provide the arguments in the correct order, then you don't need to use the names.
@@ -866,7 +866,7 @@ is multiplied by the value of the shorter vector.
 
 Challenge 4b: c(5, 2, 9, 1, 13) * c(1,2)
 ```{r}
-c(5, 2, 9, 1, 13) * c(1,2) 
+c(5, 2, 9, 1, 13) * c(1,2)
 ```
 
 Since the shorter vector has only two values, these two values are sequentially

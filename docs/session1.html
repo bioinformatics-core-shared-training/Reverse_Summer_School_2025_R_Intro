@@ -505,13 +505,13 @@ div.tocify {
 <h3>Atomic vector</h3>
 <p>The atomic vector is the fundamental data structure in R and all the other data structures built on vectors.</p>
 <p>We can assign a value to an object with a name:</p>
-<pre class="r"><code>x &lt;- 100 </code></pre>
+<pre class="r"><code>x &lt;- 100</code></pre>
 <p>Here we are creating an object called <code>x</code> containing the value ‘100’.</p>
 <p><strong>Note</strong>: The terms <code>object</code> and <code>variable</code> are often used interchangeably, even though they do have sublty different meanings.</p>
 <p>The assignment operator <code>&lt;-</code> causes the value 100 to be assigned to the variable named <code>x</code>.</p>
 <p><strong>Note</strong>: you can also use <code>=</code> instead of <code>&lt;-</code>, however, best practice is to use <code>&lt;-</code>.</p>
-<pre class="r"><code>x &lt;- 100 
-x = 100 </code></pre>
+<pre class="r"><code>x &lt;- 100
+x = 100</code></pre>
 <p>After a variable/object is created, it can be used as many times as needed.</p>
 <pre class="r"><code>y &lt;- 10
 y * y</code></pre>
@@ -546,7 +546,7 @@ my.name &lt;- &quot;Ashley&quot;</code></pre>
 <li>R is case sensitive</li>
 <li>COUNTRY and country are two different variables</li>
 </ul>
-<pre class="r"><code>COUNTRY &lt;- &quot;United Kingdom&quot; 
+<pre class="r"><code>COUNTRY &lt;- &quot;United Kingdom&quot;
 country &lt;- &quot;Uganda&quot;
 
 COUNTRY</code></pre>
@@ -574,10 +574,10 @@ x</code></pre>
 ## [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40</code></pre>
 <p>The values in a vector must all be of the same data type, such as numerics, integers, characters, logic, complexes, or raw data.</p>
 <p>When we attempt to mix different data types in a single vector, R automatically converts the data types, this phenomenon is called <a href="https://www.zigya.com/blog/what-is-coercion-in-r/">Coercion</a></p>
-<pre class="r"><code>x &lt;- c(1,2,3,4)
+<pre class="r"><code>x &lt;- c(1, 2, 3, 4)
 typeof(x)</code></pre>
 <pre><code>## [1] &quot;double&quot;</code></pre>
-<pre class="r"><code>x &lt;- c(1,&quot;2&quot;,3,4)
+<pre class="r"><code>x &lt;- c(1, &quot;2&quot;, 3, 4)
 typeof(x)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>z &lt;- c(TRUE, FALSE, FALSE)
@@ -609,10 +609,10 @@ y</code></pre>
 <div id="vectorization-in-r" class="section level3">
 <h3>Vectorization in R</h3>
 <p>It is important to note that most of R’s functions are <strong>vectorized</strong>, which means that they operate on all elements of a vector without looping through each element one by one. Coding becomes more concise, easier to read, and less prone to errors as a result.</p>
-<pre class="r"><code>x &lt;- c(1, 2, 3, 4, 5) 
-x * 5 </code></pre>
+<pre class="r"><code>x &lt;- c(1, 2, 3, 4, 5)
+x * 5</code></pre>
 <pre><code>## [1]  5 10 15 20 25</code></pre>
-<pre class="r"><code>x + 1 </code></pre>
+<pre class="r"><code>x + 1</code></pre>
 <pre><code>## [1] 2 3 4 5 6</code></pre>
 <p>Vectorization is powerful, quick and concise, but leads to confusion when vector lengths are different.</p>
 <pre class="r"><code>x &lt;- c(1, 2, 3, 4, 5, 6)
@@ -643,7 +643,7 @@ x + y</code></pre>
 vec</code></pre>
 <pre><code>##  [1]  10  20  30  40  50  60  70  80  90 100</code></pre>
 <p>To extract 4th value from the vector:</p>
-<pre class="r"><code>vec[4] </code></pre>
+<pre class="r"><code>vec[4]</code></pre>
 <pre><code>## [1] 40</code></pre>
 <p>To extract 4th and 7th values from the vector:</p>
 <pre class="r"><code>vec[c(4, 7)]</code></pre>
@@ -662,7 +662,7 @@ x</code></pre>
 <div id="using-a-logical-vector-to-select-values-from-a-vector" class="section level4">
 <h4>Using a logical vector to select values from a vector</h4>
 <p>We can also extract values using a vector of logical values. Normally the logical vector should be the same lenght as the vector from which we are extracting values, however, if it is shorter then it will be recycled as necessary - this can be confusing.</p>
-<pre class="r"><code>y &lt;- c(5, 8, 10) 
+<pre class="r"><code>y &lt;- c(5, 8, 10)
 myLogicalVec &lt;- c(FALSE, TRUE, FALSE)
 y[myLogicalVec]</code></pre>
 <pre><code>## [1] 8</code></pre>
@@ -729,9 +729,9 @@ x == 20</code></pre>
 <pre class="r"><code>keep &lt;- x &gt; 20
 keep</code></pre>
 <pre><code>## [1] FALSE FALSE  TRUE  TRUE</code></pre>
-<pre class="r"><code>x[keep] </code></pre>
+<pre class="r"><code>x[keep]</code></pre>
 <pre><code>## [1] 30 40</code></pre>
-<pre class="r"><code>x[ x &gt; 20 ] </code></pre>
+<pre class="r"><code>x[ x &gt; 20 ]</code></pre>
 <pre><code>## [1] 30 40</code></pre>
 <p>By using logical operators one can create complex expression for more complex subsetting. The logical operators are:</p>
 <table>
@@ -868,7 +868,7 @@ typeof(x)</code></pre>
 <li>Exponent: ^</li>
 </ul>
 <p>For example</p>
-<pre class="r"><code>5 * 5 </code></pre>
+<pre class="r"><code>5 * 5</code></pre>
 <pre><code>## [1] 25</code></pre>
 <pre class="r"><code>3 ^ 3</code></pre>
 <pre><code>## [1] 27</code></pre>
@@ -895,20 +895,20 @@ typeof(x)</code></pre>
 <li>In RStudio under the help tab one can search for a given function</li>
 <li>Use your favourite browser to search the web, e.g. “R round documentation”</li>
 </ul>
-<pre class="r"><code>?round </code></pre>
+<pre class="r"><code>?round</code></pre>
 <p>From the documentation page, you can see that <code>round()</code> takes exactly two arguments:</p>
 <ul>
 <li>x: a numeric vector</li>
 <li>digits: integer indicating the number of decimal places to round</li>
 </ul>
-<pre class="r"><code>round(x=pi, digits = 0)</code></pre>
+<pre class="r"><code>round(x = pi, digits = 0)</code></pre>
 <pre><code>## [1] 3</code></pre>
-<pre class="r"><code>round(x=pi, digits = 2)</code></pre>
+<pre class="r"><code>round(x = pi, digits = 2)</code></pre>
 <pre><code>## [1] 3.14</code></pre>
-<pre class="r"><code>round(x=pi, digits = 4)</code></pre>
+<pre class="r"><code>round(x = pi, digits = 4)</code></pre>
 <pre><code>## [1] 3.1416</code></pre>
 <p>As long as you use argument names, the order of the arguments does not matter.</p>
-<pre class="r"><code>round(digits = 4, x=pi)</code></pre>
+<pre class="r"><code>round(digits = 4, x = pi)</code></pre>
 <pre><code>## [1] 3.1416</code></pre>
 <p>As long as you provide the arguments in the correct order, then you don’t need to use the names.</p>
 <pre class="r"><code>round(pi, 4)</code></pre>
@@ -1040,7 +1040,7 @@ Answer
 <pre><code>## [1] 10  4 18  2 26</code></pre>
 <p>Since the shorter vector has only one value, every value of the longer vector is multiplied by the value of the shorter vector.</p>
 <p>Challenge 4b: c(5, 2, 9, 1, 13) * c(1,2)</p>
-<pre class="r"><code>c(5, 2, 9, 1, 13) * c(1,2) </code></pre>
+<pre class="r"><code>c(5, 2, 9, 1, 13) * c(1,2)</code></pre>
 <pre><code>## Warning in c(5, 2, 9, 1, 13) * c(1, 2): longer object length is not a multiple
 ## of shorter object length</code></pre>
 <pre><code>## [1]  5  4  9  2 13</code></pre>
