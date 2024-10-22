@@ -1,10 +1,9 @@
 ---
-title: "Week 3 - Working with data in R"
+title: "Session 3 - Working with data in R"
 ---
 
 > #### Learning objectives
 >
-> * Create an R Project
 > * Learn how to install and use packages that extend R's basic functionality
 > * Read data in tabular format into R
 > * Calculate summary statistics on your tabular data
@@ -14,37 +13,6 @@ title: "Week 3 - Working with data in R"
 >     * **`filter()`** for selecting observations based on their values, i.e. selecting rows in your table
 >     * **`select()`** for selecting a subset of variables, i.e. selecting columns in your table
 >     * **`arrange()`** for sorting the observations in your table 
-
-
-## Create an R Project
-
-Before starting to write code in RStudio, we need to create an R Project.  The
-idea behind an R project is  to have a workspace where you can keep all the
-files and settings associated with the project together.  In that way, next
-time you open the R Project it would be easier to resume work.  
-
-We are going to create a new project in the directory of data files that you 
-should already have downloaded. If you haven't got it yet, you can download it
-from here:
-
-https://bioinformatics-core-shared-training.github.io/Reverse_Summer_School_2023_PreCourse/Bioinformatics_workshop_data.zip
-
-Then unzip the folder somewhere on your laptop.
-
-To create an "R Project":
-
-1. Start RStudio.
-2. Under the `File` menu, click on `New Project`. Choose `Existing Directory`
-3. Click the `Browse...` button and locate the **Bioinformatics_workshop_data/R_Intro**
-   folder on your computer.
-4. Click on `Create Project`.
-5. (Optional) Set Preferences to 'Never' save workspace in RStudio:
-
-    RStudio's default preferences generally work well, but saving a workspace to
-    `.RData` can be cumbersome, especially if you are working with larger datasets
-    as this would save all the data that is loaded into R into the `.RData` file.
-    To turn that off, go to `Tools` --> `Global Options` and select the 'Never'
-    option for `Save workspace to .RData' on exit.`
 
 # Getting started with data in R
 
@@ -63,8 +31,6 @@ equivalent using traditional 'base R'.
 We will also start to look at the most important data structure you'll use
 with your data, assuming it is in tabular form, the **data frame**, and its
 superior tidyverse derivative, the **tibble**.
-
-
 
 # Packages
 
@@ -194,12 +160,12 @@ the data types of each column and the size of the dataset, the `str` function is
 not as much useful as it was when using `data.frame`.  
 
 ```{r, results=TRUE}
-str(iris_tibble)
+str(irisTibble)
 ```
 
 Notice that rather than specifing `tibble` as the data structure of surveys,
 the first line of `str`'s output now specifies ‘tbl_df’, ‘tbl’
-and 'data.frame'` which can be a bit confusing. These are the classes `tibble`
+and 'data.frame' which can be a bit confusing. These are the classes `tibble`
 inherts from which in simple terms means that `tibble` is a `data.frame` with a
 few modifications.  Therefore, most of the functions that were used with
 `data.frame` can also be used with `tibble`.
