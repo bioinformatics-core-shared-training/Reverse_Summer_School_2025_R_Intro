@@ -1,5 +1,5 @@
 ---
-title: "Week 7 -- Restructuring data for analysis"
+title: "Session 7 -- Restructuring data for analysis"
 ---
 
 > #### Learning objectives
