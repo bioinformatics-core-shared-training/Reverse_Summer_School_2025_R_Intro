@@ -1,5 +1,5 @@
 ---
-title: "Week 4 -- Visualizing tabular data with ggplot2"
+title: "Session 4 -- Visualizing tabular data with ggplot2"
 ---
 
 > #### Learning objectives
