@@ -158,7 +158,10 @@ package provides the `pivot_longer()` function for just such an operation.
 
 ```{r}
 table4a
-table4a_long <- pivot_longer(table4a, c(`1999`, `2000`), names_to = "year", values_to = "cases")
+table4a_long <- pivot_longer(table4a,
+                             c(`1999`, `2000`),
+                             names_to = "year",
+                             values_to = "cases")
 table4a_long
 ```
 
@@ -199,7 +202,10 @@ We can do the same with `table4b` and join the two resulting tables together to
 recreate `table1`.
 
 ```{r}
-table4b_long <- pivot_longer(table4b, c(`1999`, `2000`), names_to = "year", values_to = "population")
+table4b_long <- pivot_longer(table4b,
+                             -country,
+                             names_to = "year",
+                             values_to = "population")
 table4b_long
 # join the two pivoted tables to recreate table1
 left_join(table4a_long, table4b_long, by = c("country", "year"))
@@ -294,20 +300,21 @@ separated by a '/' character. The rate column is a character type so not
 terribly useful for doing anything of a mathematical nature in its current
 guise.
 
-## `separate()`
+## `separate_wider_delim()`
 
-The `separate()` function allows us to split a character column into multiple
-columns based on a delimiter or separator.
+The `separate_wider_delim()` function allows us to split a character column into
+multiple columns based on a delimiter or separator.
 
 ```{r}
-table3_separated <- separate(table3, rate, into = c("cases", "population"), sep = "/")
+table3_separated <- separate_wider_delim(table3,
+                                         rate,
+                                         names = c("cases", "population"),
+                                         delim = "/")
 table3_separated
 ```
 
-The `sep` argument takes a regular expression that defines how to split the
-values. We've mentioned regular expressions before -- they are a language for
-specifying search patterns used to find sequences of characters within text and
-well worth learning. In this case our separator is just the '/' character.
+The `delim` argument takes a vector of characters to split the string at.  In
+this case our separator is just the '/' character.
 
 The resulting data frame is still not quite what we want though. This becomes
 apparent as soon as we try to do anything with the new `cases` and `population`
@@ -318,20 +325,24 @@ mutate(table3_separated, rate = cases / population)
 ```
 
 By default the separated values are character types. We could convert these
-using `mutate_at()`.
+using `mutate()`.
 
 ```{r}
-mutate_at(table3_separated, vars(cases, population), as.integer)
+table3_separated <- separate_wider_delim(table3,
+                                         rate,
+                                         names = c("cases", "population"),
+                                         delim = "/") %>%
+    mutate(across(c(cases, population), as.integer)) %>%
+    mutate(rate = cases / population)
+table3_separated
 ```
 
-But another option is to specify `convert = TRUE` when carrying out the
-`separate()` operation, in which case it will deduce the type of the values and
-convert the column accordingly.
+In addition to `separate_wider_delim()`, the tidyr package provides a two 
+other functions for splitting columns:
 
-```{r}
-table3_separated <- separate(table3, rate, into = c("cases", "population"), sep = "/", convert = TRUE)
-mutate(table3_separated, rate = cases / population)
-```
+* `separate_wider_regex()` - for splitting columns based on a regular expression
+* `separate_wider_fixed()` - for splitting columns based on a fixed number of
+                             characters
 
 ---
 
@@ -346,7 +357,7 @@ We'll first load the table and then select just the columns we're going to need.
 
 ```{r message = FALSE}
 metabric <- read_csv("data/metabric_clinical_and_expression_data.csv") %>%
-  select(Patient_ID, ER_status, ESR1:MLPH)
+    select(Patient_ID, ER_status, ESR1:MLPH)
 metabric
 ```
 
@@ -355,7 +366,7 @@ box plot.
 
 ```{r box_plot_1, fig.width = 5, fig.height = 4}
 ggplot(metabric) +
-  geom_boxplot(mapping = aes(x = ER_status, y = GATA3))
+    geom_boxplot(mapping = aes(x = ER_status, y = GATA3))
 ```
 
 But what if we would like to create a series of plots using the faceting
@@ -389,7 +400,10 @@ We'll convert our table of ER status and gene expression data to the tidy
 format.
 
 ```{r}
-metabric <- pivot_longer(metabric, ESR1:MLPH, names_to = "Gene", values_to = "Expression")
+metabric <- pivot_longer(metabric,
+                         ESR1:MLPH,
+                         names_to = "Gene",
+                         values_to = "Expression")
 metabric
 ```
 
@@ -399,9 +413,10 @@ lot easier than naming each column individually.
 We're now in a position to create our faceted box plot chart.
 
 ```{r box_plot_2, fig.height = 6}
-ggplot(data = metabric) +
-  geom_boxplot(mapping = aes(x = ER_status, y = Expression)) +
-  facet_wrap(vars(Gene))
+ggplot(data = metabric,
+       mapping = aes(x = ER_status, y = Expression)) +
+    geom_boxplot() +
+    facet_wrap(vars(Gene))
 ```
 
 In carrying out this transformation, the observational unit has changed. The
@@ -417,9 +432,9 @@ to convert back to this format allows us to create the plot.
 
 ```{r scatter_plot_1}
 metabric %>%
-  pivot_wider(names_from = "Gene", values_from = "Expression") %>%
-  ggplot() +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = ER_status))
+    pivot_wider(names_from = "Gene", values_from = "Expression") %>%
+    ggplot() +
+    geom_point(mapping = aes(x = GATA3, y = ESR1, colour = ER_status))
 ```
 
 ---
@@ -445,7 +460,6 @@ The table in question is
 
 ```{r message = FALSE}
 library(readxl)
-download.file(url="https://bioinformatics-core-shared-training.github.io/Bitesize-R/data/41467_2018_4619_MOESM11_ESM.xlsx",destfile = "data/41467_2018_4619_MOESM11_ESM.xlsx")
 protein_levels <- read_excel("data/41467_2018_4619_MOESM11_ESM.xlsx", skip = 1)
 select(protein_levels, `Uniprot Accession`, `Gene Name`, ends_with("rep01"))
 ```
@@ -468,8 +482,10 @@ with the vehicle.
 
 ```{r}
 protein_levels <- protein_levels %>%
-  filter(`log2FC(24h/veh)` < -0.75) %>%
-  select(accession = `Uniprot Accession`, gene = `Gene Name`, vehicle.rep01:tam.24h.rep04)
+    filter(`log2FC(24h/veh)` < -0.75) %>%
+    select(accession = `Uniprot Accession`,
+           gene = `Gene Name`,
+           vehicle.rep01:tam.24h.rep04)
 protein_levels
 ```
 
@@ -487,7 +503,10 @@ the sample name column into its constituent parts.
 For the first part of this transformation we'll use `pivot_longer()`.
 
 ```{r}
-protein_levels <- pivot_longer(protein_levels, vehicle.rep01:tam.24h.rep04, names_to = "sample", values_to = "protein_level")
+protein_levels <- pivot_longer(protein_levels,
+                               vehicle.rep01:tam.24h.rep04,
+                               names_to = "sample",
+                               values_to = "protein_level")
 protein_levels
 ```
 
@@ -516,9 +535,9 @@ Join multiple strings into a single string.
 
 ` [1] "tidyverse is fab"`
 
-`str_c(c("Ashley", "Matt"), c("hiking", "beer"), sep = " loves ")`
+`str_c(c("Ashley", "Matt"), c("hiking", "swimming"), sep = " loves ")`
 
-` [1] "Ashley loves hiking" "Matt loves beer"`
+` [1] "Ashley loves hiking" "Matt loves swimming"`
 
 ---
 
@@ -544,7 +563,7 @@ Substitute a matched pattern in a string (or character vector).
 
 Remove matched patterns in a string.
 
-Alias for `str_replace(string, pattern, "")` and
+Equivalent to `str_replace(string, pattern, "")` and
 `str_replace_all(string, pattern, "")`.
 
 ---
@@ -553,9 +572,9 @@ Alias for `str_replace(string, pattern, "")` and
 
 Extract substrings from a character vector at the given start and end positions.
 
-`str_sub("Matthew", start = 1, end = 4)`
+`str_sub("Ashley", start = 1, end = 3)`
 
-` [1] "Matt"`
+` [1] "Ash"`
 
 `str_sub(c("tamoxifen", "vehicle"), 1, 3)`
 
@@ -585,14 +604,18 @@ str_replace(protein_levels$sample[1:10], "vehicle", "vehicle.24h")
 Finally, we can modify the values in our data frame using `mutate()`.
 
 ```{r}
-protein_levels <- mutate(protein_levels, sample = str_replace(sample, "vehicle", "vehicle.24h"))
+protein_levels <- mutate(protein_levels,
+                         sample = str_replace(sample, "vehicle", "vehicle.24h"))
 protein_levels
 ```
 
 Now we're ready to separate the `sample` column into its component parts.
 
 ```{r}
-protein_levels <- separate(protein_levels, sample, into = c("treatment", "time", "replicate"))
+protein_levels <- separate_wider_delim(protein_levels,
+                                       sample,
+                                       names = c("treatment", "time", "replicate"),
+                                       delim = ".")
 protein_levels
 ```
 
@@ -606,9 +629,9 @@ to a factor while we're at it.
 
 ```{r}
 protein_levels <- protein_levels %>%
-  mutate(group = str_sub(treatment, 1, 3)) %>%
-  mutate(group = str_c(group, time)) %>%
-  mutate(group = as_factor(group))
+    mutate(group = str_sub(treatment, 1, 3)) %>%
+    mutate(group = str_c(group, time)) %>%
+    mutate(group = as_factor(group))
 protein_levels
 ```
 
@@ -616,8 +639,8 @@ Computing the mean protein levels within each group is now very straightforward.
 
 ```{r}
 protein_levels %>%
-  group_by(accession, gene, group) %>%
-  summarize(protein_level = mean(protein_level))
+    group_by(accession, gene, group) %>%
+    summarize(protein_level = mean(protein_level))
 ```
 
 Plotting the protein levels in each group as box plots with each data point
@@ -627,9 +650,9 @@ recognizable).
 
 ```{r box_plot_3, fig.height = 7}
 ggplot(data = protein_levels, mapping = aes(x = group, y = protein_level)) +
-  geom_boxplot(colour = "grey60") +
-  geom_jitter(width = 0.15) +
-  facet_wrap(vars(gene), scales = "free_y", ncol = 3)
+    geom_boxplot(colour = "grey60") +
+    geom_jitter(width = 0.15) +
+    facet_wrap(vars(gene), scales = "free_y", ncol = 3)
 ```
 
 ---
@@ -650,19 +673,27 @@ Integrative cluster breast cancer subtypes.
 # read in the METABRIC data, convert the Integrative_cluster variable into a
 # categorical variable with the levels in the correct order, and select just
 # the columns and rows we're going to use
+cluster_order <- c("1", "2", "3", "4ER-", "4ER+", "5", "6", "7", "8", "9", "10")
 metabric <- read_csv("data/metabric_clinical_and_expression_data.csv") %>%
-  mutate(Integrative_cluster = factor(Integrative_cluster, levels = c("1", "2", "3", "4ER-", "4ER+", "5", "6", "7", "8", "9", "10"))) %>%
-  mutate(`3-gene_classifier` = replace_na(`3-gene_classifier`, "Unclassified")) %>%
-  select(Patient_ID, ER_status, PR_status, `3-gene_classifier`, Integrative_cluster, ESR1) %>%
-  filter(!is.na(Integrative_cluster), !is.na(ESR1))
+    mutate(Integrative_cluster = factor(Integrative_cluster,
+                                        levels = cluster_order)) %>%
+    mutate(`3-gene_classifier` = replace_na(`3-gene_classifier`,
+                                            "Unclassified")) %>%
+    select(Patient_ID,
+           ER_status,
+           PR_status,
+           `3-gene_classifier`,
+           Integrative_cluster,
+           ESR1) %>%
+    filter(!is.na(Integrative_cluster), !is.na(ESR1))
 metabric
 ```
 
 ```{r box_plot_4}
 # plot the ESR1 expression for each integrative cluster
 plot <- ggplot(data = metabric) +
-  geom_boxplot(mapping = aes(x = Integrative_cluster, y = ESR1, fill = Integrative_cluster)) +
-  labs(x = "Integrative cluster", y = "ESR1 expression")
+    geom_boxplot(mapping = aes(x = Integrative_cluster, y = ESR1, fill = Integrative_cluster)) +
+    labs(x = "Integrative cluster", y = "ESR1 expression")
 plot
 ```
 
@@ -700,20 +731,20 @@ colours.
 
 ```{r bar_plot_1, fig.width = 5}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = `3-gene_classifier`, fill = ER_status)) +
-  scale_y_continuous(limits = c(0, 700), breaks = seq(0, 700, 100), expand = expand_scale(mult = 0)) +
-  scale_fill_manual(values = c("firebrick2", "dodgerblue2")) +
-  labs(x = NULL, y = "samples", fill = "ER status") +
-  theme_bw() +
-  theme(
-    panel.border = element_blank(),
-    panel.grid = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-    axis.line.y = element_line(),
-    axis.ticks.length.y = unit(0.2, "cm"),
-    legend.position = "bottom"
-  )
+    geom_bar(mapping = aes(x = `3-gene_classifier`, fill = ER_status)) +
+    scale_y_continuous(limits = c(0, 700),
+                       breaks = seq(0, 700, 100),
+                       expand = expand_scale(mult = 0)) +
+    scale_fill_manual(values = c("firebrick2", "dodgerblue2")) +
+    labs(x = NULL, y = "samples", fill = "ER status") +
+    theme_bw() +
+    theme(panel.border = element_blank(),
+          panel.grid = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+          axis.line.y = element_line(),
+          axis.ticks.length.y = unit(0.2, "cm"),
+          legend.position = "bottom")
 ```
 
 The ggthemes package contains some extra themes and might be fun to check out.
@@ -723,13 +754,16 @@ default look of charts in Google Docs.
 ```{r box_plot_7, fig.width = 5, fig.height = 4}
 library(ggthemes)
 metabric %>%
-  filter(`3-gene_classifier` == "HER2+") %>%
-  ggplot(mapping = aes(x = PR_status, y = ESR1)) +
-  geom_boxplot() +
-  geom_jitter(mapping = aes(colour = PR_status), width = 0.25, alpha = 0.4, show.legend = FALSE) +
-  scale_colour_brewer(palette = "Set1") +
-  labs(x = "PR status", y = "ESR1 expression") +
-  theme_gdocs()
+    filter(`3-gene_classifier` == "HER2+") %>%
+    ggplot(mapping = aes(x = PR_status, y = ESR1)) +
+    geom_boxplot() +
+    geom_jitter(mapping = aes(colour = PR_status),
+                width = 0.25,
+                alpha = 0.4,
+                show.legend = FALSE) +
+    scale_colour_brewer(palette = "Set1") +
+    labs(x = "PR status", y = "ESR1 expression") +
+    theme_gdocs()
 ```
 
 ## Position adjustments
@@ -747,19 +781,20 @@ data would be to show separate bars for each ER status side-by-side by setting
 
 ```{r bar_plot_2}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = `3-gene_classifier`, fill = ER_status), position = "dodge") +
-  scale_y_continuous(limits = c(0, 700), breaks = seq(0, 700, 100), expand = expand_scale(mult = 0)) +
-  scale_fill_manual(values = c("firebrick2", "dodgerblue2")) +
-  labs(x = NULL, y = "samples", fill = "ER status") +
-  theme_bw() +
-  theme(
-    panel.border = element_blank(),
-    panel.grid = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-    axis.line.y = element_line(),
-    axis.ticks.length.y = unit(0.2, "cm")
-  )
+    geom_bar(mapping = aes(x = `3-gene_classifier`, fill = ER_status),
+             position = "dodge") +
+    scale_y_continuous(limits = c(0, 700),
+                       breaks = seq(0, 700, 100),
+                       expand = expand_scale(mult = 0)) +
+    scale_fill_manual(values = c("firebrick2", "dodgerblue2")) +
+    labs(x = NULL, y = "samples", fill = "ER status") +
+    theme_bw() +
+    theme(panel.border = element_blank(),
+          panel.grid = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+          axis.line.y = element_line(),
+          axis.ticks.length.y = unit(0.2, "cm"))
 ```
 
 Another position adjustment we've come across is `geom_jitter()`, which is just
@@ -769,18 +804,18 @@ a box plot. We show an example of just such a plot in which first use
 `postion = "jitter"`.
 
 ```{r box_plot_8}
-metabric %>%
-  ggplot(mapping = aes(x = `3-gene_classifier`, y = ESR1, colour = PR_status)) +
-  geom_boxplot() +
-  geom_point(position = "jitter", size = 0.5, alpha = 0.3) +
-  labs(x = "3-gene classification", y = "ESR1 expression", colour = "PR status") +
-  scale_color_brewer(palette = "Set1") +
-  theme_minimal() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-    axis.ticks.x = element_blank()
-  )
+ggplot(data = metabric,
+       mapping = aes(x = `3-gene_classifier`, y = ESR1, colour = PR_status)) +
+    geom_boxplot() +
+    geom_point(position = "jitter", size = 0.5, alpha = 0.3) +
+    labs(x = "3-gene classification",
+         y = "ESR1 expression",
+         colour = "PR status") +
+    scale_color_brewer(palette = "Set1") +
+    theme_minimal() +
+    theme(panel.grid.major.x = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+          axis.ticks.x = element_blank())
 ```
 
 The PR-negative and PR-positive points have distinct colours but are overlapping
@@ -789,18 +824,18 @@ have both jitter and to be dodged in the same way as the boxes. With
 `position_jitterdodge()` we get a better looking plot.
 
 ```{r box_plot_9}
-metabric %>%
-  ggplot(mapping = aes(x = `3-gene_classifier`, y = ESR1, colour = PR_status)) +
-  geom_boxplot() +
-  geom_point(position = position_jitterdodge(), size = 0.5, alpha = 0.3) +
-  labs(x = "3-gene classification", y = "ESR1 expression", colour = "PR status") +
-  scale_color_brewer(palette = "Set1") +
-  theme_minimal() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-    axis.ticks.x = element_blank()
-  )
+ggplot(data = metabric,
+       mapping = aes(x = `3-gene_classifier`, y = ESR1, colour = PR_status)) +
+    geom_boxplot() +
+    geom_point(position = position_jitterdodge(), size = 0.5, alpha = 0.3) +
+    labs(x = "3-gene classification",
+         y = "ESR1 expression",
+         colour = "PR status") +
+    scale_color_brewer(palette = "Set1") +
+    theme_minimal() +
+    theme(panel.grid.major.x = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+          axis.ticks.x = element_blank())
 ```
 
 ## Saving plot images
@@ -873,8 +908,7 @@ who
 
 What are the variables in this data set?
 
-Create a bulleted list with your answer here.
-
+<details><summary>Answer</summary>
 * country
 * iso2 and iso3 country codes
 * year
@@ -882,6 +916,7 @@ Create a bulleted list with your answer here.
 * age group
 * diagnosis method
 * number of cases of tuberculosis
+</details>
 
 
 _Hint: see the help page for `who` to understand the meaning of the column headings._
@@ -893,61 +928,121 @@ with the data in this format?
 
 Transform the data into a tidy format.
 
-Columns `new_sp_m014` to `newrel_f65` are values for a compound variable, i.e.
-multiple variables joined together - the restructured data frame should have
-columns for each of the separated values in these column headings.
+The column names `new_sp_m014` to `newrel_f65` are values for a compound
+variable, i.e.  multiple variables joined together: 
+
+* new/new_ - all are new, this is redundant and can be removed
+* diagnosis - "ep", "rel", "sn", or "sp"
+* gender - "m" or "f"
+* age group - "014", "1524", "2534", "3544", "4554", "5564", "65" (0 - 14 years,
+  15 - 24 years ... 65+ years)
+
+
+The restructured data frame should have columns for each of the separated values
+in these column headings.
 
 Also remove all rows with missing values for the number of tuberculosis cases.
+
+<details><summary>Answer</summary>
 
 ```{r}
 # the hints below lead to the following solution
 who_tidy <- who %>%
-  pivot_longer(new_sp_m014:newrel_f65, names_to = "group", values_to = "cases") %>%
-  mutate(group = str_remove(group, "new_")) %>%
-  mutate(group = str_remove(group, "new")) %>%
-  separate(group, into = c("diagnosis", "group"), sep = "_") %>%
-  separate(group, into = c("gender", "age_group"), sep = 1) %>%
-  filter(!is.na(cases))
+    pivot_longer(new_sp_m014:newrel_f65,
+                 names_to = "group",
+                 values_to = "cases") %>%
+    mutate(group = str_remove(group, "new_")) %>%
+    mutate(group = str_remove(group, "new")) %>%
+    separate_wider_delim(group,
+                         names = c("diagnosis", "group"),
+                         delim = "_") %>%
+    mutate(group = str_replace_all(group, c("m" = "m_", "f" = "f_"))) %>%
+    separate_wider_delim(group,
+                         names = c("gender", "age_group"),
+                         delim = "_") %>%
+    filter(!is.na(cases))
 
 # this is how it could be done removing missing values as part of the pivot and
 # using a more sophisticated regular expression to remove the new_? prefix in a
 # single step
 who_tidy <- who %>%
-  pivot_longer(starts_with("new"), names_to = "group", values_to = "cases", values_drop_na = TRUE) %>%
-  mutate(group = str_remove(group, "^new_?")) %>%
-  separate(group, into = c("diagnosis", "group"), sep = "_") %>%
-  separate(group, into = c("gender", "age_group"), sep = 1)
+    pivot_longer(starts_with("new"),
+                 names_to = "group",
+                 values_to = "cases",
+                 values_drop_na = TRUE) %>%
+    mutate(group = str_remove(group, "^new_?")) %>%
+    separate_wider_delim(group,
+                         names = c("diagnosis", "group"),
+                         delim = "_") %>%
+    mutate(group = str_replace_all(group, c("m" = "m_", "f" = "f_"))) %>%
+    separate_wider_delim(group,
+                         names = c("gender", "age_group"),
+                         delim = "_")
 
 # alternative using str_replace_all to get groups into suitable state for single
 # separate operation
 who_tidy <- who %>%
-  pivot_longer(starts_with("new"), names_to = "group", values_to = "cases", values_drop_na = TRUE) %>%
-  mutate(group = str_replace_all(group, c("newrel" = "rel", "new_" = "", "_m" = "_m_", "_f" = "_f_"))) %>%
-  separate(group, into = c("diagnosis", "gender", "age_group"), sep = "_")
+    pivot_longer(starts_with("new"),
+                 names_to = "group",
+                 values_to = "cases",
+                 values_drop_na = TRUE) %>%
+    mutate(group = str_replace_all(group, 
+                                   c("newrel" = "rel",
+                                     "new_" = "",
+                                     "_m" = "_m_",
+                                     "_f" = "_f_"))) %>%
+    separate_wider_delim(group,
+                         names = c("diagnosis", "gender", "age_group"),
+                         delim = "_")
+
+# alternative using separate_wider_regex to split the group column in one step
+who_tidy <- who %>%
+    pivot_longer(starts_with("new"),
+                 names_to = "group",
+                 values_to = "cases",
+                 values_drop_na = TRUE) %>%
+    separate_wider_regex(group,
+                         patterns = c("new_?",
+                                      diagnosis = "[spnerl]+",
+                                      "_",
+                                      gender = "[mf]",
+                                      age_group = "[0-9]+$"))
 
 # alternative using names_pattern in pivot_longer (need to know regular
 # expressions for this) avoiding need for separate operation
 who_tidy <- who %>%
-  pivot_longer(
-    starts_with("new"),
-    names_pattern = "new_?(.*)_(.)(.*)",
-    names_to = c("diagnosis", "gender", "age_group"),
-    values_to = "cases",
-    values_drop_na = TRUE
-  )
+    pivot_longer(starts_with("new"),
+                 names_pattern = "new_?(.*)_(.)(.*)",
+                 names_to = c("diagnosis", "gender", "age_group"),
+                 values_to = "cases",
+                 values_drop_na = TRUE)
 
 # convert the age group into a factor and change the levels to a more
 # human-readable form
 # (could also use factor or recode_factor for this)
-who_tidy <- mutate(who_tidy, age_group = fct_recode(age_group, "0-14" = "014", "15-24" = "1524", "25-34" = "2534", "35-44" = "3544", "45-54" = "4554", "55-64" = "5564", "65+" = "65"))
+who_tidy <- mutate(who_tidy,
+                   age_group = fct_recode(age_group,
+                                          "0-14" = "014",
+                                          "15-24" = "1524",
+                                          "25-34" = "2534",
+                                          "35-44" = "3544",
+                                          "45-54" = "4554",
+                                          "55-64" = "5564",
+                                          "65+" = "65"))
 
 who_tidy
-
 ```
 
-*Hint 1: the column headers from new_sp_m014 onwards contain a superfluous prefix "new" or "new_" that you will want to remove; this can be done using one of the stringr functions in a single step if you know about regular expressions but is also achievable in two steps if you don't use any regular expression magic.*
+</details>
 
-_Hint 2: separating two of the variables is a bit tricky because there is no separator character; try looking at the help for the separate function to see how this can be done._
+*Hint 1: the column headers from new_sp_m014 onwards contain a superfluous
+prefix "new" or "new_" that you will want to remove; this can be done using one
+of the stringr functions in a single step if you know about regular expressions
+but is also achievable in two steps if you don't use any regular expression
+magic.*
+
+_Hint 2: separating two of the variables is a bit tricky because there is no
+separator character; you could modify the variable before separating._
 
 ---
 
@@ -960,13 +1055,15 @@ tuberculosis data set, from your tidy version of `who`.
 select(table1, 1:3)
 ```
 
+<details><summary>Answer</summary>
 ```{r}
 who_tidy %>%
-  filter(country %in% c("Afghanistan", "Brazil", "China")) %>%
-  filter(year %in% c(1999, 2000)) %>%
-  group_by(country, year) %>%
-  summarise(cases = sum(cases))
+    filter(country %in% c("Afghanistan", "Brazil", "China")) %>%
+    filter(year %in% c(1999, 2000)) %>%
+    group_by(country, year) %>%
+    summarise(cases = sum(cases))
 ```
+</details>
 
 _Hint: this will involve some filtering, grouping and summarization._
 
@@ -978,32 +1075,37 @@ Create a time series plot showing the number of tuberculosis cases in the United
 Kingdom with separate lines for each age group. The year should be on the x axis
 and the number of cases on the y axis.
 
+<details><summary>Answer</summary>
 ```{r}
 who_tidy <- who_tidy %>%
-  group_by(country, year, age_group) %>%
-  summarise(cases = sum(cases))
+    group_by(country, year, age_group) %>%
+    summarise(cases = sum(cases))
 
+uk <- "United Kingdom of Great Britain and Northern Ireland"
 who_tidy %>%
-  filter(country == "United Kingdom of Great Britain and Northern Ireland") %>%
-  ggplot() +
-  geom_line(mapping = aes(x = year, y = cases, colour = age_group))
+    filter(country == uk) %>%
+    ggplot() +
+    geom_line(mapping = aes(x = year, y = cases, colour = age_group))
 ```
+</details>
 
 _Hint: we're not distinguishing between diagnoses and genders in this plot so you'll need to sum the numbers of cases for each country, year and age group._
 
 Use faceting in ggplot2 to create a series of plots showing the same information
-for France, Brazil, Japan and Uganda.
+for France, Brazil, Japan and Namibia.
 
 The numbers of cases in these countries are on quite different scales. Look at
 help page for `facet_wrap()` and try changing the `scales` argument so we can
 more easily compare the overall patterns between countries.
 
+<details><summary>Answer</summary>
 ```{r}
 who_tidy %>%
-  filter(country %in% c("France", "Brazil", "Japan", "Uganda")) %>%
-  ggplot() +
-  geom_line(mapping = aes(x = year, y = cases, colour = age_group)) +
-  facet_wrap(vars(country), scales = "free_y")
+    filter(country %in% c("France", "Brazil", "Japan", "Namibia")) %>%
+    ggplot() +
+    geom_line(mapping = aes(x = year, y = cases, colour = age_group)) +
+    facet_wrap(vars(country), scales = "free_y")
 ```
+</details>
 
 ---
