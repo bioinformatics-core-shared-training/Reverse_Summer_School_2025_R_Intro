@@ -1,0 +1,124 @@
+---
+title: Brief recap of sessions 1 & 2
+---
+
+## Data types in R
+![Image source:https://www.javatpoint.com/r-data-types](./images/r-programming-data-types.png)
+
+## Data structures in R
+
+![Image source:http://venus.ifca.unican.es/Rintro/dataStruct.html](./images/dataStructures.png)
+
+## Atomic vector
+
+```{r}
+x <- 100
+```
+
+### Atomic vectors with multiple values
+
+```{r}
+x <- c("apple", "banana", "mango")
+y <- c(12, 45, 87, 90)
+z <- 1:100
+```
+
+#### Using variables in operations
+
+```{r}
+y * 5
+
+z + y
+```
+
+```{r error=TRUE}
+x + y
+```
+
+
+#### Accessing particular values
+
+```{r}
+x[2]
+y[2:3]
+z[ z > 23 & z < 56]
+```
+
+## Functions
+
+```{r}
+round(pi, digits = 4)
+```
+
+## factors
+
+```{r}
+x <- c("low", "high", "medium", "high", "low", "medium", "high")
+response <- factor(x)
+response
+response <- factor(x, levels = c("low", "medium", "high"))
+response
+```
+
+## matrices
+
+```{r}
+y <- matrix(data = 1:12, nrow = 4, ncol = 3)
+dim(y)
+ncol(y)
+nrow(y)
+
+y[2, 3]
+y[2:3, ]
+```
+
+## Lists
+
+```{r}
+cities <- list(
+    city = c("Kampala", "London", "Paris"),
+    population = c(1.51, 8.8, 2.1)
+)
+
+cities
+```
+
+### Accessing list elements
+
+```{r}
+cities[[2]]
+cities$city
+```
+
+### Modifying the list
+
+Modify a specific entr
+
+```{r}
+cities$city[2] <- "New York"
+```
+
+Add a new element
+
+```{r}
+cities$country <- c("Uganda", "USA", "France")
+cities
+```
+
+## Data Frames
+
+```{r}
+dat <- data.frame(
+    city = c("Kampala", "London", "Paris"),
+    population = c(1.51, 8.8, 2.1)
+)
+dat
+```
+
+### Accessing records
+
+```{r}
+dat[1:2, ]
+dat$city[2]
+dat[dat$population > 2, "city"]
+```
