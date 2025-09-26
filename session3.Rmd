@@ -12,7 +12,7 @@ title: "Session 3 - Working with data in R"
 > * Learn the two key **dplyr** functions for manipulating your data
 >     * **`filter()`** for selecting observations based on their values, i.e. selecting rows in your table
 >     * **`select()`** for selecting a subset of variables, i.e. selecting columns in your table
->     * **`arrange()`** for sorting the observations in your table 
+>     * **`arrange()`** for sorting the observations in your table
 
 # Getting started with data in R
 
@@ -26,7 +26,7 @@ functions to get certain tasks done. The tidyverse packages form a coherant
 system for data manipulation, exploration and visualization that share a common
 design philosophy. There is a certain elegance to code crafted using the
 tidyverse approach that is in stark contrast to the strange and often cryptic
-equivalent using traditional 'base R'. 
+equivalent using traditional 'base R'.
 
 We will also start to look at the most important data structure you'll use
 with your data, assuming it is in tabular form, the **data frame**, and its
@@ -42,7 +42,7 @@ There are thousands of R packages that extend R's core functionality to provide
 specialized functions for doing all kinds of things. There are R packages that
 provide various kinds of visualizations and plotting functions, others that let
 us manipulate data in interesting and useful ways, and still others that give us
-access to cutting-edge machine learning algorithms. 
+access to cutting-edge machine learning algorithms.
 
 You need to load a package using the **`library()`** function in order to be
 able to use the functions and data sets that the package provides. The tibble
@@ -122,9 +122,9 @@ we created a data frame earlier.
 
 ```{r}
 beatles <- tibble(
-  name = c("John", "Paul", "Ringo", "George"),
-  birth_year = c(1940, 1942, 1940, 1943),
-  instrument = c("guitar", "bass", "drums", "guitar")
+    name = c("John", "Paul", "Ringo", "George"),
+    birth_year = c(1940, 1942, 1940, 1943),
+    instrument = c("guitar", "bass", "drums", "guitar")
 )
 beatles
 ```
@@ -148,16 +148,16 @@ class(irisTibble)
 So let's now have a look at what capabilities and behaviours these additional
 types confer and what the main differences are between tibbles and data frames.
 
-The first immediate difference from a `data.frame` is that a `tibble` displays 
-the data type of each column under its name and it only prints as many columns 
-as fit on one screen. Another difference is that printing a `tibble` will not 
-print the whole dataset, but just the first 10 rows and only the columns that 
-fit the screen (same as `head` but with 10 rows instead of 6). If you would 
+The first immediate difference from a `data.frame` is that a `tibble` displays
+the data type of each column under its name and it only prints as many columns
+as fit on one screen. Another difference is that printing a `tibble` will not
+print the whole dataset, but just the first 10 rows and only the columns that
+fit the screen (same as `head` but with 10 rows instead of 6). If you would
 like to print more than the first 10 rows use the `print` function.
 
-Since printing `tibble` already gives you information about the data structure, 
+Since printing `tibble` already gives you information about the data structure,
 the data types of each column and the size of the dataset, the `str` function is
-not as much useful as it was when using `data.frame`.  
+not as much useful as it was when using `data.frame`.
 
 ```{r, results=TRUE}
 str(irisTibble)
@@ -206,7 +206,7 @@ metabric
 
 ```{block type = "rmdblock"}
 **`read_csv()`** and **`read_tsv()`**
-  
+
 `read_csv()` reads data from a comma-separated value (CSV) file into a tibble.
 `read_tsv()` is the equivalent function that works on tab-delmited files.
 
@@ -422,7 +422,7 @@ use the **`%in%`** operator to test which observations (rows) contain those
 values.
 
 ```{r}
-deceased <- filter(metabric, 
+deceased <- filter(metabric,
                    Vital_status %in% c("Died of Disease", "Died of Other Causes"))
 nrow(deceased)
 ```
@@ -478,9 +478,9 @@ can filter for this using the **`is.na()`** function.
 
 ```{r}
 missing_vital_status <- filter(metabric, is.na(Vital_status))
-missing_vital_status[, c("Patient_ID", 
-                         "Survival_status", 
-                         "Vital_status", 
+missing_vital_status[, c("Patient_ID",
+                         "Survival_status",
+                         "Vital_status",
                          "Deceased")]
 ```
 
@@ -519,8 +519,8 @@ patients have stage 3 or stage 4 tumours that are either estrogen receptor (ER)
 positive or progesterone receptor (PR) positive.
 
 ```{r}
-selected_patients <- filter(metabric, 
-                            Tumour_stage >= 3, 
+selected_patients <- filter(metabric,
+                            Tumour_stage >= 3,
                             ER_status == "Positive" | PR_status == "Positive")
 nrow(selected_patients)
 ```
@@ -530,8 +530,8 @@ about the precedence of the `&` and `|` operators and use parentheses to make
 clear what you intended.
 
 ```{r eval = FALSE}
-filter(metabric, Tumour_stage >= 3 & 
-       (ER_status == "Positive" | PR_status == "Positive"))
+filter(metabric, Tumour_stage >= 3 &
+           (ER_status == "Positive" | PR_status == "Positive"))
 ```
 
 
@@ -609,10 +609,10 @@ You can use a combination of explicit naming, ranges, helper functions and
 negation to select the columns of interest.
 
 ```{r}
-selected_columns <- select(metabric, 
-                           Patient_ID, 
-                           starts_with("Tumour_"), 
-                           `3-gene_classifier`:Integrative_cluster, 
+selected_columns <- select(metabric,
+                           Patient_ID,
+                           starts_with("Tumour_"),
+                           `3-gene_classifier`:Integrative_cluster,
                            -Cellularity)
 selected_columns
 ```
@@ -636,8 +636,8 @@ relocate(metabric, Patient_ID, Survival_status, Tumour_stage)
 Finally, columns can be renamed as part of the selection process.
 
 ```{r}
-select(metabric, 
-       Patient_ID, Classification = `3-gene_classifier`, 
+select(metabric,
+       Patient_ID, Classification = `3-gene_classifier`,
        NPI = Nottingham_prognostic_index)
 ```
 
@@ -684,9 +684,9 @@ Sorting is most commonly used in workflows as one of the last steps before
 printing out a data frame or writing out the table to a file.
 
 
-# Reading data from Excel files into R 
+# Reading data from Excel files into R
 
-We haven't yet showed how to read Excel spreadsheets into R. There are several 
+We haven't yet showed how to read Excel spreadsheets into R. There are several
 packages providing this capability, but for general use the `readxl` package
 from the tidyverse ideal.
 
@@ -696,7 +696,7 @@ that's not the case, you will have to install it separately.
 `readxl` is not loaded as one of the core tidyverse packages when you run
 `library(tidyverse)` so you'll have to load this separately.
 
-The the main functions are `read_excel`, `read_xls` and `read_xslx`. Use 
+The the main functions are `read_excel`, `read_xls` and `read_xslx`. Use
 `?read_xls` to find out how specify cell ranges and worksheets to be read.
 
 
@@ -715,7 +715,9 @@ The the main functions are `read_excel`, `read_xls` and `read_xslx`. Use
 ```{r}
 selectedPatients <- metabric %>%
     select(Cellularity, ER_status, HER2_status) %>%
-    filter(Cellularity=="High" & ER_status=="Positive" & HER2_status=="Positive")
+    filter(Cellularity == "High" &
+               ER_status == "Positive" &
+               HER2_status == "Positive")
 nrow(selectedPatients)
 ```
 
@@ -725,12 +727,12 @@ nrow(selectedPatients)
 :::exercise
 
 2. Investigate the subset of long-surviving breast cancer patients that didn't
-   receive chemo or radiotherapy. 
+   receive chemo or radiotherapy.
 
    First obtain the subset of patients that received neither chemotherapy or
    radiotherapy and survived for more than 20 years.
 
-   What percentage of these patients had negative ER status? 
+   What percentage of these patients had negative ER status?
 
    How does this compare to the percentage of patients with ER_negative status
    in the whole data set?
@@ -739,11 +741,10 @@ nrow(selectedPatients)
 
 ```{r}
 selectedPatients <- metabric %>%
-    filter(Chemotherapy=="NO" & Radiotherapy=="NO" & Survival_time > 240) 
+    filter(Chemotherapy == "NO" & Radiotherapy == "NO" & Survival_time > 240)
 
-mean(selectedPatients$ER_status=="Negative")
-mean(metabric$ER_status=="Negative")
-
+mean(selectedPatients$ER_status == "Negative")
+mean(metabric$ER_status == "Negative")
 ```
 </details>
 :::

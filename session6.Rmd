@@ -526,7 +526,7 @@ tibble.
 
 ```{r}
 extra_instrument <- tibble(name = "Paul", plays = "guitar")
-band_instruments3 <- bind_rows(band_instruments, extra_instrument) 
+band_instruments3 <- bind_rows(band_instruments, extra_instrument)
 band_instruments3
 left_join(band_members, band_instruments3, by = "name")
 ```
@@ -881,9 +881,9 @@ patients in each group. You can use "metabric_clinical_data.csv" file.
 library(tidyverse)
 metabric <- read_csv("data/metabric_clinical_data.csv")
 metabric %>%
-   filter(Survival_status == "DECEASED") %>%
-   group_by(ER_status) %>%
-   summarize(`Average survival time` = mean(Survival_time), N = n())
+    filter(Survival_status == "DECEASED") %>%
+    group_by(ER_status) %>%
+    summarize(`Average survival time` = mean(Survival_time), N = n())
 ```
 </details>
 
@@ -937,9 +937,9 @@ PIK3CA are most commonly mutated.
 <details><summary>Answer</summary>
 ```{r ex_4, purl=FALSE, message=FALSE, warning=FALSE}
 mutations %>%
-  filter(Gene == "PIK3CA") %>%
-  count(Codon) %>%
-  arrange(desc(n))
+    filter(Gene == "PIK3CA") %>%
+    count(Codon) %>%
+    arrange(desc(n))
 ```
 </details>
 :::
@@ -953,10 +953,12 @@ boxplots should be colored according to the group.
 <details><summary>Answer</summary>
 ```{r}
 metabric %>%
-  filter(!is.na(`3-gene_classifier`)) %>%
-ggplot( mapping=aes(x=`3-gene_classifier`, y=Age_at_diagnosis, colour=`3-gene_classifier`)) +
-  geom_boxplot() +
-  scale_colour_discrete(name="3 gene classifier")
+    filter(!is.na(`3-gene_classifier`)) %>%
+    ggplot(mapping = aes(x = `3-gene_classifier`,
+                         y = Age_at_diagnosis,
+                         colour = `3-gene_classifier`)) +
+    geom_boxplot() +
+    scale_colour_discrete(name = "3 gene classifier")
 ```
 </details>
 :::

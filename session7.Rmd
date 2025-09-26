@@ -692,7 +692,9 @@ metabric
 ```{r box_plot_4}
 # plot the ESR1 expression for each integrative cluster
 plot <- ggplot(data = metabric) +
-    geom_boxplot(mapping = aes(x = Integrative_cluster, y = ESR1, fill = Integrative_cluster)) +
+    geom_boxplot(mapping = aes(x = Integrative_cluster,
+                               y = ESR1,
+                               fill = Integrative_cluster)) +
     labs(x = "Integrative cluster", y = "ESR1 expression")
 plot
 ```
@@ -718,12 +720,10 @@ change. The following example demonstrates a few of these.
 
 ```{r box_plot_6}
 plot +
-  theme_bw() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    axis.ticks.x = element_blank(),
-    legend.position = "none"
-  )
+    theme_bw() +
+    theme(panel.grid.major.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          legend.position = "none")
 ```
 
 Here's another example that also involves customizing the labels, scales and
@@ -986,7 +986,7 @@ who_tidy <- who %>%
                  names_to = "group",
                  values_to = "cases",
                  values_drop_na = TRUE) %>%
-    mutate(group = str_replace_all(group, 
+    mutate(group = str_replace_all(group,
                                    c("newrel" = "rel",
                                      "new_" = "",
                                      "_m" = "_m_",

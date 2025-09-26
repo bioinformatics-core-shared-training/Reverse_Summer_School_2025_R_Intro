@@ -62,7 +62,7 @@ estrogen receptor alpha (ESR1) against that of the transcription factor, GATA3.
 
 ```{r scatter_plot_1}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1))
+    geom_point(mapping = aes(x = GATA3, y = ESR1))
 ```
 
 We specified 3 things to create this plot:
@@ -106,14 +106,14 @@ the ER status as an example.
 
 ```{r scatter_plot_2}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = ER_status))
+    geom_point(mapping = aes(x = GATA3, y = ESR1, colour = ER_status))
 ```
 
 What about colouring points based on a continuous variable?
 
 ```{r scatter_plot_3}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index))
+    geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index))
 ```
 
 ggplot2 uses a colour scale for a continous variable but discrete colours for
@@ -124,7 +124,7 @@ the case where we have such a large number of observations.
 
 ```{r scatter_plot_4}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, size = ER_status))
+    geom_point(mapping = aes(x = GATA3, y = ESR1, size = ER_status))
 ```
 
 Some aesthetics, such as size, are designed to be used with continuous
@@ -139,14 +139,17 @@ set - this has to be done outside the aesthetic mappings, i.e. outside the
 
 ```{r scatter_plot_5}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Nottingham_prognostic_index), size = 0.5)
+    geom_point(mapping = aes(x = GATA3,
+                             y = ESR1,
+                             colour = Nottingham_prognostic_index),
+               size = 0.5)
 ```
 
 Some aesthetics can only be used with categorical variables, e.g. shape.
 
 ```{r eval = FALSE}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, shape = Survival_time))
+    geom_point(mapping = aes(x = GATA3, y = ESR1, shape = Survival_time))
 ```
 
 ```
@@ -157,7 +160,8 @@ Here we set the shape based on the 3-gene classifier.
 
 ```{r scatter_plot_6}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, shape = `3-gene_classifier`), size = 0.9)
+    geom_point(mapping = aes(x = GATA3, y = ESR1, shape = `3-gene_classifier`),
+               size = 0.9)
 ```
 
 Note that some of the patient samples have not been classified and ggplot has
@@ -169,7 +173,11 @@ show which group a data point belongs to in two different categorical variables.
 
 ```{r scatter_plot_7}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = PAM50, shape = `3-gene_classifier`), size = 0.9)
+    geom_point(mapping = aes(x = GATA3,
+                             y = ESR1,
+                             colour = PAM50,
+                             shape = `3-gene_classifier`),
+              size = 0.9)
 ```
 
 Transparency can be useful when we have a large number of points as we can more
@@ -178,7 +186,9 @@ a variable and sits outside the `aes()`.
 
 ```{r scatter_plot_8}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`), size = 0.75, alpha = 0.5)
+    geom_point(mapping = aes(x = GATA3, y = ESR1, colour = `3-gene_classifier`),
+               size = 0.75,
+               alpha = 0.5)
 ```
 
 Colours are more commonly used than shapes, sizes or transparency.
@@ -223,7 +233,7 @@ categorical variable of interest to `x`.
 
 ```{r bar_plot_1}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Integrative_cluster))
+    geom_bar(mapping = aes(x = Integrative_cluster))
 ```
 
 The dark grey bars are a big ugly - what if we want each bar to be a different
@@ -231,7 +241,8 @@ colour?
 
 ```{r bar_plot_2}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Integrative_cluster, colour = Integrative_cluster))
+    geom_bar(mapping = aes(x = Integrative_cluster,
+                           colour = Integrative_cluster))
 ```
 
 Colouring the edges wasn't quite what we had in mind. Look at the help for
@@ -239,7 +250,7 @@ Colouring the edges wasn't quite what we had in mind. Look at the help for
 
 ```{r bar_plot_3}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Integrative_cluster, fill = Integrative_cluster))
+    geom_bar(mapping = aes(x = Integrative_cluster, fill = Integrative_cluster))
 ```
 
 What happens if we colour (fill) with something other than the integrative
@@ -247,7 +258,7 @@ cluster?
 
 ```{r bar_plot_4}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Integrative_cluster, fill = ER_status))
+    geom_bar(mapping = aes(x = Integrative_cluster, fill = ER_status))
 ```
 
 We get a stacked bar plot.
@@ -260,14 +271,14 @@ more than two categories.
 
 ```{r bar_plot_5}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Integrative_cluster, fill = `3-gene_classifier`))
+    geom_bar(mapping = aes(x = Integrative_cluster, fill = `3-gene_classifier`))
 ```
 
 What if want all the bars to be the same colour but not dark grey, e.g. blue?
 
 ```{r bar_plot_6}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Integrative_cluster, fill = "blue"))
+    geom_bar(mapping = aes(x = Integrative_cluster, fill = "blue"))
 ```
 
 That doesn't look right - why not?
@@ -277,7 +288,7 @@ mapping, just like we did before for size and transparency in the scatter plots.
 
 ```{r bar_plot_7}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Integrative_cluster), fill = "blue")
+    geom_bar(mapping = aes(x = Integrative_cluster), fill = "blue")
 ```
 
 Setting this inside the `aes()` mapping told ggplot2 to map the colour aesthetic
@@ -304,8 +315,8 @@ Let's create a plot with two geoms.
 
 ```{r scatter_line_plot_1}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1)) +
-  geom_smooth(mapping = aes(x = GATA3, y = ESR1))
+    geom_point(mapping = aes(x = GATA3, y = ESR1)) +
+    geom_smooth(mapping = aes(x = GATA3, y = ESR1))
 ```
 
 What is **`geom_smooth()`** doing? Look up the help page.
@@ -323,8 +334,8 @@ putting the mappings in the `ggplot()` function instead.
 
 ```{r scatter_line_plot_2}
 ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
-  geom_point() +
-  geom_smooth()
+    geom_point() +
+    geom_smooth()
 ```
 
 Let's make the plot look a bit prettier by reducing the size of the points and
@@ -334,8 +345,8 @@ to the points, so we set them inside `geom_point()`.
 
 ```{r scatter_line_plot_3}
 ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  geom_smooth()
+    geom_point(size = 0.5, alpha = 0.5) +
+    geom_smooth()
 ```
 
 Aesthetics set in the `ggplot` function are treated as global mappings for the
@@ -344,9 +355,10 @@ plot and are inherited by all geoms added to the plot.
 Let's say we still want to colour the points by ER status.
 
 ```{r scatter_line_plot_4}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  geom_smooth()
+ggplot(data = metabric,
+       mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
+    geom_point(size = 0.5, alpha = 0.5) +
+    geom_smooth()
 ```
 
 Well, that wasn't expected, although it's pretty neat. We only wanted to apply
@@ -357,8 +369,8 @@ global mapping in the `ggplot()` function.
 
 ```{r scatter_line_plot_5}
 ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1)) +
-  geom_point(mapping = aes(colour = ER_status), size = 0.5, alpha = 0.5) +
-  geom_smooth()
+    geom_point(mapping = aes(colour = ER_status), size = 0.5, alpha = 0.5) +
+    geom_smooth()
 ```
 
 Or suppose you've spent a bit of time getting your scatter plot just right and
@@ -367,9 +379,10 @@ the code you so lovingly crafted, you can set the `inherit.aes` option to
 `FALSE` and set the aesthetic mappings explicitly for your new layer.
 
 ```{r scatter_line_plot_6}
-ggplot(data = metabric, mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  geom_smooth(mapping = aes(x = GATA3, y = ESR1), inherit.aes = FALSE)
+ggplot(data = metabric,
+       mapping = aes(x = GATA3, y = ESR1, colour = ER_status)) +
+    geom_point(size = 0.5, alpha = 0.5) +
+    geom_smooth(mapping = aes(x = GATA3, y = ESR1), inherit.aes = FALSE)
 ```
 
 # Box plots
@@ -378,7 +391,7 @@ Box plots are a particular favourite of Wednesday lunchtime seminars.
 
 ```{r box_plot_1}
 ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3)) +
-  geom_boxplot()
+    geom_boxplot()
 ```
 
 See `geom_boxplot` help to explain how the box and whiskers are constructed and
@@ -388,8 +401,8 @@ How about adding another layer to display all the points?
 
 ```{r box_plot_2}
 ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3)) +
-  geom_boxplot() +
-  geom_point()
+    geom_boxplot() +
+    geom_point()
 ```
 
 Ideally, we'd like these points to be spread out a bit. The `geom_point` help
@@ -398,8 +411,8 @@ categorical.
 
 ```{r box_plot_3}
 ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3)) +
-  geom_boxplot() +
-  geom_jitter()
+    geom_boxplot() +
+    geom_jitter()
 ```
 
 Well, that's a bit of a mess. We need to reduce the spread or jitter and make
@@ -407,8 +420,8 @@ the points smaller and transparent.
 
 ```{r box_plot_4}
 ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.3, size = 0.5, alpha = 0.25)
+    geom_boxplot() +
+    geom_jitter(width = 0.3, size = 0.5, alpha = 0.25)
 ```
 
 Displaying points in this way makes much more sense when we only have a few
@@ -420,8 +433,9 @@ Let's try a colour aesthetic to also look at how estrogen receptor expression
 differs between HER2 positive and negative tumours.
 
 ```{r box_plot_5}
-ggplot(data = metabric, mapping = aes(x = ER_status, y = GATA3, colour = HER2_status)) +
-  geom_boxplot()
+ggplot(data = metabric,
+       mapping = aes(x = ER_status, y = GATA3, colour = HER2_status)) +
+    geom_boxplot()
 ```
 
 # Time series data
@@ -432,9 +446,9 @@ in the METABRIC data set so we'll turn our attention to a more topical data set.
 
 ## COVID-19 data set
 
-Every day the UK Government presents a series of plots showing data relating to
-the coronavirus (COVID-19) pandemic. Both the plots and the data are published
-on the Government's
+Every day during the pandemic the UK Government presents a series of plots
+showing data relating to the coronavirus (COVID-19) pandemic. Both the plots and
+the data are published on the Government's
 [website](https://www.gov.uk/government/collections/slides-and-datasets-to-accompany-coronavirus-press-conferences).
 
 One of the plots shows the reduction in different types oftransport use over
@@ -520,7 +534,7 @@ and y mapping. Our x aesthetic will be `date` and the y aesthetic will be
 
 ```{r line_plot_1}
 ggplot(data = rail_use) +
-  geom_line(mapping = aes(x = date, y = percentage))
+    geom_line(mapping = aes(x = date, y = percentage))
 ```
 
 We can return to our original `transport_use` table containing data for all
@@ -529,14 +543,14 @@ each.
 
 ```{r line_plot_2}
 ggplot(data = transport_use) +
-  geom_line(mapping = aes(x = date, y = percentage, colour = transport_type))
+    geom_line(mapping = aes(x = date, y = percentage, colour = transport_type))
 ```
 
 Another aesthetic available for `geom_line` is `linetype`.
 
 ```{r line_plot_3}
 ggplot(data = transport_use) +
-  geom_line(mapping = aes(x = date, y = percentage, linetype = transport_type))
+    geom_line(mapping = aes(x = date, y = percentage, linetype = transport_type))
 ```
 
 # Histograms
@@ -545,7 +559,7 @@ The geom for creating histograms is, rather unsurprisingly, `geom_histogram()`.
 
 ```{r histogram_plot_1}
 ggplot(data = metabric) +
-  geom_histogram(mapping = aes(x = Age_at_diagnosis))
+    geom_histogram(mapping = aes(x = Age_at_diagnosis))
 ```
 
 The warning message hints at picking a more optimal number of bins by specifying
@@ -553,14 +567,14 @@ the `binwidth` argument.
 
 ```{r histogram_plot_2}
 ggplot(data = metabric) +
-  geom_histogram(mapping = aes(x = Age_at_diagnosis), binwidth = 5)
+    geom_histogram(mapping = aes(x = Age_at_diagnosis), binwidth = 5)
 ```
 
 Or we can set the number of bins.
 
 ```{r histogram_plot_3}
 ggplot(data = metabric) +
-  geom_histogram(mapping = aes(x = Age_at_diagnosis), bins = 20)
+    geom_histogram(mapping = aes(x = Age_at_diagnosis), bins = 20)
 ```
 
 These histograms are not very pleasing, aesthetically speaking - how about some
@@ -568,7 +582,7 @@ better aesthetics?
 
 ```{r histogram_plot_4}
 ggplot(data = metabric) +
-  geom_histogram(mapping = aes(x = Age_at_diagnosis), bins = 20, colour = "darkblue", fill = "grey")
+    geom_histogram(mapping = aes(x = Age_at_diagnosis), bins = 20, colour = "darkblue", fill = "grey")
 ```
 
 # Categorical variables -- factors
@@ -590,7 +604,7 @@ continuous variable, e.g. `Tumour_stage`, which is read in as a double type.
 
 ```{r scatter_plot_9}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Tumour_stage))
+    geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Tumour_stage))
 ```
 
 ```{r}
@@ -621,7 +635,7 @@ levels(metabric$Tumour_stage)
 
 ```{r scatter_plot_10}
 ggplot(data = metabric) +
-  geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Tumour_stage))
+    geom_point(mapping = aes(x = GATA3, y = ESR1, colour = Tumour_stage))
 ```
 
 In this case the order of the levels makes sense but for other variables you
@@ -663,7 +677,7 @@ levels(metabric$Integrative_cluster)
 
 ```{r bar_plot_9}
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Integrative_cluster, fill = Integrative_cluster))
+    geom_bar(mapping = aes(x = Integrative_cluster, fill = Integrative_cluster))
 ```
 
 ---
@@ -697,7 +711,7 @@ In this session we have covered the following concepts:
 library(tidyverse)
 metabric <- read_csv("data/metabric_clinical_and_expression_data.csv")
 ggplot(data = metabric) +
-  geom_bar(mapping = aes(x = Neoplasm_histologic_grade))
+    geom_bar(mapping = aes(x = Neoplasm_histologic_grade))
 ```
 </details>
 :::
@@ -709,7 +723,7 @@ ggplot(data = metabric) +
 ```{r message=FALSE, warning=FALSE}
 # 2 a.
 ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) + 
-  geom_boxplot()
+    geom_boxplot()
 ```
 </details>
 
@@ -724,7 +738,7 @@ ggplot(data=iris, mapping = aes(x=Species, y= Petal.Length)) +
 
 ```{r message=FALSE, warning=FALSE}
 ggplot(data = metabric) +
-  geom_density(mapping = aes(x = ESR1))
+    geom_density(mapping = aes(x = ESR1))
 ```
 </details>
 :::
@@ -737,8 +751,8 @@ best fit using `metabric` data set.
 <details><summary>Answer</summary>
 ```{r message=FALSE, warning=FALSE}
 ggplot(data = metabric, mapping = aes(x = FOXA1, y = MLPH)) +
-  geom_point() +
-  geom_smooth()
+    geom_point() +
+    geom_smooth()
 ```
 
 </details>

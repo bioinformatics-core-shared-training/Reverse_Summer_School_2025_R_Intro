@@ -113,7 +113,7 @@ This is convenient for simple commands, but is unwieldy and not easy to read
 with more complex commands:
 
 ```{r}
-patients <- select(filter(metabric, Survival_status == "LIVING", Survival_time > 120), Patient_ID, Survival_time, Tumour_stage, Nottingham_prognostic_index)
+patients <- select(filter(metabric, Survival_status == "LIVING", Survival_time > 120), Patient_ID, Survival_time)
 nrow(patients)
 ```
 
