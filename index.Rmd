@@ -39,6 +39,8 @@ graphical user interface to make working with R more user friendly.
    ggplot2 plots
 7. [Restructuring data for analysis](session7.html) - The concept of 'tidy
    data', pivoting and separating operations, ggplot2 extras
+8. [R Markdown](session8.html) - Creating reproducible reports with R
+   Markdown
 
 # Additional resources
 
