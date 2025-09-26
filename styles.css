@@ -37,3 +37,15 @@ blockquote p,ul,ol {
   margin-bottom: 20px;
   background: #cce6ff;
 }
+.renderedblock {
+  padding: 0.5em 0.25em 0.25em 0.5em;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-style: solid;
+  border-color: #BBBBBB;
+  border-width: 1px;
+  background: #fafbfb;
+}
+
+
+
