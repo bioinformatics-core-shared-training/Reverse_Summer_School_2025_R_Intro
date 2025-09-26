@@ -274,8 +274,8 @@ as *italics*.
 
 #### Strikethrough {.unlisted .unnumbered}
 
-Strikethrough is achieved with tilde e.g. `~strikethrough~` is rendered
-as ~Strikethrough~.
+Strikethrough is achieved with two tildes e.g. `~~strikethrough~~` is rendered
+as ~~Strikethrough~~.
 
 ### Next section {.unlisted .unnumbered}
 
